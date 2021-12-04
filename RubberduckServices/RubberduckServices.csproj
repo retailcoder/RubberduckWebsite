@@ -10,14 +10,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Libs\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Rubberduck.Parsing">
-      <HintPath>..\..\Rubberduck\Rubberduck.Parsing\bin\Debug\net46\Rubberduck.Parsing.dll</HintPath>
+      <HintPath>Libs\Rubberduck.Parsing.dll</HintPath>
     </Reference>
     <Reference Include="Rubberduck.SmartIndenter">
-      <HintPath>..\..\Rubberduck\Rubberduck.SmartIndenter\bin\Debug\net461\Rubberduck.SmartIndenter.dll</HintPath>
+      <HintPath>Libs\Rubberduck.SmartIndenter.dll</HintPath>
     </Reference>
     <Reference Include="Rubberduck.VBEditor">
-      <HintPath>..\..\Rubberduck\Rubberduck.SmartIndenter\bin\Debug\net461\Rubberduck.VBEditor.dll</HintPath>
+      <HintPath>Libs\Rubberduck.VBEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
 
