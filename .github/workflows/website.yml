@@ -1,4 +1,4 @@
-name: Build solution
+name: Build Website
 
 on:
   push:
@@ -23,3 +23,16 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+  trigger-api-build:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        repository: retailcoder/RubberduckAPI
+        event-type: new-website-build
+        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
