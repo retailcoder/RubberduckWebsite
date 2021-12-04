@@ -1,17 +1,16 @@
-## Rubberduck Website
-
+# Rubberduck Website  
 This repository contains the source code for the [Rubberduck](https://github.com/rubberduck-vba/Rubberduck) project's website.
 
-### Projects
+## Projects
 
-#### Rubberduck.Web
-
+### RubberduckWebsite  
 The website front-end.
 
-#### Rubberduck.Database
+### Rubberduck.Model  
+Defines the data model entities and DTOs/ViewModels.
 
-The SQL Server back-end database.
+### Rubberduck.ContentServices  
+Contains the logic for parsing xmldocs into website content.
 
-#### Rubberduck.DataServices
-
-The website back-end services.
+### RubberduckServices  
+References Rubberduck libraries and exposes indenter and syntax highlighter services.
