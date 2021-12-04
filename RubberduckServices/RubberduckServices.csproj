@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr" Version="3.5.0.2" />
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Rubberduck.Parsing">
+      <HintPath>..\..\Rubberduck\Rubberduck.Parsing\bin\Debug\net46\Rubberduck.Parsing.dll</HintPath>
+    </Reference>
+    <Reference Include="Rubberduck.SmartIndenter">
+      <HintPath>..\..\Rubberduck\Rubberduck.SmartIndenter\bin\Debug\net461\Rubberduck.SmartIndenter.dll</HintPath>
+    </Reference>
+    <Reference Include="Rubberduck.VBEditor">
+      <HintPath>..\..\Rubberduck\Rubberduck.SmartIndenter\bin\Debug\net461\Rubberduck.VBEditor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

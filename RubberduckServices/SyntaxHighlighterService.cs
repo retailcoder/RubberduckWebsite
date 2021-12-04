@@ -1,0 +1,140 @@
+﻿using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Atn;
+using Rubberduck.Parsing.Grammar;
+using Rubberduck.SmartIndenter;
+using RubberduckServices.Abstract;
+using RubberduckServices.Internal;
+
+namespace RubberduckServices
+{
+    public class SyntaxHighlighterService : ISyntaxHighlighterService
+    {
+        public const string DefaultKeywordClass = "keyword";
+        public const string DefaultStringLiteralClass = "string-literal";
+
+        private readonly string _keywordClass;
+        private readonly string _stringLiteralClass;
+        private readonly string _commentClass;
+        private readonly string _annotationClass;
+        private readonly string _attributeClass;
+        private readonly string _attributeValueClass;
+
+        public SyntaxHighlighterService(
+            string cssKeywords = DefaultKeywordClass, 
+            string cssStringLiterals = DefaultStringLiteralClass,
+            string cssComments = CommentIntervalsListener.DefaultCommentClass,
+            string cssAnnotations = AnnotationIntervalsListener.DefaultAnnotationClass,
+            string cssAttributes = AttributeIntervalsListener.DefaultAttributeClass,
+            string cssAttributeValues = AttributeValueIntervalsListener.DefaultAttributeValueClass)
+        {
+            _keywordClass = cssKeywords;
+            _stringLiteralClass = cssStringLiterals;
+            _commentClass = cssComments;
+            _annotationClass = cssAnnotations;
+            _attributeClass = cssAttributes;
+            _attributeValueClass = cssAttributeValues;
+        }
+
+        public async Task<string> FormatAsync(string code)
+        {
+            return await Task.Run(() =>
+            {
+                var indenter = new Indenter(null, () => new IndenterSettings(true));
+                var indentedCode = indenter.Indent(code.Split('\n').Select(line => line.Replace("\r", string.Empty))).ToArray();
+
+                var builder = new StringBuilder();
+                var tokens = Tokenize(string.Join("\n", indentedCode));
+
+                var parser = new VBAParser(tokens)
+                {
+                    Interpreter = { PredictionMode = PredictionMode.Ll }
+                };
+
+                var listeners = new IntervalListener[]
+                {
+                    new CommentIntervalsListener(_commentClass),
+                    new AnnotationIntervalsListener(_annotationClass),
+                    new AttributeIntervalsListener(_attributeClass),
+                    new AttributeValueIntervalsListener(_attributeValueClass),
+                };
+
+                foreach (var listener in listeners)
+                {
+                    parser.AddParseListener(listener);
+                }
+
+                parser.startRule();
+                FormatTokens(builder, tokens, listeners);
+
+                var lines = builder.ToString().Split('\n').Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
+                var indent = lines.Last().TakeWhile(char.IsWhiteSpace).Count();
+                var formattedLines = from line in lines
+                                     let trimmed = line.Substring(indent)
+                                     select FormatIndents(trimmed);
+
+                return string.Join("<br/>", formattedLines);
+            });
+        }
+
+        private void FormatTokens(StringBuilder builder, ITokenStream tokens, IntervalListener[] listeners)
+        {
+            for (var i = 0; i < tokens.Size; i++)
+            {
+                var token = tokens.Get(i);
+                var listener = listeners.Select(e => new
+                {
+                    IsValidInterval = e.IsValidInterval(token, out var interval),
+                    Interval = interval,
+                    e.Class
+                }).FirstOrDefault(e => e.IsValidInterval);
+
+                if (listener != null)
+                {
+                    builder.Append($"<span class=\"{listener.Class}\">{tokens.GetText(listener.Interval)}</span>");
+                    i = listener.Interval.b;
+                }
+                else
+                {
+                    if (TokenKinds.StringLiterals.Contains(token.Type))
+                    {
+                        builder.Append($"<span class=\"{_stringLiteralClass}\">{token.Text}</span>");
+                    }
+                    else if (TokenKinds.Keywords.Contains(token.Type))
+                    {
+                        builder.Append($"<span class=\"{_keywordClass}\">{token.Text}</span>");
+                    }
+                    else if (token.Type != VBAParser.Eof)
+                    {
+                        builder.Append(token.Text);
+                    }
+                }
+            }
+        }
+
+        private static ITokenStream Tokenize(string code)
+        {
+            AntlrInputStream input;
+            using (var reader = new StringReader(code))
+            {
+                input = new AntlrInputStream(reader);
+            }
+            var lexer = new VBALexer(input);
+            return new CommonTokenStream(lexer);
+        }
+
+        private static string FormatIndents(string line)
+        {
+            var formatted = line;
+            var indent = line.TakeWhile(char.IsWhiteSpace).Count();
+            if (indent > 0)
+            {
+                formatted = line.Substring(0, indent).Replace(" ", "&nbsp;") + line.Substring(indent);
+            }
+            return formatted;
+        }
+    }
+}
