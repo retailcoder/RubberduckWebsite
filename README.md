@@ -1,6 +1,5 @@
 # Rubberduck Website  
-[![Build solution](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/website.yml)
-
+[![Build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/website.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/website.yml)
 This repository contains the source code for the [Rubberduck](https://github.com/rubberduck-vba/Rubberduck) project's website.
 
 ## Projects
