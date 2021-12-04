@@ -8,12 +8,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      max-parallel: 1
-      
+    
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -28,7 +24,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
   trigger-api-build:
-    if: success()
+    needs: build
     runs-on: ubuntu-latest
     
     steps:
