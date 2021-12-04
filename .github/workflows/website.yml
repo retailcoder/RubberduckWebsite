@@ -25,7 +25,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
   trigger-api-build:
-  
+    if: success()
     runs-on: ubuntu-latest
     
     steps:
