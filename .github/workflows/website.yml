@@ -32,7 +32,7 @@ jobs:
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        token: ${{ secrets.GITHUBAPIKEY }}
         repository: retailcoder/RubberduckAPI
         event-type: new-website-build
         client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
