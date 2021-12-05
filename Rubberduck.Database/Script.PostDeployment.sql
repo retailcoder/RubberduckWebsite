@@ -1,1 +1,1 @@
-﻿:r .\PostDeployment\Script.InitialData.dbo.ExampleModuleTypes.sql
+﻿:r .\PostDeployment\Script.InitialData.site.ExampleModuleTypes.sql
