@@ -1,5 +1,5 @@
 ﻿# Rubberduck.Database  
-Generates the SQL Server backing database for content services.
+Generates the SQL Server 2014 backing database for content services.
 
 ![site](https://user-images.githubusercontent.com/5751684/144734293-0035c90f-b010-4e47-a12f-7a5119fb4cc4.png)
 
