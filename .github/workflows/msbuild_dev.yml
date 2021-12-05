@@ -1,10 +1,12 @@
-name: Build RDDB (dev)
+# Builds the Rubberduck.Database project, uploads a .dacpac artifact.
+# Runs in dev and main branches, on push and pull request events.
+name: Build Database (dev)
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ dev, main ]
   pull_request:
-    branches: [ dev ]
+    branches: [ dev, main ]
 
 
 env:
@@ -31,3 +33,11 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}/Rubberduck.Database
+
+    - uses: actions/checkout@v2
+    - run: mkdir -p ${{env.SOLUTION_FILE_PATH}}/artifacts
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: db
+        path: '${{env.SOLUTION_FILE_PATH}}/Rubberduck.Database/bin/${{env.BUILD_CONFIGURATION}}/Rubberduck.Database.dacpac'
