@@ -5,11 +5,10 @@ This repository contains the source code for the [Rubberduck](https://github.com
 
 - main:  
 [![dotnet build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml)
-[![Build RDDB](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml)
-
+[![Build RDDB (prod)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml)
 - dev:  
 [![dotnet build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg?branch=dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml)
-[![Build RDDB](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml/badge.svg?branch=dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml)
+[![Build RDDB (dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild_dev.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild_dev.yml)
 
 ## Projects
 
