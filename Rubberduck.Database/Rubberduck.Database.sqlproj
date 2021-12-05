@@ -46,7 +46,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <SqlTargetName>RubberduckDb</SqlTargetName>
+    <SqlTargetName>RDDB</SqlTargetName>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -117,13 +117,15 @@
     <Build Include="Views\dbo\vLatestTags.sql" />
     <Build Include="Tables\dbo\Configuration\Configuration.sql" />
     <Build Include="Tables\dbo\Configuration\Constraints\PK_Configuration.sql" />
+    <Build Include="Tables\dbo\Examples\Constraints\FK_Examples_Features.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PostDeployment\Script.InitialData.dbo.ExampleModuleTypes.sql" />
-    <None Include="Rubberduck.Database.publish.xml" />
     <None Include="PostDeployment\Script.InitialData.dbo.Configuration.sql" />
+    <None Include="README.md" />
+    <None Include="Rubberduck.Database.publish.xml" />
   </ItemGroup>
 </Project>
