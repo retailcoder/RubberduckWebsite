@@ -44,5 +44,5 @@ jobs:
         uses: abelsquidhead/dacpac-deploy@master
         with:
           connectionString: ${{ secrets.RDAPI_RUBBERDUCKDB }}
-          dacpac: 'bin\$${{env.BUILD_CONFIGURATION}}\rubberduckdb.dacpac'
+          dacpac: '${{env.SOLUTION_FILE_PATH}}\Rubberduck.Database\bin\$${{env.BUILD_CONFIGURATION}}\Rubberduck.Database.dacpac'
           additionalArguments: '/p:BlockOnPossibleDataLoss=False'
