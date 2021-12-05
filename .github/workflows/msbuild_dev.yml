@@ -1,4 +1,4 @@
-name: Build RDDB
+name: Build RDDB (dev)
 
 on:
   push:
