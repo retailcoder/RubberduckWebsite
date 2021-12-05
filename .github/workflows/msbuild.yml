@@ -16,6 +16,9 @@ env:
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   BUILD_CONFIGURATION: Release
 
+  # FIXME figure out how to run the dacpac without triggering 'add-path' warning (support for this is planned to be removed in the future)
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 jobs:
   build:
     runs-on: windows-latest
