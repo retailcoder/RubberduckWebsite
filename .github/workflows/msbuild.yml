@@ -1,6 +1,6 @@
 # Builds and deploys the Rubberduck.Database project.
 # Runs on push, only in the main branch.
-name: Build/Deploy Database (dev)
+name: Build/Deploy Database (prod)
 
 on:
   push:
