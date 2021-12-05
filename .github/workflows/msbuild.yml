@@ -37,7 +37,7 @@ jobs:
       - name: download build artifacts
         uses: actions/download-artifact@master
         with: 
-          name: db
+          name: Rubberduck.Database
 
       # deploy dacpac calling my dacpac-deploy task
       - name: update database schema using dacpac deploy action
