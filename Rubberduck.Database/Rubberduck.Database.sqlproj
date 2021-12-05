@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Rubberduck.Database</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{c12a9ec7-fa6e-4c52-accf-c4feff377bf7}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Rubberduck.Database</RootNamespace>
+    <AssemblyName>Rubberduck.Database</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DacApplicationName>RDDB</DacApplicationName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>E:\Dev\GitHub\RubberduckWebsite\Rubberduck.Database\bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <SqlTargetName>RubberduckDb</SqlTargetName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Schemas" />
+    <Folder Include="Tables" />
+    <Folder Include="Tables\dbo" />
+    <Folder Include="StoredProcedures" />
+    <Folder Include="Tables\dbo\Features" />
+    <Folder Include="Tables\dbo\Features\Constraints" />
+    <Folder Include="Tables\dbo\FeatureItems" />
+    <Folder Include="Tables\dbo\FeatureItems\Constraints" />
+    <Folder Include="Tables\dbo\FeatureItems\Indexes" />
+    <Folder Include="Tables\dbo\Features\Indexes" />
+    <Folder Include="PostDeployment" />
+    <Folder Include="Tables\dbo\Examples" />
+    <Folder Include="Tables\dbo\ExampleModules" />
+    <Folder Include="Tables\dbo\Examples\Constraints" />
+    <Folder Include="Tables\dbo\ExampleModules\Constraints" />
+    <Folder Include="Views" />
+    <Folder Include="Tables\dbo\ExampleModuleTypes" />
+    <Folder Include="Tables\dbo\Tags" />
+    <Folder Include="Tables\dbo\Tags\Constraints" />
+    <Folder Include="Tables\dbo\Tags\Indexes" />
+    <Folder Include="Tables\dbo\Examples\Indexes" />
+    <Folder Include="Tables\dbo\ExampleModuleTypes\Constraints" />
+    <Folder Include="Tables\dbo\TagAssets" />
+    <Folder Include="Tables\dbo\TagAssets\Constraints" />
+    <Folder Include="Tables\dbo\TagAssets\Indexes" />
+    <Folder Include="Views\dbo" />
+    <Folder Include="Tables\dbo\Configuration" />
+    <Folder Include="Tables\dbo\Configuration\Constraints" />
+    <Folder Include="Tables\dbo\Configuration\Indexes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\dbo\Features\Features.sql" />
+    <Build Include="Tables\dbo\Features\Constraints\PK_Features.sql" />
+    <Build Include="Tables\dbo\Features\Constraints\NK_Features.sql" />
+    <Build Include="Tables\dbo\FeatureItems\FeatureItems.sql" />
+    <Build Include="Tables\dbo\FeatureItems\Constraints\NK_FeatureItems.sql" />
+    <Build Include="Tables\dbo\FeatureItems\Constraints\PK_FeatureItems.sql" />
+    <Build Include="Tables\dbo\Examples\Examples.sql" />
+    <Build Include="Tables\dbo\ExampleModules\ExampleModules.sql" />
+    <Build Include="Tables\dbo\ExampleModuleTypes\ExampleModuleTypes.sql" />
+    <Build Include="Tables\dbo\Tags\Tags.sql" />
+    <Build Include="Tables\dbo\TagAssets\TagAssets.sql" />
+    <Build Include="Tables\dbo\Examples\Constraints\PK_Examples.sql" />
+    <Build Include="Tables\dbo\Tags\Constraints\PK_Tags.sql" />
+    <Build Include="Tables\dbo\Examples\Constraints\NK_Examples.sql" />
+    <Build Include="Tables\dbo\ExampleModules\Constraints\PK_ExampleModules.sql" />
+    <Build Include="Tables\dbo\ExampleModules\Constraints\NK_ExampleModules.sql" />
+    <Build Include="Tables\dbo\ExampleModuleTypes\Constraints\PK_ExampleModuleTypes.sql" />
+    <Build Include="Tables\dbo\ExampleModuleTypes\Constraints\NK_ExampleModuleTypes.sql" />
+    <Build Include="Tables\dbo\TagAssets\Constraints\PK_TagAssets.sql" />
+    <Build Include="Tables\dbo\TagAssets\Constraints\NK_TagAssets.sql" />
+    <Build Include="Tables\dbo\TagAssets\Constraints\FK_TagAssets_Tags.sql" />
+    <Build Include="Tables\dbo\ExampleModules\Constraints\FK_ExampleModules_Examples.sql" />
+    <Build Include="Tables\dbo\ExampleModules\Constraints\FK_ExampleModules_ModuleTypes.sql" />
+    <Build Include="Tables\dbo\FeatureItems\Constraints\FK_FeatureItems_Features.sql" />
+    <Build Include="Tables\dbo\Features\Constraints\FK_Features_Features.sql" />
+    <Build Include="Views\dbo\vLatestTags.sql" />
+    <Build Include="Tables\dbo\Configuration\Configuration.sql" />
+    <Build Include="Tables\dbo\Configuration\Constraints\PK_Configuration.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PostDeployment\Script.InitialData.dbo.ExampleModuleTypes.sql" />
+    <None Include="Rubberduck.Database.publish.xml" />
+    <None Include="PostDeployment\Script.InitialData.dbo.Configuration.sql" />
+  </ItemGroup>
+</Project>
