@@ -21,6 +21,13 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Rubberduck.Database", "Rubb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rubberduck.API", "Rubberduck.API\Rubberduck.API.csproj", "{697B27B6-F5D6-41E8-B4A4-94BAA6822C03}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C06DC292-CB82-439F-BA13-3060D015099D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{4E04CF57-2F00-45BC-9171-345BBA6E514C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +63,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C06DC292-CB82-439F-BA13-3060D015099D} = {8332C1D4-2AF6-48C8-B90C-037729C0726A}
+		{4E04CF57-2F00-45BC-9171-345BBA6E514C} = {C06DC292-CB82-439F-BA13-3060D015099D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF89FDC3-660D-41B6-AE8F-C3D87F93A303}
