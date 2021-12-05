@@ -2,7 +2,10 @@ name: Build RDDB
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
 
 env:
   # Path to the solution file relative to the root of the project.
@@ -28,21 +31,3 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}/Rubberduck.Database
-
-  deploy:
-      needs: build
-      runs-on: windows-latest
-      steps:
-      # download build artifacts which holds the dacpac
-      - name: download build artifacts
-        uses: actions/download-artifact@master
-        with: 
-          name: db
-
-      # deploy dacpac calling my dacpac-deploy task
-      - name: update database schema using dacpac deploy action
-        uses: abelsquidhead/dacpac-deploy@master
-        with:
-          connectionString: ${{ secrets.RDAPI_RUBBERDUCKDB }}
-          dacpac: 'bin\$${{env.BUILD_CONFIGURATION}}\rubberduckdb.dacpac'
-          additionalArguments: '/p:BlockOnPossibleDataLoss=False'
