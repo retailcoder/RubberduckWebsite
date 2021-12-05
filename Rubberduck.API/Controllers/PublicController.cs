@@ -98,7 +98,9 @@ namespace Rubberduck.API.Controllers
         {
             try
             {
-                var tags = await _tagsReader.GetAllAsync().ContinueWith(t => t.Result.Select(Tag.ToDTO));
+                var tags = await _tagsReader
+                    .GetAllAsync() // FIXME behavior is overridden at the repository level to return the latest tags
+                    .ContinueWith(t => t.Result.Select(Tag.ToDTO));
                 return Ok(tags);
             }
             catch (Exception e)
