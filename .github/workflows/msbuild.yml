@@ -8,7 +8,8 @@ on:
 
 env:
   # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
+  # D:\a\RubberduckWebsite\RubberduckWebsite\
+  SOLUTION_FILE_PATH: . 
 
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
@@ -34,19 +35,19 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    - run: mkdir -p ${{env.SOLUTION_FILE_PATH}}/artifacts
-
     - name: Upload dacpac
       uses: actions/upload-artifact@v2
       with:
         name: db
-        path: '${{env.SOLUTION_FILE_PATH}}/Rubberduck.Database/bin/${{env.BUILD_CONFIGURATION}}/Rubberduck.Database.dacpac'
+        path: 'D:\a\RubberduckWebsite\RubberduckWebsite\Rubberduck.Database\bin\Release\Rubberduck.Database.dacpac'
 
   deploy:
       needs: build
       runs-on: windows-latest
 
       steps:
+
+      - run: mkdir -p ${{env.SOLUTION_FILE_PATH}}/artifacts
 
       - name: download build artifacts
         uses: actions/download-artifact@master
