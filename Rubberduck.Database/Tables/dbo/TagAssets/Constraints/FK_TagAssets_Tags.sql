@@ -1,1 +1,0 @@
-﻿ALTER TABLE [dbo].[TagAssets] ADD CONSTRAINT [FK_TagAssets_Tags] FOREIGN KEY ([TagId]) REFERENCES [dbo].[Tags] ([Id]);

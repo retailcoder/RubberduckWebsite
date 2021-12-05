@@ -22,7 +22,8 @@
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
-    <DacApplicationName>RDDB</DacApplicationName>
+    <DacApplicationName>rubberduckdb</DacApplicationName>
+    <DefaultSchema>site</DefaultSchema>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -46,7 +47,7 @@
     <DefineTrace>true</DefineTrace>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <SqlTargetName>RDDB</SqlTargetName>
+    <SqlTargetName>rubberduckdb</SqlTargetName>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
@@ -60,71 +61,72 @@
     <Folder Include="Properties" />
     <Folder Include="Schemas" />
     <Folder Include="Tables" />
-    <Folder Include="Tables\dbo" />
+    <Folder Include="Tables\site" />
     <Folder Include="StoredProcedures" />
-    <Folder Include="Tables\dbo\Features" />
-    <Folder Include="Tables\dbo\Features\Constraints" />
-    <Folder Include="Tables\dbo\FeatureItems" />
-    <Folder Include="Tables\dbo\FeatureItems\Constraints" />
-    <Folder Include="Tables\dbo\FeatureItems\Indexes" />
-    <Folder Include="Tables\dbo\Features\Indexes" />
+    <Folder Include="Tables\site\Features" />
+    <Folder Include="Tables\site\Features\Constraints" />
+    <Folder Include="Tables\site\FeatureItems" />
+    <Folder Include="Tables\site\FeatureItems\Constraints" />
+    <Folder Include="Tables\site\FeatureItems\Indexes" />
+    <Folder Include="Tables\site\Features\Indexes" />
     <Folder Include="PostDeployment" />
-    <Folder Include="Tables\dbo\Examples" />
-    <Folder Include="Tables\dbo\ExampleModules" />
-    <Folder Include="Tables\dbo\Examples\Constraints" />
-    <Folder Include="Tables\dbo\ExampleModules\Constraints" />
+    <Folder Include="Tables\site\Examples" />
+    <Folder Include="Tables\site\ExampleModules" />
+    <Folder Include="Tables\site\Examples\Constraints" />
+    <Folder Include="Tables\site\ExampleModules\Constraints" />
     <Folder Include="Views" />
-    <Folder Include="Tables\dbo\ExampleModuleTypes" />
-    <Folder Include="Tables\dbo\Tags" />
-    <Folder Include="Tables\dbo\Tags\Constraints" />
-    <Folder Include="Tables\dbo\Tags\Indexes" />
-    <Folder Include="Tables\dbo\Examples\Indexes" />
-    <Folder Include="Tables\dbo\ExampleModuleTypes\Constraints" />
-    <Folder Include="Tables\dbo\TagAssets" />
-    <Folder Include="Tables\dbo\TagAssets\Constraints" />
-    <Folder Include="Tables\dbo\TagAssets\Indexes" />
-    <Folder Include="Views\dbo" />
-    <Folder Include="Tables\dbo\Configuration" />
-    <Folder Include="Tables\dbo\Configuration\Constraints" />
-    <Folder Include="Tables\dbo\Configuration\Indexes" />
+    <Folder Include="Tables\site\ExampleModuleTypes" />
+    <Folder Include="Tables\site\Tags" />
+    <Folder Include="Tables\site\Tags\Constraints" />
+    <Folder Include="Tables\site\Tags\Indexes" />
+    <Folder Include="Tables\site\Examples\Indexes" />
+    <Folder Include="Tables\site\ExampleModuleTypes\Constraints" />
+    <Folder Include="Tables\site\TagAssets" />
+    <Folder Include="Tables\site\TagAssets\Constraints" />
+    <Folder Include="Tables\site\TagAssets\Indexes" />
+    <Folder Include="Views\site" />
+    <Folder Include="Tables\site\Configuration" />
+    <Folder Include="Tables\site\Configuration\Constraints" />
+    <Folder Include="Tables\site\Configuration\Indexes" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\dbo\Features\Features.sql" />
-    <Build Include="Tables\dbo\Features\Constraints\PK_Features.sql" />
-    <Build Include="Tables\dbo\Features\Constraints\NK_Features.sql" />
-    <Build Include="Tables\dbo\FeatureItems\FeatureItems.sql" />
-    <Build Include="Tables\dbo\FeatureItems\Constraints\NK_FeatureItems.sql" />
-    <Build Include="Tables\dbo\FeatureItems\Constraints\PK_FeatureItems.sql" />
-    <Build Include="Tables\dbo\Examples\Examples.sql" />
-    <Build Include="Tables\dbo\ExampleModules\ExampleModules.sql" />
-    <Build Include="Tables\dbo\ExampleModuleTypes\ExampleModuleTypes.sql" />
-    <Build Include="Tables\dbo\Tags\Tags.sql" />
-    <Build Include="Tables\dbo\TagAssets\TagAssets.sql" />
-    <Build Include="Tables\dbo\Examples\Constraints\PK_Examples.sql" />
-    <Build Include="Tables\dbo\Tags\Constraints\PK_Tags.sql" />
-    <Build Include="Tables\dbo\Examples\Constraints\NK_Examples.sql" />
-    <Build Include="Tables\dbo\ExampleModules\Constraints\PK_ExampleModules.sql" />
-    <Build Include="Tables\dbo\ExampleModules\Constraints\NK_ExampleModules.sql" />
-    <Build Include="Tables\dbo\ExampleModuleTypes\Constraints\PK_ExampleModuleTypes.sql" />
-    <Build Include="Tables\dbo\ExampleModuleTypes\Constraints\NK_ExampleModuleTypes.sql" />
-    <Build Include="Tables\dbo\TagAssets\Constraints\PK_TagAssets.sql" />
-    <Build Include="Tables\dbo\TagAssets\Constraints\NK_TagAssets.sql" />
-    <Build Include="Tables\dbo\TagAssets\Constraints\FK_TagAssets_Tags.sql" />
-    <Build Include="Tables\dbo\ExampleModules\Constraints\FK_ExampleModules_Examples.sql" />
-    <Build Include="Tables\dbo\ExampleModules\Constraints\FK_ExampleModules_ModuleTypes.sql" />
-    <Build Include="Tables\dbo\FeatureItems\Constraints\FK_FeatureItems_Features.sql" />
-    <Build Include="Tables\dbo\Features\Constraints\FK_Features_Features.sql" />
-    <Build Include="Views\dbo\vLatestTags.sql" />
-    <Build Include="Tables\dbo\Configuration\Configuration.sql" />
-    <Build Include="Tables\dbo\Configuration\Constraints\PK_Configuration.sql" />
-    <Build Include="Tables\dbo\Examples\Constraints\FK_Examples_Features.sql" />
+    <Build Include="Tables\site\Features\Features.sql" />
+    <Build Include="Tables\site\Features\Constraints\PK_Features.sql" />
+    <Build Include="Tables\site\Features\Constraints\NK_Features.sql" />
+    <Build Include="Tables\site\FeatureItems\FeatureItems.sql" />
+    <Build Include="Tables\site\FeatureItems\Constraints\NK_FeatureItems.sql" />
+    <Build Include="Tables\site\FeatureItems\Constraints\PK_FeatureItems.sql" />
+    <Build Include="Tables\site\Examples\Examples.sql" />
+    <Build Include="Tables\site\ExampleModules\ExampleModules.sql" />
+    <Build Include="Tables\site\ExampleModuleTypes\ExampleModuleTypes.sql" />
+    <Build Include="Tables\site\Tags\Tags.sql" />
+    <Build Include="Tables\site\TagAssets\TagAssets.sql" />
+    <Build Include="Tables\site\Examples\Constraints\PK_Examples.sql" />
+    <Build Include="Tables\site\Tags\Constraints\PK_Tags.sql" />
+    <Build Include="Tables\site\Examples\Constraints\NK_Examples.sql" />
+    <Build Include="Tables\site\ExampleModules\Constraints\PK_ExampleModules.sql" />
+    <Build Include="Tables\site\ExampleModules\Constraints\NK_ExampleModules.sql" />
+    <Build Include="Tables\site\ExampleModuleTypes\Constraints\PK_ExampleModuleTypes.sql" />
+    <Build Include="Tables\site\ExampleModuleTypes\Constraints\NK_ExampleModuleTypes.sql" />
+    <Build Include="Tables\site\TagAssets\Constraints\PK_TagAssets.sql" />
+    <Build Include="Tables\site\TagAssets\Constraints\NK_TagAssets.sql" />
+    <Build Include="Tables\site\TagAssets\Constraints\FK_TagAssets_Tags.sql" />
+    <Build Include="Tables\site\ExampleModules\Constraints\FK_ExampleModules_Examples.sql" />
+    <Build Include="Tables\site\ExampleModules\Constraints\FK_ExampleModules_ModuleTypes.sql" />
+    <Build Include="Tables\site\FeatureItems\Constraints\FK_FeatureItems_Features.sql" />
+    <Build Include="Tables\site\Features\Constraints\FK_Features_Features.sql" />
+    <Build Include="Views\site\vLatestTags.sql" />
+    <Build Include="Tables\site\Configuration\Configuration.sql" />
+    <Build Include="Tables\site\Configuration\Constraints\PK_Configuration.sql" />
+    <Build Include="Tables\site\Examples\Constraints\FK_Examples_Features.sql" />
+    <Build Include="Schemas\site.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PostDeployment\Script.InitialData.dbo.ExampleModuleTypes.sql" />
-    <None Include="PostDeployment\Script.InitialData.dbo.Configuration.sql" />
+    <None Include="PostDeployment\Script.InitialData.site.ExampleModuleTypes.sql" />
+    <None Include="PostDeployment\Script.InitialData.site.Configuration.sql" />
     <None Include="README.md" />
     <None Include="Rubberduck.Database.publish.xml" />
   </ItemGroup>
