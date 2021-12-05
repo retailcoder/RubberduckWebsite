@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{4E04CF57-2F00-45BC-9171-345BBA6E514C}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\msbuild.yml = .github\workflows\msbuild.yml
 	EndProjectSection
 EndProject
 Global
@@ -51,7 +52,6 @@ Global
 		{BAB96AE2-9E8B-44D6-93E7-048315D320CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAB96AE2-9E8B-44D6-93E7-048315D320CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C12A9EC7-FA6E-4C52-ACCF-C4FEFF377BF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C12A9EC7-FA6E-4C52-ACCF-C4FEFF377BF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C12A9EC7-FA6E-4C52-ACCF-C4FEFF377BF7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{C12A9EC7-FA6E-4C52-ACCF-C4FEFF377BF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C12A9EC7-FA6E-4C52-ACCF-C4FEFF377BF7}.Release|Any CPU.Build.0 = Release|Any CPU

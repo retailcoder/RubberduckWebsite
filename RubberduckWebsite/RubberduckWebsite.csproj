@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Rubberduck.ContentServices\Rubberduck.ContentServices.csproj" />
     <ProjectReference Include="..\Rubberduck.Model\Rubberduck.Model.csproj" />
   </ItemGroup>
 

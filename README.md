@@ -1,9 +1,17 @@
 # Rubberduck Website  
 This repository contains the source code for the [Rubberduck](https://github.com/rubberduck-vba/Rubberduck) project's website.
 
+#### Build Status
+
+- main:  
+[![dotnet build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml)
+[![Build RDDB](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml)
+
+- dev:  
+[![dotnet build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg?branch=dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml)
+[![Build RDDB](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml/badge.svg?branch=dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml)
+
 ## Projects
-
-
 
 ### RubberduckWebsite  
 The website front-end, published to https://rubberduckvba.com.
