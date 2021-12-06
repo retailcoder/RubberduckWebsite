@@ -3,10 +3,8 @@
 name: Build Database (dev)
 
 on:
-  push:
-    branches: [ dev, main ]
   pull_request:
-    branches: [ dev, main ]
+    branches: [ dev ]
 
 
 env:

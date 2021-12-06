@@ -1,17 +1,17 @@
 # Builds the .NET 5 projects in the solution, uploads artifacts.
 # Runs in dev and main branches, on push and pull request events.
-name:  windows dotnet build (dev)
+name:  ubuntu dotnet build (dev)
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ dev ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ dev ]
 
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
 

@@ -5,8 +5,8 @@ name: Build/Deploy API (prod)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+
   workflow_dispatch:
 
 jobs:
