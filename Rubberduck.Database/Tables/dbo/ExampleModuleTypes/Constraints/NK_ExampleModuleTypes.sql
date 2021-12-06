@@ -1,0 +1,1 @@
+﻿ALTER TABLE [dbo].[ExampleModuleTypes] ADD CONSTRAINT [NK_ExampleModuleTypes] UNIQUE ([Name]);

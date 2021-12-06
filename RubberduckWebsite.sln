@@ -25,9 +25,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C06D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{4E04CF57-2F00-45BC-9171-345BBA6E514C}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
-		.github\workflows\msbuild.yml = .github\workflows\msbuild.yml
-		.github\workflows\msbuild_dev.yml = .github\workflows\msbuild_dev.yml
+		.github\workflows\dev_dotnet_ubuntu.yml = .github\workflows\dev_dotnet_ubuntu.yml
+		.github\workflows\dev_dotnet_windows.yml = .github\workflows\dev_dotnet_windows.yml
+		.github\workflows\dev_msbuild_windows.yml = .github\workflows\dev_msbuild_windows.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{56193EF0-C096-46B9-BB0D-E3788C1BE4CF}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main_rubberduckapi.yml = .github\workflows\main_rubberduckapi.yml
+		.github\workflows\main_rubberduckdb.yml = .github\workflows\main_rubberduckdb.yml
 	EndProjectSection
 EndProject
 Global
@@ -68,6 +74,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C06DC292-CB82-439F-BA13-3060D015099D} = {8332C1D4-2AF6-48C8-B90C-037729C0726A}
 		{4E04CF57-2F00-45BC-9171-345BBA6E514C} = {C06DC292-CB82-439F-BA13-3060D015099D}
+		{56193EF0-C096-46B9-BB0D-E3788C1BE4CF} = {4E04CF57-2F00-45BC-9171-345BBA6E514C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF89FDC3-660D-41B6-AE8F-C3D87F93A303}

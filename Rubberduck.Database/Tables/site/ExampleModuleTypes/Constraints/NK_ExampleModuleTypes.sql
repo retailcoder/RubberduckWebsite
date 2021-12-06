@@ -1,1 +1,0 @@
-﻿ALTER TABLE [site].[ExampleModuleTypes] ADD CONSTRAINT [NK_ExampleModuleTypes] UNIQUE ([Name]);
