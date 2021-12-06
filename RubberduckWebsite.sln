@@ -33,8 +33,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{56193EF0-C096-46B9-BB0D-E3788C1BE4CF}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\main_rubberduckapi.yml = .github\workflows\main_rubberduckapi.yml
-		.github\workflows\msbuild_prod_windows.yml = .github\workflows\msbuild_prod_windows.yml
-		.github\workflows\web_dotnet_prod_windows.yml = .github\workflows\web_dotnet_prod_windows.yml
+		.github\workflows\main_rubberduckdb.yml = .github\workflows\main_rubberduckdb.yml
 	EndProjectSection
 EndProject
 Global
