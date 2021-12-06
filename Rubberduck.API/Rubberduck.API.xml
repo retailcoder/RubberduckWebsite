@@ -155,6 +155,36 @@
             Encapsulates CRUD operations against content entities.
             </summary>
         </member>
+        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.Feature)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.Example)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.ExampleModule)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.Tag)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.TagAsset)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
         <member name="T:Rubberduck.API.Services.Abstract.IGitHubDataServices">
             <summary>
             A service that queries GitHub.
@@ -185,6 +215,46 @@
         <member name="M:Rubberduck.API.Services.Abstract.IXmlDocServices.SynchronizeAsync">
             <summary>
             Gets the xmldoc assets from the latest release and prerelease tags, and processes/merges them into the database.
+            </summary>
+        </member>
+        <member name="T:Rubberduck.API.Services.ContentServices">
+            <summary>
+            Regroups content writer service implementations.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.#ctor(Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Feature},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Example},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.Example},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Tag},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.Tag},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.TagAsset},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.TagAsset})">
+            <summary>
+            Creates a new service to orchestrate data access.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.Feature)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.Example)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.ExampleModule)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.Tag)">
+            <summary>
+            Inserts or updates the specified data object.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.TagAsset)">
+            <summary>
+            Inserts or updates the specified data object.
             </summary>
         </member>
         <member name="T:Rubberduck.API.DTO.IndenterViewModel">

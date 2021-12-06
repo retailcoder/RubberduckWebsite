@@ -5,6 +5,9 @@ using Rubberduck.Model.Entity;
 
 namespace Rubberduck.API.Services
 {
+    /// <summary>
+    /// Regroups content writer service implementations.
+    /// </summary>
     public class ContentServices : IContentServices
     {
         private readonly IContentReaderService<Feature> _featuresReader;
@@ -20,6 +23,9 @@ namespace Rubberduck.API.Services
         private readonly IContentReaderService<TagAsset> _tagAssetsReader;
         private readonly IContentWriterService<TagAsset> _tagAssetsWriter;
 
+        /// <summary>
+        /// Creates a new service to orchestrate data access.
+        /// </summary>
         public ContentServices(
             IContentReaderService<Feature> featuresReader,
             IContentWriterService<Feature> featuresWriter,
@@ -48,6 +54,9 @@ namespace Rubberduck.API.Services
             _tagAssetsWriter = tagAssetsWriter;
         }
 
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         public async Task<Feature> SaveAsync(Model.DTO.Feature dto)
         {
             var entity = Feature.FromDTO(dto);
@@ -67,6 +76,9 @@ namespace Rubberduck.API.Services
             }
         }
 
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         public async Task<FeatureItem> SaveAsync(Model.DTO.FeatureItem dto)
         {
             var entity = FeatureItem.FromDTO(dto);
@@ -86,6 +98,9 @@ namespace Rubberduck.API.Services
             }
         }
 
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         public async Task<Example> SaveAsync(Model.DTO.Example dto)
         {
             var entity = Example.FromDTO(dto);
@@ -105,6 +120,9 @@ namespace Rubberduck.API.Services
             }
         }
 
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         public async Task<ExampleModule> SaveAsync(Model.DTO.ExampleModule dto)
         {
             var entity = ExampleModule.FromDTO(dto);
@@ -124,6 +142,9 @@ namespace Rubberduck.API.Services
             }
         }
 
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         public async Task<Tag> SaveAsync(Model.DTO.Tag dto)
         {
             var entity = Tag.FromDTO(dto);
@@ -143,6 +164,9 @@ namespace Rubberduck.API.Services
             }
         }
 
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         public async Task<TagAsset> SaveAsync(Model.DTO.TagAsset dto)
         {
             var entity = TagAsset.FromDTO(dto);

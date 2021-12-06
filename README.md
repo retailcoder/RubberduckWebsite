@@ -4,11 +4,13 @@ This repository contains the source code for the [Rubberduck](https://github.com
 #### Build Status
 
 - main:  
-[![dotnet build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml)
-[![Build RDDB (prod)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild.yml)
+[![Build/Deploy Database (prod)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/main_rubberduckdb.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/main_rubberduckdb.yml)  
+[![Build/Deploy API (prod)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/main_rubberduckapi.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/main_rubberduckapi.yml)  
+
 - dev:  
-[![dotnet build](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml/badge.svg?branch=dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dotnet.yml)
-[![Build RDDB (dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild_dev.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild_dev.yml)
+[![Build Database (dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild_dev_windows.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/msbuild_dev_windows.yml)  
+[![windows dotnet build (dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dev_dotnet_windows.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dev_dotnet_windows.yml)  
+[![ubuntu dotnet build (dev)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dev_dotnet_ubuntu.yml/badge.svg)](https://github.com/retailcoder/RubberduckWebsite/actions/workflows/dev_dotnet_ubuntu.yml)  
 
 ## Projects
 
