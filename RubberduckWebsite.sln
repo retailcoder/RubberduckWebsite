@@ -25,9 +25,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C06D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{4E04CF57-2F00-45BC-9171-345BBA6E514C}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
-		.github\workflows\msbuild.yml = .github\workflows\msbuild.yml
-		.github\workflows\msbuild_dev.yml = .github\workflows\msbuild_dev.yml
+		.github\workflows\dotnet_dev_ubuntu.yml = .github\workflows\dotnet_dev_ubuntu.yml
+		.github\workflows\dotnet_dev_windows.yml = .github\workflows\dotnet_dev_windows.yml
+		.github\workflows\msbuild_dev_windows.yml = .github\workflows\msbuild_dev_windows.yml
+		.github\workflows\msbuild_prod_windows.yml = .github\workflows\msbuild_prod_windows.yml
 	EndProjectSection
 EndProject
 Global

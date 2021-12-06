@@ -1,1 +1,0 @@
-﻿ALTER TABLE [site].[TagAssets] ADD CONSTRAINT [FK_TagAssets_Tags] FOREIGN KEY ([TagId]) REFERENCES [site].[Tags] ([Id]);

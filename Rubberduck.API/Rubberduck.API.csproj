@@ -24,4 +24,8 @@
     <ProjectReference Include="..\RubberduckServices\RubberduckServices.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
 </Project>
