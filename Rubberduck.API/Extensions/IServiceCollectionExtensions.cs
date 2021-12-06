@@ -17,8 +17,7 @@ namespace Rubberduck.API.Extensions
     {
         public static void RegisterApiServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
-            var db = environment.IsDevelopment() ? "RubberduckDb_localdb" : "RubberduckDb";
-            var connectionString = configuration.GetConnectionString(db);
+            var connectionString = configuration.GetConnectionString("RubberduckDb");
             services.AddScoped<IReaderDbContext, DbContext>(provider => new DbContext(connectionString));
             services.AddScoped<IWriterDbContext, DbContext>(provider => new DbContext(connectionString));
 

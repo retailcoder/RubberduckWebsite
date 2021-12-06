@@ -8,11 +8,29 @@ namespace Rubberduck.API.Services.Abstract
     /// </summary>
     public interface IContentServices
     {
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         Task<Model.Entity.Feature> SaveAsync(Feature dto);
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         Task<Model.Entity.FeatureItem> SaveAsync(FeatureItem dto);
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         Task<Model.Entity.Example> SaveAsync(Example dto);
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         Task<Model.Entity.ExampleModule> SaveAsync(ExampleModule dto);
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         Task<Model.Entity.Tag> SaveAsync(Tag dto);
+        /// <summary>
+        /// Inserts or updates the specified data object.
+        /// </summary>
         Task<Model.Entity.TagAsset> SaveAsync(TagAsset dto);
     }
 }
