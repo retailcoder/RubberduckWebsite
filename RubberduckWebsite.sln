@@ -13,6 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RubberduckServices", "Rubbe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8332C1D4-2AF6-48C8-B90C-037729C0726A}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		README.md = README.md
 	EndProjectSection
@@ -35,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", 
 		.github\workflows\main_rubberduckapi.yml = .github\workflows\main_rubberduckapi.yml
 		.github\workflows\main_rubberduckdb.yml = .github\workflows\main_rubberduckdb.yml
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RubberduckWebsite.UnitTests", "RubberduckWebsite.UnitTests\RubberduckWebsite.UnitTests.csproj", "{87F9BB2C-7419-44E3-9552-202315C4EA79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +70,10 @@ Global
 		{697B27B6-F5D6-41E8-B4A4-94BAA6822C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{697B27B6-F5D6-41E8-B4A4-94BAA6822C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{697B27B6-F5D6-41E8-B4A4-94BAA6822C03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87F9BB2C-7419-44E3-9552-202315C4EA79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87F9BB2C-7419-44E3-9552-202315C4EA79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F9BB2C-7419-44E3-9552-202315C4EA79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87F9BB2C-7419-44E3-9552-202315C4EA79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

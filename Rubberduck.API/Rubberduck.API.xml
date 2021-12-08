@@ -111,6 +111,21 @@
             Parses and formats the provided code string.
             </summary>
         </member>
+        <member name="T:Rubberduck.API.Controllers.HealthController">
+            <summary>
+            A controller that exposes an endpoint that runs quick checks periodically.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.HealthController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.HealthController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Feature},RubberduckServices.Abstract.IIndenterService,Rubberduck.API.Services.Abstract.IGitHubDataServices)">
+            <summary>
+            Creates a controller that exposes an endpoint that runs quick checks periodically.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.HealthController.CheckAsync">
+            <summary>
+            Runs a number of internal quick checks to ensure base services are operational.
+            </summary>
+        </member>
         <member name="T:Rubberduck.API.Controllers.PublicController">
             <summary>
             Exposes endpoints providing the website's dynamic content.

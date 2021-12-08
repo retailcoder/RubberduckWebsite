@@ -43,7 +43,7 @@ namespace RubberduckServices
         {
             return await Task.Run(() =>
             {
-                var indenter = new Indenter(null, () => new IndenterSettings(true));
+                var indenter = new SimpleIndenter();
                 var indentedCode = indenter.Indent(code.Split('\n').Select(line => line.Replace("\r", string.Empty))).ToArray();
 
                 var builder = new StringBuilder();

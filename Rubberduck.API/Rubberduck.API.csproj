@@ -1,10 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UserSecretsId>e1c0c2c5-4d7b-4fb6-bcc4-859b5daf7f41</UserSecretsId>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>Rubberduck.API.xml</DocumentationFile>
     <OutputPath>bin\Debug\</OutputPath>
@@ -12,6 +7,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>Rubberduck.API.xml</DocumentationFile>
     <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +32,12 @@
 
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Rubberduck.SmartIndenter">
+      <HintPath>..\RubberduckServices\Libs\Rubberduck.SmartIndenter.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -1,12 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr" Version="3.5.0.2" />
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <PackageReference Include="Antlr4" Version="4.6.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,12 +19,11 @@
   <ItemGroup>
     <Reference Include="Rubberduck.Parsing">
       <HintPath>Libs\Rubberduck.Parsing.dll</HintPath>
+      <Private>true</Private>
     </Reference>
     <Reference Include="Rubberduck.SmartIndenter">
       <HintPath>Libs\Rubberduck.SmartIndenter.dll</HintPath>
-    </Reference>
-    <Reference Include="Rubberduck.VBEditor">
-      <HintPath>Libs\Rubberduck.VBEditor.dll</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 

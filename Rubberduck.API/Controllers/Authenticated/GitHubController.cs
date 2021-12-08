@@ -16,7 +16,7 @@ namespace Rubberduck.API.Controllers.Authenticated
     /// </summary>
     //[Authorize]
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/[controller]")]
     public class GitHubController : ControllerBase
     {
         private readonly ILogger<GitHubController> _logger;

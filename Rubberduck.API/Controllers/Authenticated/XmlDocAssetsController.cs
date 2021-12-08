@@ -14,7 +14,7 @@ namespace Rubberduck.API.Controllers.Authenticated
     /// </summary>
     //[Authorize]
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/[controller]")]
     public class XmlDocAssetsController : ControllerBase
     {
         private readonly ILogger<XmlDocAssetsController> _logger;
@@ -55,7 +55,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                         _logger.LogInformation($"{nameof(UpdateXmlDocContentAsync)} completed in {ms:N} milliseconds.");
                         return ms;
                     });
-                return Ok(elapsedMilliseconds);
+                return Ok($"{nameof(UpdateXmlDocContentAsync)} completed in {elapsedMilliseconds:N} milliseconds.");
             }
             catch (Exception e)
             {
