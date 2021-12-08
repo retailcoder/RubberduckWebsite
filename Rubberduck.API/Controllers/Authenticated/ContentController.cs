@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.ContentServices.Service.Abstract;
 using Rubberduck.Model.Entity;
 
 namespace Rubberduck.API.Controllers.Authenticated
@@ -13,7 +12,7 @@ namespace Rubberduck.API.Controllers.Authenticated
     /// Exposes endpoints providing an interface to manipulate the website's dynamic content.
     /// </summary>
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/[controller]")]
     public class ContentController : ControllerBase
     {
         private readonly ILogger<ContentController> _logger;

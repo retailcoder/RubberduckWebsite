@@ -15,7 +15,7 @@ namespace Rubberduck.API.Controllers
     /// Exposes endpoints providing the website's dynamic content.
     /// </summary>
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/[controller]")]
     public class PublicController : ControllerBase
     {
         private readonly ILogger<PublicController> _logger;

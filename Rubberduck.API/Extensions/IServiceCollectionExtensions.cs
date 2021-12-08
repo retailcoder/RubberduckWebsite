@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Rubberduck.API.Services.Abstract;
 using Rubberduck.ContentServices;
 using Rubberduck.ContentServices.Reader;
@@ -9,6 +8,7 @@ using Rubberduck.ContentServices.Repository.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
 using Rubberduck.ContentServices.Writer;
 using Rubberduck.Model.Entity;
+using Rubberduck.SmartIndenter;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.API.Extensions
@@ -44,6 +44,7 @@ namespace Rubberduck.API.Extensions
             // RubberduckServices
             services.AddScoped<ISyntaxHighlighterService, RubberduckServices.SyntaxHighlighterService>();
             services.AddScoped<IIndenterService, RubberduckServices.IndenterService>();
+            services.AddScoped<ISimpleIndenter, SimpleIndenter>();
         }
     }
 }
