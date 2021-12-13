@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Rubberduck.API.Services.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.API.Services
 {

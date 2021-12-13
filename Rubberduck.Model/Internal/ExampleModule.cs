@@ -1,17 +1,30 @@
 ﻿using System;
+using System.ComponentModel;
 
-namespace Rubberduck.Model.Entity
+namespace Rubberduck.Model.Internal
 {
+    public enum ExampleModuleType
+    {
+        None = 0,
+        [Description("(Any)")]Any,
+        [Description("Class Module")]ClassModule,
+        [Description("Document Module")]DocumentModule,
+        [Description("Interface Module")]InterfaceModule,
+        [Description("Predeclared Class")]PredeclaredClass,
+        [Description("Standard Module")]StandardModule,
+        [Description("UserForm Module")]UserFormModule
+    }
+
     public class ExampleModule : IEntity
     {
         public static ExampleModule FromDTO(DTO.ExampleModule dto) => new(dto);
-        public static DTO.ExampleModule ToDTO(ExampleModule entity) => new()
+        public static DTO.ExampleModuleEntity ToDTO(ExampleModule entity) => new()
         {
             DateInserted = DateTime.Now,
             ExampleId = entity.ExampleId,
             Description = entity.Description,
             ModuleName = entity.ModuleName,
-            ModuleType = entity.ModuleTypeId,
+            ModuleType = (int)entity.ModuleType,
             HtmlContent = entity.HtmlContent
         };
 
@@ -22,7 +35,7 @@ namespace Rubberduck.Model.Entity
             ExampleId = dto.ExampleId;
             ModuleName = dto.ModuleName;
 
-            ModuleTypeId = dto.ModuleType;
+            ModuleType = (ExampleModuleType)dto.ModuleType;
             Description = dto.Description;
             HtmlContent = dto.HtmlContent;
         }
@@ -32,7 +45,7 @@ namespace Rubberduck.Model.Entity
         public int ExampleId { get; }
         public string ModuleName { get; }
 
-        public int ModuleTypeId { get; }
+        public ExampleModuleType ModuleType { get; }
         public string Description { get; }
         public string HtmlContent { get; }
 

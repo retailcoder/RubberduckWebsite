@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Rubberduck.Model.DTO
 {
-    [Table("Features")]
     public class Feature : BaseDto
     {
         public int? ParentId { get; set; }
@@ -19,5 +18,13 @@ namespace Rubberduck.Model.DTO
         public bool IsHidden { get; set; }
         public int SortOrder { get; set; }
         public string XmlDocSource { get; set; }
+    }
+
+    [Table("Features")]
+    public class FeatureEntity : Feature
+    {
+        public virtual FeatureEntity ParentFeature { get; set; }
+        public virtual ICollection<FeatureEntity> SubFeatures { get; set; }
+        public virtual ICollection<FeatureItemEntity> FeatureItems { get; set; }
     }
 }

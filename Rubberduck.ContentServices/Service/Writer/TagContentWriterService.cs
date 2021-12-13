@@ -1,20 +1,53 @@
-﻿using Rubberduck.ContentServices.Repository.Abstract;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.Writer
 {
-    public class TagContentWriterService : ContentWriterService<Tag, Model.DTO.Tag>
+    public class TagContentWriterService : IContentWriterService<Tag>
     {
-        private readonly IWriterDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public TagContentWriterService(IWriterDbContext context)
+        public TagContentWriterService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        protected override IAsyncWriteRepository<Model.DTO.Tag> Repository => _context.TagsRepository;
-        protected override Tag GetEntity(Model.DTO.Tag dto) => Tag.FromDTO(dto);
-        protected override Model.DTO.Tag GetDTO(Tag entity) => Tag.ToDTO(entity);
+        public async Task<Tag> CreateAsync(Tag entity)
+        {
+            if (entity.Id != default)
+            {
+                throw new InvalidOperationException("Cannot add an entity that already has an ID.");
+            }
+
+            var dto = Tag.ToDTO(entity);
+            dto.DateInserted = DateTime.Now;
+
+            await _context.Tags.AddAsync(dto);
+
+            await _context.SaveChangesAsync();
+            return Tag.FromDTO(dto);
+        }
+
+        public async Task<Tag> UpdateAsync(Tag entity)
+        {
+            var dto = _context.Tags.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
+            dto.DateUpdated = DateTime.Now;
+            dto.InstallerDownloads = entity.InstallerDownloads;
+
+            await _context.SaveChangesAsync();
+            return Tag.FromDTO(dto);
+        }
+
+        public async Task DeleteAsync(Tag entity)
+        {
+            var dto = _context.Tags.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
+            _context.Remove(dto);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

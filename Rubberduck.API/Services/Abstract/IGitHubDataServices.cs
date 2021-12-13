@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rubberduck.API.DTO;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
+using Rubberduck.Model.ViewModel;
 
 namespace Rubberduck.API.Services.Abstract
 {

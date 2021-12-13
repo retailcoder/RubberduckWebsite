@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rubberduck.Model.Entity
+namespace Rubberduck.Model.Internal
 {
     /// <summary>
     /// An immutable object representing a data entity.

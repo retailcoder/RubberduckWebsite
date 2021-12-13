@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
 using Octokit;
-using Rubberduck.API.DTO;
 using Rubberduck.API.Extensions;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
+using Rubberduck.Model.ViewModel;
 
 namespace Rubberduck.API.Services
 {
@@ -35,24 +35,22 @@ namespace Rubberduck.API.Services
         {
             var url = _codeInspectionDefaultsSettingsRawURl;
             using (var client = new HttpClient())
+            using (var response = await client.GetAsync(new Uri(url)))
             {
-                var uri = new Uri(url);
-                var response = await client.GetAsync(uri);
                 if (response.IsSuccessStatusCode)
                 {
-                    using (var xml = await response.Content.ReadAsStreamAsync())
-                    {
-                        var document = await XDocument.LoadAsync(xml, LoadOptions.None, CancellationToken.None)
-                            .ContinueWith(t => ParseInspectionSettings(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+                    using var xml = await response.Content.ReadAsStreamAsync();
+                    var document = await XDocument.LoadAsync(xml, LoadOptions.None, CancellationToken.None)
+                        .ContinueWith(t => ParseInspectionSettings(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
 
-                        return document.Elements("CodeInspection")
-                            .Select(e => new InspectionDefaultConfig
-                            {
-                                InspectionName = e.Attribute("Name").Value,
-                                InspectionType = e.Attribute("InspectionType").Value,
-                                DefaultSeverity = e.Attribute("Severity").Value,
-                            });
-                    }
+                    return document.Elements("CodeInspection")
+                        .Select(e => new Model.DTO.InspectionDefaultConfig
+                        {
+                            InspectionName = e.Attribute("Name").Value,
+                            InspectionType = e.Attribute("InspectionType").Value,
+                            DefaultSeverity = e.Attribute("Severity").Value,
+                        })
+                        .Select(InspectionDefaultConfig.FromDTO);
                 }
                 else
                 {
@@ -74,10 +72,7 @@ namespace Rubberduck.API.Services
         public async Task<Tag> GetTag(string name = null)
         {
             var tokenAuth = new Credentials(_apiKey);
-            var client = new GitHubClient(new ProductHeaderValue(_userAgent))
-            {
-                Credentials = tokenAuth
-            };
+            var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
 
             var release = string.IsNullOrEmpty(name)
                 ? await client.Repository.Release.GetLatest(_owner, _repository)
@@ -107,10 +102,7 @@ namespace Rubberduck.API.Services
         public async Task<IEnumerable<Tag>> GetAllTags()
         {
             var tokenAuth = new Credentials(_apiKey);
-            var client = new GitHubClient(new ProductHeaderValue(_userAgent))
-            {
-                Credentials = tokenAuth
-            };
+            var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
 
             var releases = await client.Repository.Release.GetAll(_owner, _repository);
 

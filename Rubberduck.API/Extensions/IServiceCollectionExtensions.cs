@@ -2,14 +2,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.ContentServices;
-using Rubberduck.ContentServices.Reader;
-using Rubberduck.ContentServices.Repository.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
+using Rubberduck.ContentServices.Reader;
 using Rubberduck.ContentServices.Writer;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 using Rubberduck.SmartIndenter;
 using RubberduckServices.Abstract;
+using Rubberduck.ContentServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace Rubberduck.API.Extensions
 {
@@ -18,8 +18,7 @@ namespace Rubberduck.API.Extensions
         public static void RegisterApiServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             var connectionString = configuration.GetConnectionString("RubberduckDb");
-            services.AddScoped<IReaderDbContext, DbContext>(provider => new DbContext(connectionString));
-            services.AddScoped<IWriterDbContext, DbContext>(provider => new DbContext(connectionString));
+            services.AddDbContext<RubberduckDbContext>(options => options.UseSqlServer(connectionString));
 
             // API.Services
             services.AddScoped<IContentServices, Services.ContentServices>();

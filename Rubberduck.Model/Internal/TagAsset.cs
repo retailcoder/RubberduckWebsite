@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Rubberduck.Model.Entity
+namespace Rubberduck.Model.Internal
 {
     public class TagAsset : IEntity
     {
         public static TagAsset FromDTO(DTO.TagAsset dto) => new(dto);
-        public static DTO.TagAsset ToDTO(TagAsset entity) => new()
+        public static DTO.TagAssetEntity ToDTO(TagAsset entity) => new()
         {
             Id = entity.Id,
             TagId = entity.TagId,

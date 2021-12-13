@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Rubberduck.API.DTO;
 using Rubberduck.API.Services.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.API.Controllers

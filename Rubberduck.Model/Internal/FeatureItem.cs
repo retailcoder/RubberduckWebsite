@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rubberduck.Model.Entity
+namespace Rubberduck.Model.Internal
 {
     public class FeatureItem : IEntity
     {
         public static FeatureItem FromDTO(DTO.FeatureItem dto) => new(dto);
         public static FeatureItem FromDTO(DTO.FeatureItem dto, IEnumerable<Example> examples) => new(dto, examples);
-        public static DTO.FeatureItem ToDTO(FeatureItem entity) => new()
+        public static DTO.FeatureItemEntity ToDTO(FeatureItem entity, bool? isDiscontinued = null, bool? isNew = null) => new()
         {
             DateInserted = DateTime.Now,
             FeatureId = entity.FeatureId,
+            TagAssetId = entity.TagAssetId,
             Name = entity.Name,
             Title = entity.Title,
             Description = entity.Description,
             IsHidden = entity.IsHidden,
-            IsNew = entity.IsNew,
+            IsDiscontinued = isDiscontinued ?? entity.IsDiscontinued,
+            IsNew = isNew ?? entity.IsNew,
             ContentUrl = entity.ContentUrl?.ToString(),
             XmlDocSourceObject = entity.RubberduckSource,
             XmlDocSummary = entity.Summary,
@@ -41,10 +43,14 @@ namespace Rubberduck.Model.Entity
             FeatureId = dto.FeatureId;
             Name = dto.Name;
 
+            // FK
+            TagAssetId = dto.TagAssetId;
+
             // all others...
             Title = dto.Title;
             Description = dto.Description;
             IsNew = dto.IsNew;
+            IsDiscontinued = dto.IsDiscontinued;
             IsHidden = dto.IsHidden;
 
             // items from xmldocs...
@@ -65,11 +71,13 @@ namespace Rubberduck.Model.Entity
 
         public int Id { get; }
         public int FeatureId { get; }
+        public int? TagAssetId { get; }
         public string Name { get; }
         public string Title { get; }
         public string Description { get; }
         public Uri ContentUrl { get; }
         public bool IsNew { get; }
+        public bool IsDiscontinued { get; }
         public bool IsHidden { get; }
 
         public string TabName { get; }

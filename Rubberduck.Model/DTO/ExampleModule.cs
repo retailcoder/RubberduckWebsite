@@ -2,7 +2,6 @@
 
 namespace Rubberduck.Model.DTO
 {
-    [Table("ExampleModules")]
     public class ExampleModule : BaseDto
     {
         public int ExampleId { get; set; }
@@ -10,5 +9,11 @@ namespace Rubberduck.Model.DTO
         public int ModuleType { get; set; }
         public string Description { get; set; }
         public string HtmlContent { get; set; }
+    }
+
+    [Table("ExampleModules")]
+    public class ExampleModuleEntity : ExampleModule
+    {
+        public virtual ExampleEntity Example { get; set; }
     }
 }

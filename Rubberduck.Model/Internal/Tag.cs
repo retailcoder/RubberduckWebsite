@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rubberduck.Model.Entity
+namespace Rubberduck.Model.Internal
 {
     public class Tag : IEntity
     {
         public static Tag FromDTO(DTO.Tag dto) => new(dto);
         public static Tag FromDTO(DTO.Tag dto, IEnumerable<TagAsset> assets) => new(dto, assets);
 
-        public static DTO.Tag ToDTO(Tag entity) => new()
+        public static DTO.TagEntity ToDTO(Tag entity) => new()
         {
             Id = entity.Id,
             DateCreated = entity.DateCreated,

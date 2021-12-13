@@ -1,21 +1,55 @@
 ﻿using System;
-using Rubberduck.ContentServices.Repository.Abstract;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.Writer
 {
-    public class ExampleModuleContentWriterService : ContentWriterService<ExampleModule, Model.DTO.ExampleModule>
+    public class ExampleModuleContentWriterService : IContentWriterService<ExampleModule>
     {
-        private readonly IWriterDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public ExampleModuleContentWriterService(IWriterDbContext context)
+        public ExampleModuleContentWriterService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        protected override IAsyncWriteRepository<Model.DTO.ExampleModule> Repository => _context.ExampleModulesRepository;
-        protected override ExampleModule GetEntity(Model.DTO.ExampleModule dto) => ExampleModule.FromDTO(dto);
-        protected override Model.DTO.ExampleModule GetDTO(ExampleModule entity) => ExampleModule.ToDTO(entity);
+        public async Task<ExampleModule> CreateAsync(ExampleModule entity)
+        {
+            if (entity.Id != default)
+            {
+                throw new InvalidOperationException("Cannot add an entity that already has an ID.");
+            }
+
+            var dto = ExampleModule.ToDTO(entity);
+            dto.DateInserted = DateTime.Now;
+
+            await _context.ExampleModules.AddAsync(dto);
+
+            await _context.SaveChangesAsync();
+            return ExampleModule.FromDTO(dto);
+        }
+
+        public async Task<ExampleModule> UpdateAsync(ExampleModule entity)
+        {
+            var dto = _context.ExampleModules.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
+            dto.DateUpdated = DateTime.Now;
+            dto.Description = entity.Description;
+            dto.HtmlContent = entity.HtmlContent;
+            dto.ModuleType = (int)entity.ModuleType;
+
+            await _context.SaveChangesAsync();
+            return ExampleModule.FromDTO(dto);
+        }
+
+        public async Task DeleteAsync(ExampleModule entity)
+        {
+            var dto = _context.ExampleModules.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
+            _context.Remove(dto);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

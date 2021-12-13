@@ -121,6 +121,7 @@
     <Build Include="Tables\dbo\Configuration\Configuration.sql" />
     <Build Include="Tables\dbo\Configuration\Constraints\PK_Configuration.sql" />
     <Build Include="Tables\dbo\Examples\Constraints\FK_Examples_Features.sql" />
+    <Build Include="Tables\dbo\FeatureItems\Constraints\FK_FeatureItems_TagAssets.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
