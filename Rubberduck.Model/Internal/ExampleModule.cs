@@ -48,7 +48,5 @@ namespace Rubberduck.Model.Internal
         public ExampleModuleType ModuleType { get; }
         public string Description { get; }
         public string HtmlContent { get; }
-
-        public object Key() => new { ExampleId, ModuleName };
     }
 }

@@ -79,7 +79,5 @@ namespace Rubberduck.Model.Internal
         public string XmlDocSource { get; }
         public IEnumerable<Feature> SubFeatures { get; } = Enumerable.Empty<Feature>();
         public IEnumerable<FeatureItem> Items { get; } = Enumerable.Empty<FeatureItem>();
-
-        public object Key() => new { Name };
     }
 }

@@ -8,15 +8,18 @@ using System.Xml.Linq;
 using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.Model.Internal;
 using Rubberduck.Model.ViewModel;
+using RubberduckServices.Abstract;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class CodeAnalysisXmlDocParser : ICodeAnalysisXmlDocParser
     {
+        private readonly ISyntaxHighlighterService _syntaxHighlighterService;
         private readonly IDictionary<string, InspectionDefaultConfig> _inspectionDefaults;
 
-        public CodeAnalysisXmlDocParser(IEnumerable<InspectionDefaultConfig> inspectionDefaults)
+        public CodeAnalysisXmlDocParser(ISyntaxHighlighterService syntaxHighlighterService, IEnumerable<InspectionDefaultConfig> inspectionDefaults)
         {
+            _syntaxHighlighterService = syntaxHighlighterService;
             _inspectionDefaults = inspectionDefaults.ToDictionary(e => e.InspectionName, e => e);
         }
 
@@ -69,12 +72,12 @@ namespace Rubberduck.ContentServices.XmlDoc
             return name;
         }
 
-        private static IEnumerable<FeatureItem> ReadQuickFixes(int assetId, XDocument doc, bool hasReleased) =>
+        private IEnumerable<FeatureItem> ReadQuickFixes(int assetId, XDocument doc, bool hasReleased) =>
             from node in doc.Descendants("member")
             let name = GetQuickFixNameOrDefault(node)
             where !string.IsNullOrEmpty(name)
             && node.Descendants(XmlDocSchema.QuickFix.CanFix.ElementName).Any() // this excludes any quickfixes added to main (master) prior to v2.5.0 
-            select new XmlDocQuickFix(name, node, !hasReleased).Parse(assetId);
+            select new XmlDocQuickFix(_syntaxHighlighterService, name, node, !hasReleased).Parse(assetId);
 
         private static string GetQuickFixNameOrDefault(XElement memberNode)
         {

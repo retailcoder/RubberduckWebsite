@@ -37,7 +37,5 @@ namespace Rubberduck.Model.Internal
         public string Description { get; }
         
         public IEnumerable<ExampleModule> Modules { get; }
-
-        public object Key() => new { FeatureItemId, SortOrder };
     }
 }

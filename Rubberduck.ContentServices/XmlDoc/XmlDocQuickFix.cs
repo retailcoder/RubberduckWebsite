@@ -4,15 +4,16 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Rubberduck.Model.Internal;
-using RubberduckServices;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class XmlDocQuickFix : IEquatable<XmlDocQuickFix>
     {
-        public XmlDocQuickFix(string name, XElement node, bool isPreRelease)
+        public XmlDocQuickFix(ISyntaxHighlighterService syntaxHighlighterService, string name, XElement node, bool isPreRelease)
         {
+            SyntaxHighlighterService = syntaxHighlighterService;
+
             SourceObject = name;
             QuickFixName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1).Replace("QuickFix", string.Empty).Trim();
             Summary = node.Element(XmlDocSchema.QuickFix.Summary.ElementName)?.Value.Trim();
@@ -99,7 +100,7 @@ namespace Rubberduck.ContentServices.XmlDoc
         public override bool Equals(object obj) => Equals((XmlDocQuickFix)obj);
         public override int GetHashCode() => QuickFixName.GetHashCode();
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; private set; } = new SyntaxHighlighterService();
+        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
         private IEnumerable<BeforeAndAfterCodeExample> ParseExamples(XElement node)
         {

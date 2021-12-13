@@ -88,7 +88,5 @@ namespace Rubberduck.Model.Internal
         public string RubberduckSource { get; }
 
         public IEnumerable<Example> Examples { get; }
-
-        public object Key() => new { FeatureId, Name };
     }
 }

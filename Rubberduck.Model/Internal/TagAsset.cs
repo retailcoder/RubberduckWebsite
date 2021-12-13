@@ -30,7 +30,5 @@ namespace Rubberduck.Model.Internal
         public int TagId { get; }
         public string Name { get; }
         public Uri DownloadUrl { get; }
-
-        public object Key() => new { Id };
     }
 }

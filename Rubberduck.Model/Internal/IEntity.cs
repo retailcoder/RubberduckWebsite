@@ -11,9 +11,5 @@ namespace Rubberduck.Model.Internal
         /// The internal primary key.
         /// </summary>
         int Id { get; }
-        /// <summary>
-        /// An object representing the unique key for the entity.
-        /// </summary>
-        object Key();
     }
 }

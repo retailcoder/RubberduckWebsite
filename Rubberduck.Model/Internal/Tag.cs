@@ -47,7 +47,5 @@ namespace Rubberduck.Model.Internal
         public int InstallerDownloads { get; }
         public bool IsPreRelease { get; }
         public IEnumerable<TagAsset> Assets { get; }
-
-        public object Key() => new { Id };
     }
 }
