@@ -104,7 +104,7 @@ namespace Rubberduck.ContentServices.XmlDoc
         private IEnumerable<BeforeAndAfterCodeExample> ParseExamples(XElement node)
         {
             var moduleTypes = typeof(ExampleModuleType).GetMembers()
-                .Select(m => (m.Name, Description: m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().Single().Description))
+                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().Single().Description))
                 .ToDictionary(m => m.Description, m => (ExampleModuleType)Enum.Parse(typeof(ExampleModuleType), m.Name, true));
 
             var results = new List<BeforeAndAfterCodeExample>();

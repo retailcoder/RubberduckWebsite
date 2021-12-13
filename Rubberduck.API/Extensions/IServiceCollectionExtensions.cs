@@ -15,7 +15,7 @@ namespace Rubberduck.API.Extensions
 {
     internal static class IServiceCollectionExtensions
     {
-        public static void RegisterApiServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        public static void RegisterApiServices(this IServiceCollection services, IConfiguration configuration/*, IWebHostEnvironment environment*/)
         {
             var connectionString = configuration.GetConnectionString("RubberduckDb");
             services.AddDbContext<RubberduckDbContext>(options => options.UseSqlServer(connectionString));

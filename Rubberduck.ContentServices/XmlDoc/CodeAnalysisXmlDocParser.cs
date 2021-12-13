@@ -5,38 +5,19 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.Extensions.Logging;
 using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.Model.Internal;
 using Rubberduck.Model.ViewModel;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
-    public class XmlDocMerge : IXmlDocMerge
-    {
-        public IEnumerable<FeatureItem> Merge(IEnumerable<FeatureItem> main, IEnumerable<FeatureItem> next)
-        {
-            var mainBranch = main.ToHashSet();
-            var nextBranch = next.ToHashSet();
-
-            var deletedItems = main.Where(e => !nextBranch.Contains(e))
-                .Select(e => FeatureItem.ToDTO(e, isDiscontinued:true))
-                .Select(FeatureItem.FromDTO);
-            var newItems = next.Where(e => !mainBranch.Contains(e))
-                .Select(e => FeatureItem.ToDTO(e, isNew:true))
-                .Select(FeatureItem.FromDTO);
-            var otherItems = nextBranch.Intersect(mainBranch);
-
-            return otherItems.Concat(newItems).Concat(deletedItems).ToList();
-        }
-    }
-
     public class CodeAnalysisXmlDocParser : ICodeAnalysisXmlDocParser
     {
         private readonly IDictionary<string, InspectionDefaultConfig> _inspectionDefaults;
 
-        public CodeAnalysisXmlDocParser()
+        public CodeAnalysisXmlDocParser(IEnumerable<InspectionDefaultConfig> inspectionDefaults)
         {
+            _inspectionDefaults = inspectionDefaults.ToDictionary(e => e.InspectionName, e => e);
         }
 
         public string AssetName { get; } = "Rubberduck.CodeAnalysis";
@@ -57,13 +38,12 @@ namespace Rubberduck.ContentServices.XmlDoc
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    {
-                        var document = await XDocument.LoadAsync(stream, LoadOptions.None, CancellationToken.None);
-                        var quickFixes = ReadQuickFixes(asset.Id, document, !tag.IsPreRelease);
-                        var inspections = ReadInspections(asset.Id, document, !tag.IsPreRelease, quickFixes);
-                        return inspections.Concat(quickFixes);
-                    }
+                    using var stream = await response.Content.ReadAsStreamAsync();
+                    var document = await XDocument.LoadAsync(stream, LoadOptions.None, CancellationToken.None);
+
+                    var quickFixes = ReadQuickFixes(asset.Id, document, !tag.IsPreRelease);
+                    var inspections = ReadInspections(asset.Id, document, !tag.IsPreRelease, quickFixes);
+                    return inspections.Concat(quickFixes);
                 }
             }
 

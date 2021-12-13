@@ -31,7 +31,7 @@ namespace Rubberduck.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Rubberduck.API", Version = "v1" });
             });
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
-            services.RegisterApiServices(Configuration, Environment);
+            services.RegisterApiServices(Configuration/*, Environment*/);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
