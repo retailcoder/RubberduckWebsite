@@ -4,6 +4,12 @@ namespace Rubberduck.Model.DTO
 {
     public class ExampleModule : BaseDto
     {
+        public static ExampleModule ParseError(string name) => new()
+        {
+            ModuleName = name,
+            HtmlContent = "(error parsing code example from source xmldoc)"
+        };
+
         public int ExampleId { get; set; }
         public string ModuleName { get; set; }
         public int ModuleType { get; set; }

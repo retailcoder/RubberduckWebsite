@@ -112,5 +112,71 @@
                 }
             }
         }
+
+        public static class Annotation
+        {
+            public static class Summary
+            {
+                public static readonly string ElementName = "summary";
+            }
+
+            public static class Remarks
+            {
+                public static readonly string ElementName = "remarks";
+            }
+
+            public static class Parameter
+            {
+                public static readonly string ElementName = "parameter";
+                public static readonly string NameAttribute = "name";
+                public static readonly string TypeAttribute = "type";
+            }
+
+            public static class Example
+            {
+                public static readonly string ElementName = "example";
+
+                public static class Module
+                {
+                    public static readonly string ElementName = "module";
+                    public static readonly string ModuleNameAttribute = "name";
+                    public static readonly string ModuleTypeAttribute = "type";
+
+                    public static class Before
+                    {
+                        public static readonly string ElementName = "before";
+                    }
+
+                    public static class After
+                    {
+                        public static readonly string ElementName = "after";
+                    }
+                }
+
+                public static class Before
+                {
+                    public static readonly string ElementName = "before";
+
+                    public static class Module
+                    {
+                        public static readonly string ElementName = "module";
+                        public static readonly string ModuleNameAttribute = "name";
+                        public static readonly string ModuleTypeAttribute = "type";
+                    }
+                }
+
+                public static class After
+                {
+                    public static readonly string ElementName = "after";
+
+                    public static class Module
+                    {
+                        public static readonly string ElementName = "module";
+                        public static readonly string ModuleNameAttribute = "name";
+                        public static readonly string ModuleTypeAttribute = "type";
+                    }
+                }
+            }
+        }
     }
 }
