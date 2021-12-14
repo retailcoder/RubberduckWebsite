@@ -18,12 +18,10 @@ namespace Rubberduck.ContentServices.XmlDoc
             _syntaxHighlighterService = syntaxHighlighterService;
         }
 
-        protected override async Task<IEnumerable<FeatureItem>> ParseAsync(int assetId, XDocument document, bool isPreRelease)
-        {
-            return ReadAnnotations(assetId, document, !isPreRelease)
-        }
+        protected override async Task<IEnumerable<FeatureItem>> ParseAsync(int assetId, XDocument document, bool isPreRelease) =>
+            await Task.FromResult(ReadAnnotations(assetId, document, !isPreRelease));
 
-        private IEnumerable<FeatureItem> ReadAnnotations(int assetId, XDocument doc, bool hasReleased) =>
+        private static IEnumerable<FeatureItem> ReadAnnotations(int assetId, XDocument doc, bool hasReleased) =>
             from node in doc.Descendants("member")
             let name = GetAnnotationNameOrDefault(node)
             where !string.IsNullOrWhiteSpace(name)
