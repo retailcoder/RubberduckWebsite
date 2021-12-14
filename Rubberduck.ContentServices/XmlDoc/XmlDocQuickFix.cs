@@ -33,7 +33,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             Examples = ParseExamples(node).ToArray();
         }
 
-        public FeatureItem Parse(int assetId)
+        public FeatureItem Parse(int assetId, int featureId)
         {
             var applicableScopes = string.Join("", new[]
                 {
@@ -61,6 +61,8 @@ namespace Rubberduck.ContentServices.XmlDoc
 
             var dto = new Model.DTO.FeatureItem
             {
+                FeatureId = featureId,
+
                 Name = QuickFixName,
                 IsHidden = false,
                 IsNew = IsPreRelease,

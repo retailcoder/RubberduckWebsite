@@ -25,7 +25,7 @@ namespace Rubberduck.ContentServices.Reader
         {
             var feature = Repository.Single(e => e.Id == id);
             var items = feature.FeatureItems.Cast<FeatureItem>();
-            var subFeatures = Traverse(feature);
+            var subFeatures = Traverse(feature).ToList();
             return await Task.FromResult(Feature.FromDTO(feature, subFeatures, items));
         }
 
@@ -38,8 +38,8 @@ namespace Rubberduck.ContentServices.Reader
             foreach (var feature in parent.SubFeatures)
             {
                 var items = feature.FeatureItems.Cast<FeatureItem>();
-                var subFeatures = Traverse(feature);
-                yield return Feature.FromDTO(parent, subFeatures, items);
+                var subFeatures = Traverse(feature).ToList();
+                yield return Feature.FromDTO(feature, subFeatures, items);
             }
         }
 
@@ -51,17 +51,17 @@ namespace Rubberduck.ContentServices.Reader
                 return null;
             }
             var items = feature.FeatureItems.Cast<FeatureItem>();
-            var subFeatures = Traverse(feature);
+            var subFeatures = Traverse(feature).ToList();
             return await Task.FromResult(Feature.FromDTO(feature, subFeatures, items));
         }
 
         public async Task<IEnumerable<Feature>> GetAllAsync()
         {
             var features = new List<Feature>();
-            foreach (var feature in Repository)
+            foreach (var feature in Repository.Where(e => !e.ParentId.HasValue))
             {
                 var items = feature.FeatureItems.Cast<FeatureItem>();
-                var subFeatures = Traverse(feature);
+                var subFeatures = Traverse(feature).ToList();
                 features.Add(Feature.FromDTO(feature, subFeatures, items));
             }
             return await Task.FromResult(features);

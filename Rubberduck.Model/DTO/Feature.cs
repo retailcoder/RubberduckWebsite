@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rubberduck.Model.DTO
 {
@@ -24,7 +20,7 @@ namespace Rubberduck.Model.DTO
     public class FeatureEntity : Feature
     {
         public virtual FeatureEntity ParentFeature { get; set; }
-        public virtual ICollection<FeatureEntity> SubFeatures { get; set; }
-        public virtual ICollection<FeatureItemEntity> FeatureItems { get; set; }
+        public virtual ICollection<FeatureEntity> SubFeatures { get; set; } = new List<FeatureEntity>();
+        public virtual ICollection<FeatureItemEntity> FeatureItems { get; set; } = new List<FeatureItemEntity>();
     }
 }

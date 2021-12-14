@@ -5,7 +5,7 @@
 	[DateUpdated] DATETIME NULL,
 	[Name] NVARCHAR(1023) NOT NULL,
 	[DateCreated] DATETIME NOT NULL,
-	[InstallerDownloadUrl] NVARCHAR(1023) NOT NULL,
+	[InstallerDownloadUrl] NVARCHAR(1023) NULL,
 	[InstallerDownloads] INT NOT NULL,
 	[IsPreRelease] BIT NOT NULL
 )

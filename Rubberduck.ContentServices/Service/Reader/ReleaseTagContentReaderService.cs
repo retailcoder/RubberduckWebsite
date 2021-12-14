@@ -28,7 +28,11 @@ namespace Rubberduck.ContentServices.Reader
 
         public async Task<Tag> GetByEntityKeyAsync(Tag key)
         {
-            var tag = Repository.Single(e => e.Id == key.Id);
+            var tag = Repository.SingleOrDefault(e => e.Name == key.Name);
+            if (tag is null)
+            {
+                return null;
+            }
             var assets = tag.TagAssets.Cast<TagAsset>();
             return await Task.FromResult(Tag.FromDTO(tag, assets));
         }

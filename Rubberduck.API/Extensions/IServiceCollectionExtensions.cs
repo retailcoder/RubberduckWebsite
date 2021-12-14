@@ -10,6 +10,8 @@ using Rubberduck.SmartIndenter;
 using RubberduckServices.Abstract;
 using Rubberduck.ContentServices;
 using Microsoft.EntityFrameworkCore;
+using Rubberduck.ContentServices.XmlDoc.Abstract;
+using Rubberduck.ContentServices.XmlDoc;
 
 namespace Rubberduck.API.Extensions
 {
@@ -39,6 +41,10 @@ namespace Rubberduck.API.Extensions
             services.AddScoped<IContentWriterService<ExampleModule>, ExampleModuleContentWriterService>();
             services.AddScoped<IContentWriterService<Tag>, TagContentWriterService>();
             services.AddScoped<IContentWriterService<TagAsset>, TagAssetContentWriterService>();
+
+            services.AddScoped<ICodeAnalysisXmlDocParser, CodeAnalysisXmlDocParser>();
+            services.AddScoped<IParsingXmlDocParser, ParsingXmlDocParser>();
+            services.AddScoped<IXmlDocMerge, XmlDocMerge>();
 
             // RubberduckServices
             services.AddScoped<ISyntaxHighlighterService, RubberduckServices.SyntaxHighlighterService>();

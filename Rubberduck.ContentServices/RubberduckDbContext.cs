@@ -23,6 +23,7 @@ namespace Rubberduck.ContentServices
                 .Entity<FeatureEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
                     entity.HasIndex(e => e.Name).IsUnique(true);
                     entity.HasOne(e => e.ParentFeature).WithMany(e => e.SubFeatures).HasForeignKey(e => e.ParentId).IsRequired(false);
                     entity.HasMany(e => e.FeatureItems).WithOne(e => e.Feature).HasForeignKey(e => e.FeatureId);
@@ -30,26 +31,28 @@ namespace Rubberduck.ContentServices
                 .Entity<FeatureItemEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
                     entity.HasOne(e => e.Feature).WithMany(e => e.FeatureItems).HasForeignKey(e => e.FeatureId);
                     entity.HasMany(e => e.Examples).WithOne(e => e.FeatureItem).HasForeignKey(e => e.FeatureItemId);
-                    entity.HasOne(e => e.TagAsset).WithMany(e => e.FeatureItems).HasForeignKey(e => e.TagAssetId).IsRequired(false);
                 })
                 .Entity<ExampleEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
                     entity.HasOne(e => e.FeatureItem).WithMany(e => e.Examples).HasForeignKey(e => e.FeatureItemId);
                     entity.HasMany(e => e.Modules).WithOne(e => e.Example).HasForeignKey(e => e.ExampleId);
                 })
                 .Entity<TagEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
+                    entity.HasIndex(e => e.Name).IsUnique(true);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
                     entity.HasMany(e => e.TagAssets).WithOne(e => e.Tag).HasForeignKey(e => e.TagId);
                 })
                 .Entity<TagAssetEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
-                    entity.HasOne(e => e.Tag).WithMany(e => e.TagAssets).HasForeignKey(e => e.TagId);
-                    entity.HasMany(e => e.FeatureItems).WithOne(e => e.TagAsset).HasForeignKey(e => e.TagAssetId).IsRequired(false);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
                 });
         }
     }

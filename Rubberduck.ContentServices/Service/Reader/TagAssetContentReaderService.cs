@@ -21,10 +21,10 @@ namespace Rubberduck.ContentServices.Reader
 
 
         public async Task<TagAsset> GetByIdAsync(int id) =>
-            await Task.FromResult(TagAsset.FromDTO(Repository.Single(e => e.Id == id)));
+            await Task.FromResult(Repository.Where(e => e.Id == id).Select(TagAsset.FromDTO).SingleOrDefault());
 
         public async Task<TagAsset> GetByEntityKeyAsync(TagAsset key) =>
-            await Task.FromResult(TagAsset.FromDTO(Repository.Single(e => e.Id == key.Id)));
+            await Task.FromResult(Repository.Where(e => e.TagId == key.TagId && e.Name == key.Name).Select(TagAsset.FromDTO).SingleOrDefault());
 
         public async Task<IEnumerable<TagAsset>> GetAllAsync() =>
             await Task.FromResult(Repository.Select(TagAsset.FromDTO));

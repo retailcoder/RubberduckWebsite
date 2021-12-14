@@ -53,10 +53,11 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public Example[] Examples { get; }
 
-        public FeatureItem Parse(int assetId, IEnumerable<FeatureItem> quickFixes)
+        public FeatureItem Parse(int assetId, int featureId, IEnumerable<FeatureItem> quickFixes)
         {
             var dto = new Model.DTO.FeatureItem
             {
+                FeatureId = featureId,
                 Name = InspectionName,
                 IsHidden = IsHidden,
                 IsNew = IsPreRelease,

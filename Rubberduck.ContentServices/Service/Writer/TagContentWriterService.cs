@@ -34,7 +34,7 @@ namespace Rubberduck.ContentServices.Writer
 
         public async Task<Tag> UpdateAsync(Tag entity)
         {
-            var dto = _context.Tags.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
+            var dto = _context.Tags.AsTracking().SingleOrDefault(e => e.Id == entity.Id || e.Name == entity.Name);
             dto.DateUpdated = DateTime.Now;
             dto.InstallerDownloads = entity.InstallerDownloads;
 

@@ -43,7 +43,7 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
-        public FeatureItem Parse(int assetId)
+        public FeatureItem Parse(int assetId, int featureId)
         {
             var parameters = string.Join(string.Empty, Parameters.Select(p => $"<tr><td>{p.Name}</td><td>{p.Type}</td><td>{p.Description}</td></tr>"));
             var parameterInfo = Parameters.Count == 0 ? string.Empty
@@ -51,6 +51,8 @@ namespace Rubberduck.ContentServices.XmlDoc
 
             var dto = new Model.DTO.FeatureItem
             {
+                FeatureId = featureId,
+
                 Name = AnnotationName,
                 IsNew = IsPreRelease,
                 Title = Summary,

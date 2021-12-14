@@ -15,12 +15,15 @@ namespace Rubberduck.Model.Internal
         [Description("UserForm Module")]UserFormModule
     }
 
-    public class ExampleModule : IEntity
+    public class ExampleModule : EntityBase
     {
         public static ExampleModule FromDTO(DTO.ExampleModule dto) => new(dto);
         public static DTO.ExampleModuleEntity ToDTO(ExampleModule entity) => new()
         {
-            DateInserted = DateTime.Now,
+            Id = entity.Id,
+            DateInserted = entity.DateInserted,
+            DateUpdated = entity.DateUpdated,
+
             ExampleId = entity.ExampleId,
             Description = entity.Description,
             ModuleName = entity.ModuleName,
@@ -29,8 +32,8 @@ namespace Rubberduck.Model.Internal
         };
 
         internal ExampleModule(DTO.ExampleModule dto)
+            : base(dto.Id, dto.DateInserted, dto.DateUpdated)
         {
-            Id = dto.Id;
 
             ExampleId = dto.ExampleId;
             ModuleName = dto.ModuleName;
@@ -40,7 +43,6 @@ namespace Rubberduck.Model.Internal
             HtmlContent = dto.HtmlContent;
         }
 
-        public int Id { get; }
 
         public int ExampleId { get; }
         public string ModuleName { get; }

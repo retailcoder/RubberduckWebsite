@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Rubberduck.Model.Internal
 {
-    public class Feature : IEntity
+    public class Feature : EntityBase
     {
         public static Feature FromDTO(DTO.Feature dto) => new(dto);
         public static Feature FromDTO(DTO.Feature dto, IEnumerable<Feature> subFeatures) => new(dto, subFeatures);
@@ -13,7 +13,10 @@ namespace Rubberduck.Model.Internal
 
         public static DTO.FeatureEntity ToDTO(Feature entity) => new()
         {
-            DateInserted = DateTime.Now,
+            Id = entity.Id,
+            DateInserted = entity.DateInserted,
+            DateUpdated = entity.DateUpdated,
+
             ParentId = entity.ParentId,
             Name = entity.Name ?? string.Empty,
             Title = entity.Title ?? string.Empty,
@@ -28,8 +31,8 @@ namespace Rubberduck.Model.Internal
         };
 
         internal Feature(DTO.Feature dto)
+            : base(dto.Id, dto.DateInserted, dto.DateUpdated)
         {
-            Id = dto.Id;
             ParentId = dto.ParentId;
 
             Name = dto.Name;
@@ -67,7 +70,6 @@ namespace Rubberduck.Model.Internal
             Items = items?.ToArray() ?? Enumerable.Empty<FeatureItem>();
         }
 
-        public int Id { get; }
         public int? ParentId { get; }
         public string Name { get; }
         public string Title { get; }

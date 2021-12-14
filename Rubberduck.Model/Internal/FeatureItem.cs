@@ -4,13 +4,16 @@ using System.Linq;
 
 namespace Rubberduck.Model.Internal
 {
-    public class FeatureItem : IEntity
+    public class FeatureItem : EntityBase
     {
         public static FeatureItem FromDTO(DTO.FeatureItem dto) => new(dto);
         public static FeatureItem FromDTO(DTO.FeatureItem dto, IEnumerable<Example> examples) => new(dto, examples);
         public static DTO.FeatureItemEntity ToDTO(FeatureItem entity, bool? isDiscontinued = null, bool? isNew = null) => new()
         {
-            DateInserted = DateTime.Now,
+            Id = entity.Id,
+            DateInserted = entity.DateInserted,
+            DateUpdated = entity.DateUpdated,
+
             FeatureId = entity.FeatureId,
             TagAssetId = entity.TagAssetId,
             Name = entity.Name,
@@ -35,10 +38,8 @@ namespace Rubberduck.Model.Internal
         }
 
         internal FeatureItem(DTO.FeatureItem dto)
+            : base(dto.Id, dto.DateInserted, dto.DateUpdated)
         {
-            // Primary key
-            Id = dto.Id;
-
             // Natural (unique) key
             FeatureId = dto.FeatureId;
             Name = dto.Name;
@@ -69,7 +70,6 @@ namespace Rubberduck.Model.Internal
             Examples = Enumerable.Empty<Example>();
         }
 
-        public int Id { get; }
         public int FeatureId { get; }
         public int? TagAssetId { get; }
         public string Name { get; }

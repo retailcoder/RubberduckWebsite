@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Rubberduck.Model.Internal
 {
-    public class Tag : IEntity
+    public class Tag : EntityBase
     {
         public static Tag FromDTO(DTO.Tag dto) => new(dto);
         public static Tag FromDTO(DTO.Tag dto, IEnumerable<TagAsset> assets) => new(dto, assets);
@@ -12,8 +12,11 @@ namespace Rubberduck.Model.Internal
         public static DTO.TagEntity ToDTO(Tag entity) => new()
         {
             Id = entity.Id,
-            DateCreated = entity.DateCreated,
+            DateInserted = entity.DateInserted,
+            DateUpdated = entity.DateUpdated,
+
             Name = entity.Name,
+            DateCreated = entity.DateCreated,
             IsPreRelease = entity.IsPreRelease,
             InstallerDownloadUrl = entity.InstallerDownloadUrl?.ToString(),
             InstallerDownloads = entity.InstallerDownloads,
@@ -21,10 +24,11 @@ namespace Rubberduck.Model.Internal
         };
 
         internal Tag(DTO.Tag dto)
+            : base(dto.Id, dto.DateInserted, dto.DateUpdated)
         {
-            Id = dto.Id;
             Name = dto.Name;
             DateCreated = dto.DateCreated;
+
             if (Uri.TryCreate(dto.InstallerDownloadUrl, UriKind.Absolute, out var uri))
             {
                 InstallerDownloadUrl = uri;
@@ -40,7 +44,6 @@ namespace Rubberduck.Model.Internal
             Assets = assets ?? Enumerable.Empty<TagAsset>();
         }
 
-        public int Id { get; }
         public string Name { get; }
         public DateTime DateCreated { get; }
         public Uri InstallerDownloadUrl { get; }

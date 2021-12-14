@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 
 namespace Rubberduck.Model.DTO
 {
@@ -17,6 +16,6 @@ namespace Rubberduck.Model.DTO
     [Table("Tags")]
     public class TagEntity : Tag
     {
-        public virtual ICollection<TagAssetEntity> TagAssets { get; set; }
+        public virtual ICollection<TagAssetEntity> TagAssets { get; set; } = new List<TagAssetEntity>();
     }
 }

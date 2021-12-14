@@ -14,6 +14,6 @@ namespace Rubberduck.Model.DTO
     public class ExampleEntity : Example
     {
         public virtual FeatureItemEntity FeatureItem { get; set; }
-        public virtual ICollection<ExampleModuleEntity> Modules { get; set; }
+        public virtual ICollection<ExampleModuleEntity> Modules { get; set; } = new List<ExampleModuleEntity>();
     }
 }

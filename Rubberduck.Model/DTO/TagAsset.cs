@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rubberduck.Model.DTO
 {
@@ -14,6 +13,5 @@ namespace Rubberduck.Model.DTO
     public class TagAssetEntity : TagAsset
     {
         public virtual TagEntity Tag { get; set; }
-        public virtual ICollection<FeatureItemEntity> FeatureItems { get; set; }
     }
 }

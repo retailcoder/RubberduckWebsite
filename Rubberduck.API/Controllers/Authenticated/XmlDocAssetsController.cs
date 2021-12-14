@@ -41,21 +41,14 @@ namespace Rubberduck.API.Controllers.Authenticated
         {
             try
             {
-                var elapsedMilliseconds = await Task.Run(() => Stopwatch.StartNew())
-                    .ContinueWith(async t =>
-                    {
-                        var sw = t.Result;
-                        await _service.SynchronizeAsync();
-                        sw.Stop();
-                        return sw.ElapsedMilliseconds;
-                    })
-                    .ContinueWith(t =>
-                    {
-                        var ms = t.Result;
-                        _logger.LogInformation($"{nameof(UpdateXmlDocContentAsync)} completed in {ms:N} milliseconds.");
-                        return ms;
-                    });
-                return Ok($"{nameof(UpdateXmlDocContentAsync)} completed in {elapsedMilliseconds:N} milliseconds.");
+                var sw = Stopwatch.StartNew();
+                await _service.SynchronizeAsync();
+                sw.Stop();
+                
+                var result = $"{nameof(UpdateXmlDocContentAsync)} completed in {sw.ElapsedMilliseconds:N} milliseconds.";
+
+                _logger.LogInformation(result);
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -73,21 +66,12 @@ namespace Rubberduck.API.Controllers.Authenticated
         {
             try
             {
-                var formattedCode = await Task.Run(() => Stopwatch.StartNew())
-                    .ContinueWith(async t =>
-                    {
-                        var sw = await t;
-                        var result = await _syntaxHighlighter.FormatAsync(content);
-                        sw.Stop();
-                        return (FormattedCode:result, sw.ElapsedMilliseconds);
-                    })
-                    .ContinueWith(async t =>
-                    {
-                        var (FormattedCode, ElapsedMilliseconds) = await t.Result;
-                        _logger.LogInformation($"{nameof(GetFormattedCodeModuleAsync)} completed in {ElapsedMilliseconds:N} milliseconds.");
-                        return FormattedCode;
-                    });
-                return Ok(formattedCode);
+                var sw = Stopwatch.StartNew();
+                var result = await _syntaxHighlighter.FormatAsync(content);
+                sw.Stop();
+
+                _logger.LogInformation($"{nameof(GetFormattedCodeModuleAsync)} completed in {sw.ElapsedMilliseconds:N} milliseconds.");
+                return Ok(result);
             }
             catch (Exception e)
             {

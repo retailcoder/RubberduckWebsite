@@ -31,6 +31,6 @@ namespace Rubberduck.Model.DTO
     {
         public virtual FeatureEntity Feature { get; set; }
         public virtual TagAssetEntity TagAsset { get; set; }
-        public virtual ICollection<ExampleEntity> Examples { get; set; }
+        public virtual ICollection<ExampleEntity> Examples { get; set; } = new List<ExampleEntity>();
     }
 }
