@@ -21,11 +21,11 @@ namespace Rubberduck.ContentServices.XmlDoc
         protected override async Task<IEnumerable<FeatureItem>> ParseAsync(int assetId, XDocument document, bool isPreRelease) =>
             await Task.FromResult(ReadAnnotations(assetId, document, !isPreRelease));
 
-        private static IEnumerable<FeatureItem> ReadAnnotations(int assetId, XDocument doc, bool hasReleased) =>
+        private IEnumerable<FeatureItem> ReadAnnotations(int assetId, XDocument doc, bool hasReleased) =>
             from node in doc.Descendants("member")
             let name = GetAnnotationNameOrDefault(node)
             where !string.IsNullOrWhiteSpace(name)
-            select new XmlDocAnnotation(name, node, !hasReleased).Parse(assetId);
+            select new XmlDocAnnotation(_syntaxHighlighterService, name, node, !hasReleased).Parse(assetId);
 
         private static string GetAnnotationNameOrDefault(XElement memberNode)
         {

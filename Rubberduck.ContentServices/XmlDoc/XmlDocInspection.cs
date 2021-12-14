@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Xml.Linq;
 using Rubberduck.Model.Internal;
 using Rubberduck.Model.ViewModel;
-using RubberduckServices;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.ContentServices.XmlDoc
@@ -15,8 +14,10 @@ namespace Rubberduck.ContentServices.XmlDoc
         private static readonly string _defaultSeverity = "Warning";
         private static readonly string _defaultInspectionType = "CodeQualityIssues";
 
-        public XmlDocInspection(string name, XElement node, InspectionDefaultConfig config, bool isPreRelease)
+        public XmlDocInspection(ISyntaxHighlighterService service, string name, XElement node, InspectionDefaultConfig config, bool isPreRelease)
         {
+            SyntaxHighlighterService = service;
+
             SourceObject = name;
             TypeName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1);
 
@@ -95,7 +96,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             return FeatureItem.FromDTO(dto, Examples);
         }
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; private set; } = new SyntaxHighlighterService();
+        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
         private IEnumerable<Example> ParseExamples(XElement node)
         {

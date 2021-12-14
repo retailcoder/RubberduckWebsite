@@ -4,15 +4,16 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Rubberduck.Model.Internal;
-using RubberduckServices;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class XmlDocAnnotation
     {
-        public XmlDocAnnotation(string name, XElement node, bool isPreRelease)
+        public XmlDocAnnotation(ISyntaxHighlighterService service, string name, XElement node, bool isPreRelease)
         {
+            SyntaxHighlighterService = service;
+
             SourceObject = name;
             IsPreRelease = isPreRelease;
 
@@ -40,7 +41,7 @@ namespace Rubberduck.ContentServices.XmlDoc
         public IReadOnlyList<AnnotationArgInfo> Parameters { get; }
         public IReadOnlyList<BeforeAndAfterCodeExample> Examples { get; }
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; private set; } = new SyntaxHighlighterService();
+        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
         public FeatureItem Parse(int assetId)
         {

@@ -35,7 +35,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             where !string.IsNullOrWhiteSpace(name)
             let inspectionName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1)
             let config = _inspectionDefaults.ContainsKey(inspectionName) ? _inspectionDefaults[inspectionName] : default
-            select new XmlDocInspection(name, node, config, !hasReleased).Parse(assetId, quickFixes);
+            select new XmlDocInspection(_syntaxHighlighterService, name, node, config, !hasReleased).Parse(assetId, quickFixes);
 
         private static string GetInspectionNameOrDefault(XElement memberNode)
         {
