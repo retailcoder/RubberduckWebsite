@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Rubberduck.API.DTO;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.API.Controllers.Authenticated
 {
@@ -109,8 +108,8 @@ namespace Rubberduck.API.Controllers.Authenticated
         [HttpGet]
         [Route("InspectionDefaults")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<InspectionDefaultConfig>), 200)]
-        public async Task<ActionResult<IEnumerable<InspectionDefaultConfig>>> GetInspectionDefaultsAsync()
+        [ProducesResponseType(typeof(IEnumerable<Model.DTO.InspectionDefaultConfig>), 200)]
+        public async Task<ActionResult<IEnumerable<Model.DTO.InspectionDefaultConfig>>> GetInspectionDefaultsAsync()
         {
             try
             {

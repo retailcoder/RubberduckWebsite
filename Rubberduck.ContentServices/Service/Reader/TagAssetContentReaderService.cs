@@ -1,22 +1,32 @@
-﻿using Rubberduck.ContentServices.Repository.Abstract;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.Reader
 {
-    public class TagAssetContentReaderService : ContentReaderService<TagAsset, Model.DTO.TagAsset>
+    public class TagAssetContentReaderService : IContentReaderService<TagAsset>
     {
-        private readonly IReaderDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public TagAssetContentReaderService(IReaderDbContext context)
+        public TagAssetContentReaderService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        protected override IAsyncReadRepository<Model.DTO.TagAsset> Repository => _context.TagAssetsRepository;
+        private IQueryable<Model.DTO.TagAssetEntity> Repository =>
+            _context.TagAssets.AsNoTracking();
 
-        protected override Model.DTO.TagAsset GetDTO(TagAsset entity) => TagAsset.ToDTO(entity);
 
-        protected override TagAsset GetEntity(Model.DTO.TagAsset dto) => TagAsset.FromDTO(dto);
+        public async Task<TagAsset> GetByIdAsync(int id) =>
+            await Task.FromResult(Repository.Where(e => e.Id == id).Select(TagAsset.FromDTO).SingleOrDefault());
+
+        public async Task<TagAsset> GetByEntityKeyAsync(TagAsset key) =>
+            await Task.FromResult(Repository.Where(e => e.Id == key.Id || (e.TagId == key.TagId && e.Name == key.Name)).Select(TagAsset.FromDTO).SingleOrDefault());
+
+        public async Task<IEnumerable<TagAsset>> GetAllAsync() =>
+            await Task.FromResult(Repository.Select(TagAsset.FromDTO));
     }
 }

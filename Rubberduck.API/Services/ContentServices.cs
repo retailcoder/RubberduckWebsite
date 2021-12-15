@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rubberduck.API.Services.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.API.Services
 {
@@ -10,6 +11,8 @@ namespace Rubberduck.API.Services
     /// </summary>
     public class ContentServices : IContentServices
     {
+        private readonly ILogger _logger;
+
         private readonly IContentReaderService<Feature> _featuresReader;
         private readonly IContentWriterService<Feature> _featuresWriter;
         private readonly IContentReaderService<FeatureItem> _featureItemsReader;
@@ -26,7 +29,7 @@ namespace Rubberduck.API.Services
         /// <summary>
         /// Creates a new service to orchestrate data access.
         /// </summary>
-        public ContentServices(
+        public ContentServices(ILogger<ContentServices> logger,
             IContentReaderService<Feature> featuresReader,
             IContentWriterService<Feature> featuresWriter,
             IContentReaderService<FeatureItem> featureItemsReader,
@@ -40,6 +43,8 @@ namespace Rubberduck.API.Services
             IContentReaderService<TagAsset> tagAssetsReader,
             IContentWriterService<TagAsset> tagAssetsWriter)
         {
+            _logger = logger;
+
             _featuresReader = featuresReader;
             _featuresWriter = featuresWriter;
             _featureItemsReader = featureItemsReader;
@@ -62,18 +67,25 @@ namespace Rubberduck.API.Services
             var entity = Feature.FromDTO(dto);
             if (entity.Id == 0)
             {
-                return await _featuresWriter.CreateAsync(entity);
-            }
-
-            var existing = await _featuresReader.GetByIdAsync(entity.Id);
-            if (existing is null)
-            {
-                return null;
+                var existingKey = await _featuresReader.GetByEntityKeyAsync(entity);
+                if (existingKey is null)
+                {
+                    _logger.LogDebug($"Creating new Feature entity...");
+                    return await _featuresWriter.CreateAsync(entity);
+                }
             }
             else
             {
-                return await _featuresWriter.UpdateAsync(entity);
+                var existingId = await _featuresReader.GetByIdAsync(entity.Id);
+                if (existingId is null)
+                {
+                    _logger.LogWarning($"Could not find Feature Id {entity.Id}");
+                    return null;
+                }
             }
+
+            _logger.LogDebug($"Updating existing Feature entity...");
+            return await _featuresWriter.UpdateAsync(entity);
         }
 
         /// <summary>
@@ -84,18 +96,25 @@ namespace Rubberduck.API.Services
             var entity = FeatureItem.FromDTO(dto);
             if (entity.Id == 0)
             {
-                return await _featureItemsWriter.CreateAsync(entity);
-            }
-
-            var existing = await _featureItemsReader.GetByIdAsync(entity.Id);
-            if (existing is null)
-            {
-                return null;
+                var existingKey = await _featureItemsReader.GetByEntityKeyAsync(entity);
+                if (existingKey is null)
+                {
+                    _logger.LogDebug($"Creating new FeatureItem entity...");
+                    return await _featureItemsWriter.CreateAsync(entity);
+                }
             }
             else
             {
-                return await _featureItemsWriter.UpdateAsync(entity);
+                var existingId = await _featureItemsReader.GetByIdAsync(entity.Id);
+                if (existingId is null)
+                {
+                    _logger.LogWarning($"Could not find FeatureItem Id {entity.Id}");
+                    return null;
+                }
             }
+
+            _logger.LogDebug($"Updating existing FeatureItem entity...");
+            return await _featureItemsWriter.UpdateAsync(entity);
         }
 
         /// <summary>
@@ -106,18 +125,25 @@ namespace Rubberduck.API.Services
             var entity = Example.FromDTO(dto);
             if (entity.Id == 0)
             {
-                return await _examplesWriter.CreateAsync(entity);
-            }
-
-            var existing = await _examplesReader.GetByIdAsync(entity.Id);
-            if (existing is null)
-            {
-                return null;
+                var existingKey = await _examplesReader.GetByEntityKeyAsync(entity);
+                if (existingKey is null)
+                {
+                    _logger.LogDebug($"Creating new Example entity...");
+                    return await _examplesWriter.CreateAsync(entity);
+                }
             }
             else
             {
-                return await _examplesWriter.UpdateAsync(entity);
+                var existingId = await _examplesReader.GetByIdAsync(entity.Id);
+                if (existingId is null)
+                {
+                    _logger.LogWarning($"Could not find Example Id {entity.Id}");
+                    return null;
+                }
             }
+
+            _logger.LogDebug($"Updating existing Example entity...");
+            return await _examplesWriter.UpdateAsync(entity);
         }
 
         /// <summary>
@@ -128,18 +154,25 @@ namespace Rubberduck.API.Services
             var entity = ExampleModule.FromDTO(dto);
             if (entity.Id == 0)
             {
-                return await _exampleModulesWriter.CreateAsync(entity);
-            }
-
-            var existing = await _exampleModulesReader.GetByIdAsync(entity.Id);
-            if (existing is null)
-            {
-                return null;
+                var existingKey = await _exampleModulesReader.GetByEntityKeyAsync(entity);
+                if (existingKey is null)
+                {
+                    _logger.LogDebug($"Creating new ExampleModule entity...");
+                    return await _exampleModulesWriter.CreateAsync(entity);
+                }
             }
             else
             {
-                return await _exampleModulesWriter.UpdateAsync(entity);
+                var existingId = await _exampleModulesReader.GetByIdAsync(entity.Id);
+                if (existingId is null)
+                {
+                    _logger.LogWarning($"Could not find ExampleModule Id {entity.Id}");
+                    return null;
+                }
             }
+
+            _logger.LogDebug($"Updating existing ExampleModule entity...");
+            return await _exampleModulesWriter.UpdateAsync(entity);
         }
 
         /// <summary>
@@ -150,18 +183,25 @@ namespace Rubberduck.API.Services
             var entity = Tag.FromDTO(dto);
             if (entity.Id == 0)
             {
-                return await _tagsWriter.CreateAsync(entity);
-            }
-
-            var existing = await _tagsReader.GetByIdAsync(entity.Id);
-            if (existing is null)
-            {
-                return null;
+                var existingKey = await _tagsReader.GetByEntityKeyAsync(entity);
+                if (existingKey is null)
+                {
+                    _logger.LogDebug($"Creating new Tag {entity.Name}...");
+                    return await _tagsWriter.CreateAsync(entity);
+                }
             }
             else
             {
-                return await _tagsWriter.UpdateAsync(entity);
+                var existingId = await _tagsReader.GetByIdAsync(entity.Id);
+                if (existingId is null)
+                {
+                    _logger.LogWarning($"Could not find Tag Id {entity.Id}");
+                    return null;
+                }
             }
+
+            _logger.LogDebug($"Updating existing Tag {entity.Name}...");
+            return await _tagsWriter.UpdateAsync(entity);
         }
 
         /// <summary>
@@ -172,18 +212,25 @@ namespace Rubberduck.API.Services
             var entity = TagAsset.FromDTO(dto);
             if (entity.Id == 0)
             {
-                return await _tagAssetsWriter.CreateAsync(entity);
-            }
-
-            var existing = await _tagAssetsReader.GetByIdAsync(entity.Id);
-            if (existing is null)
-            {
-                return null;
+                var existingName = await _tagAssetsReader.GetByEntityKeyAsync(entity);
+                if (existingName is null)
+                {
+                    _logger.LogDebug($"Creating new TagAsset entity...");
+                    return await _tagAssetsWriter.CreateAsync(entity);
+                }
             }
             else
             {
-                return await _tagAssetsWriter.UpdateAsync(entity);
+                var existingId = await _tagAssetsReader.GetByIdAsync(entity.Id);
+                if (existingId is null)
+                {
+                    _logger.LogWarning($"Could not find TagAsset Id {entity.Id}");
+                    return null;
+                }
             }
+
+            _logger.LogDebug($"Updating existing TagAsset entity...");
+            return await _tagAssetsWriter.UpdateAsync(entity);
         }
     }
 }

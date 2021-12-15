@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.ContentServices;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.API.Controllers.Authenticated
 {
@@ -17,14 +18,16 @@ namespace Rubberduck.API.Controllers.Authenticated
     {
         private readonly ILogger<ContentController> _logger;
         private readonly IContentServices _service;
+        private readonly RubberduckDbContext _context;
 
         /// <summary>
         /// Creates a controller that exposes endpoints providing an interface to manipulate the website's dynamic content.
         /// </summary>
-        public ContentController(ILogger<ContentController> logger, IContentServices service)
+        public ContentController(ILogger<ContentController> logger, IContentServices service, RubberduckDbContext context)
         {
             _logger = logger;
             _service = service;
+            _context = context;
         }
 
         /// <summary>
@@ -50,6 +53,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return NotFound();
                 }
 
+                await _context.SaveChangesAsync();
                 return Ok(Feature.ToDTO(result));
             }
             catch (Exception e)
@@ -120,6 +124,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return NotFound();
                 }
 
+                await _context.SaveChangesAsync();
                 return Ok(FeatureItem.ToDTO(result));
             }
             catch (Exception e)
@@ -188,6 +193,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return NotFound();
                 }
 
+                await _context.SaveChangesAsync();
                 return Ok(Example.ToDTO(result));
             }
             catch (Exception e)
@@ -257,6 +263,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return NotFound();
                 }
 
+                await _context.SaveChangesAsync();
                 return Ok(ExampleModule.ToDTO(result));
             }
             catch (Exception e)
@@ -327,6 +334,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return NotFound();
                 }
 
+                await _context.SaveChangesAsync();
                 return Ok(Tag.ToDTO(result));
             }
             catch (Exception e)
@@ -359,6 +367,7 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return NotFound();
                 }
 
+                await _context.SaveChangesAsync();
                 return Ok(TagAsset.ToDTO(result));
             }
             catch (Exception e)

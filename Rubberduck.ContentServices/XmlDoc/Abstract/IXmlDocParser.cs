@@ -1,14 +1,22 @@
-﻿using System.Threading.Tasks;
-using Rubberduck.Model.Entity;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.XmlDoc.Abstract
 {
     public interface IXmlDocParser
     {
-        Task<FeatureItem> ParseAsync();
+        string AssetName { get; }
+        Task<IEnumerable<FeatureItem>> ParseAsync(Tag tag);
     }
 
-    public interface IInspectionXmlDocParser : IXmlDocParser { /* DI/IoC marker interface */ }
-    public interface IQuickFixXmlDocParser  : IXmlDocParser { /* DI/IoC marker interface */ }
-    public interface IAnnotationXmlDocParser : IXmlDocParser { /* DI/IoC marker interface */ }
+    /// <summary>
+    /// Downloads and processes Rubberduck.CodeAnalysis xmldoc asset for a tag.
+    /// </summary>
+    public interface ICodeAnalysisXmlDocParser : IXmlDocParser { /* DI/IoC marker interface */ }
+
+    /// <summary>
+    /// Downloads and processes Rubberduck.Parsing xmldoc asset for a tag.
+    /// </summary>
+    public interface IParsingXmlDocParser : IXmlDocParser { /* DI/IoC marker interface */ }
 }

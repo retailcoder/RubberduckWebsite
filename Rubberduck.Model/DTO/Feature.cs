@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Rubberduck.Model.DTO
 {
-    [Table("Features")]
     public class Feature : BaseDto
     {
         public int? ParentId { get; set; }
@@ -19,5 +14,13 @@ namespace Rubberduck.Model.DTO
         public bool IsHidden { get; set; }
         public int SortOrder { get; set; }
         public string XmlDocSource { get; set; }
+    }
+
+    [Table("Features")]
+    public class FeatureEntity : Feature
+    {
+        public virtual FeatureEntity ParentFeature { get; set; }
+        public virtual ICollection<FeatureEntity> SubFeatures { get; set; } = new List<FeatureEntity>();
+        public virtual ICollection<FeatureItemEntity> FeatureItems { get; set; } = new List<FeatureItemEntity>();
     }
 }

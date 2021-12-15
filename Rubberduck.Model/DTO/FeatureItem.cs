@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Rubberduck.Model.DTO
 {
-    [Table("FeatureItems")]
     public class FeatureItem : BaseDto
     {
         public int FeatureId { get; set; }
@@ -16,12 +15,22 @@ namespace Rubberduck.Model.DTO
         public string Description { get; set; }
         public string ContentUrl { get; set; }
         public bool IsNew { get; set; }
+        public bool IsDiscontinued { get; set; }
         public bool IsHidden { get; set; }
+        public int? TagAssetId { get; set; }
         public string XmlDocSourceObject { get; set; }
         public string XmlDocTabName { get; set; }
         public string XmlDocMetadata { get; set; }
         public string XmlDocSummary { get; set; }
         public string XmlDocInfo { get; set; }
         public string XmlDocRemarks { get; set; }
+    }
+
+    [Table("FeatureItems")]
+    public class FeatureItemEntity : FeatureItem
+    {
+        public virtual FeatureEntity Feature { get; set; }
+        public virtual TagAssetEntity TagAsset { get; set; }
+        public virtual ICollection<ExampleEntity> Examples { get; set; } = new List<ExampleEntity>();
     }
 }

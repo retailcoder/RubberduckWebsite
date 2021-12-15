@@ -2,49 +2,47 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Rubberduck.ContentServices.Repository.Abstract;
+using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.Reader
 {
-    public class ExampleContentReaderService : ContentReaderService<Example, Model.DTO.Example>
+    public class ExampleContentReaderService : IContentReaderService<Example>
     {
-        private readonly IReaderDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public ExampleContentReaderService(IReaderDbContext context)
+        public ExampleContentReaderService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        protected override IAsyncReadRepository<Model.DTO.Example> Repository => _context.ExamplesRepository;
-        protected override Model.DTO.Example GetDTO(Example entity) => Example.ToDTO(entity);
-        protected override Example GetEntity(Model.DTO.Example dto) => Example.FromDTO(dto);
+        private IQueryable<Model.DTO.ExampleEntity> Repository => 
+            _context.Examples.AsNoTracking().Include(e => e.Modules);
 
-        public override async Task<Example> GetByIdAsync(int id) =>
-            await await Repository.GetByIdAsync(id).ContinueWith(async t => await GetExampleAsync(t.Result));
-
-        public override async Task<Example> GetByEntityKeyAsync(object key) =>
-            await await Repository.GetByKeyAsync(key).ContinueWith(async t => await GetExampleAsync(t.Result));
-
-        private async Task<Example> GetExampleAsync(Model.DTO.Example dto)
+        public async Task<Example> GetByIdAsync(int id)
         {
-            if (dto is null)
-            {
-                return null;
-            }
-            var modules = await GetExampleModulesAsync(dto);
-            return Example.FromDTO(dto, modules);
+            var example = Repository.Single(e => e.Id == id);
+            var modules = example.Modules.Select(ExampleModule.FromDTO);
+            return await Task.FromResult(Example.FromDTO(example, modules));
         }
 
-        private async Task<IEnumerable<ExampleModule>> GetExampleModulesAsync(Model.DTO.Example dto)
+        public async Task<Example> GetByEntityKeyAsync(Example key)
         {
-            if (dto is null)
+            var example = Repository.SingleOrDefault(e => e.Id == key.Id || (e.FeatureItemId == key.FeatureItemId && e.SortOrder == key.SortOrder));
+            var modules = example.Modules.Select(ExampleModule.FromDTO);
+            return await Task.FromResult(Example.FromDTO(example, modules));
+        }
+
+        public async Task<IEnumerable<Example>> GetAllAsync()
+        {
+            var examples = new List<Example>();
+            foreach (var example in Repository)
             {
-                return Enumerable.Empty<ExampleModule>();
+                var modules = example.Modules.Select(ExampleModule.FromDTO);
+                examples.Add(Example.FromDTO(example, modules));
             }
-            return await _context.ExampleModulesRepository.GetAllAsync(dto.Id)
-                .ContinueWith(t => t.Result.Select(ExampleModule.FromDTO));
+            return await Task.FromResult(examples);
         }
     }
 }

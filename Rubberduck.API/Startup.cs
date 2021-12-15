@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Rubberduck.API.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -32,7 +32,8 @@ namespace Rubberduck.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Rubberduck.API", Version = "v1" });
             });
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerGenOptions>();
-            services.RegisterApiServices(Configuration, Environment);
+            services.RegisterApiServices(Configuration/*, Environment*/);
+            services.AddLogging(ConfigureLogging);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +54,12 @@ namespace Rubberduck.API
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void ConfigureLogging(ILoggingBuilder builder)
+        {
+            builder.AddConsole();
+            builder.SetMinimumLevel(LogLevel.Trace);
         }
     }
 }
