@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 
 namespace Rubberduck.Model.DTO
 {
-    [Table("Tags")]
     public class Tag : BaseDto
     {
         public string Name { get; set; }
@@ -13,7 +11,11 @@ namespace Rubberduck.Model.DTO
         public string InstallerDownloadUrl { get; set; }
         public int InstallerDownloads { get; set; }
         public bool IsPreRelease { get; set; }
+    }
 
-        public IEnumerable<TagAsset> TagAssets { get; set; } = Enumerable.Empty<TagAsset>();
+    [Table("Tags")]
+    public class TagEntity : Tag
+    {
+        public virtual ICollection<TagAssetEntity> TagAssets { get; set; } = new List<TagAssetEntity>();
     }
 }

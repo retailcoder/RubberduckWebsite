@@ -1,67 +1,51 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Rubberduck.ContentServices.Repository.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
+using Microsoft.EntityFrameworkCore;
 
 namespace Rubberduck.ContentServices.Reader
 {
-    public class ReleaseTagContentReaderService : ContentReaderService<Tag, Model.DTO.Tag>
+    public class ReleaseTagContentReaderService : IContentReaderService<Tag>
     {
-        private readonly IReaderDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public ReleaseTagContentReaderService(IReaderDbContext context)
+        public ReleaseTagContentReaderService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        private async Task<IEnumerable<Tag>> GetLatestTags() => 
-            await await ((Repository.TagsRepository)Repository).GetLatestTagsAsync().ContinueWith(async t => await GetTagsAsync(t.Result));
+        private IQueryable<Model.DTO.TagEntity> Repository =>
+            _context.Tags.AsNoTracking().Include(e => e.TagAssets);
 
-        protected override IAsyncReadRepository<Model.DTO.Tag> Repository => _context.TagsRepository;
-
-        protected override Model.DTO.Tag GetDTO(Tag entity) => Tag.ToDTO(entity);
-
-        protected override Tag GetEntity(Model.DTO.Tag dto) => Tag.FromDTO(dto);
-
-        public override async Task<IEnumerable<Tag>> GetAllAsync() => await GetLatestTags();
-            //await await Repository.GetAllAsync().ContinueWith(async t => await GetTagsAsync(t.Result));
-
-        public override async Task<Tag> GetByIdAsync(int id) =>
-            await await Repository.GetByIdAsync(id).ContinueWith(async t => await GetTagAsync(t.Result));
-
-        public override async Task<Tag> GetByEntityKeyAsync(object key) =>
-            await await Repository.GetByKeyAsync(key).ContinueWith(async t => await GetTagAsync(t.Result));
-
-        private async Task<IEnumerable<Tag>> GetTagsAsync(IEnumerable<Model.DTO.Tag> tags)
+        public async Task<Tag> GetByIdAsync(int id)
         {
-            var results = new List<Tag>();
-            foreach (var tag in tags)
-            {
-                results.Add(await GetTagAsync(tag));
-            }
-            return results;
+            var tag = Repository.Single(e => e.Id == id);
+            var assets = tag.TagAssets.Select(TagAsset.FromDTO).ToArray();
+            return await Task.FromResult(Tag.FromDTO(tag, assets));
         }
 
-        private async Task<Tag> GetTagAsync(Model.DTO.Tag dto)
+        public async Task<Tag> GetByEntityKeyAsync(Tag key)
         {
-            if (dto is null)
+            var tag = Repository.SingleOrDefault(e => e.Id == key.Id || e.Name == key.Name);
+            if (tag is null)
             {
                 return null;
             }
-            var assets = await GetTagAssetsAsync(dto);
-            return Tag.FromDTO(dto, assets);
+            var assets = tag.TagAssets.Select(TagAsset.FromDTO).ToArray();
+            return await Task.FromResult(Tag.FromDTO(tag, assets));
         }
 
-        private async Task<IEnumerable<TagAsset>> GetTagAssetsAsync(Model.DTO.Tag dto)
+        public async Task<IEnumerable<Tag>> GetAllAsync()
         {
-            if (dto is null)
+            var tags = new List<Tag>();
+            foreach (var tag in Repository)
             {
-                return Enumerable.Empty<TagAsset>();
+                var assets = tag.TagAssets.Select(TagAsset.FromDTO).ToArray();
+                tags.Add(Tag.FromDTO(tag, assets));
             }
-            return await _context.TagAssetsRepository.GetAllAsync(dto.Id)
-                .ContinueWith(t => t.Result.Select(TagAsset.FromDTO));
+            return await Task.FromResult(tags);
         }
     }
 }

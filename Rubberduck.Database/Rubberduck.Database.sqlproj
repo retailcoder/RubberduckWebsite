@@ -121,6 +121,8 @@
     <Build Include="Tables\dbo\Configuration\Configuration.sql" />
     <Build Include="Tables\dbo\Configuration\Constraints\PK_Configuration.sql" />
     <Build Include="Tables\dbo\Examples\Constraints\FK_Examples_Features.sql" />
+    <Build Include="Tables\dbo\FeatureItems\Constraints\FK_FeatureItems_TagAssets.sql" />
+    <Build Include="Tables\dbo\Tags\Constraints\NK_Tags.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
@@ -131,5 +133,6 @@
     <None Include="README.md" />
     <None Include="Rubberduck.Database.publish.xml" />
     <None Include="rubberduckdb.godaddy.publish.xml" />
+    <None Include="PostDeployment\Script.InitialData.dbo.Features.sql" />
   </ItemGroup>
 </Project>

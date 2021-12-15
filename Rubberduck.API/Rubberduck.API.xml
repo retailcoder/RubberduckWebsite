@@ -19,7 +19,7 @@
             Exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.ContentController},Rubberduck.API.Services.Abstract.IContentServices)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.ContentController},Rubberduck.API.Services.Abstract.IContentServices,Rubberduck.ContentServices.RubberduckDbContext)">
             <summary>
             Creates a controller that exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
@@ -95,7 +95,7 @@
             Exposes endpoints providing an interface to download xmldoc assets.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController},Rubberduck.API.Services.Abstract.IXmlDocServices,RubberduckServices.Abstract.ISyntaxHighlighterService)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController},Rubberduck.API.Services.Abstract.IXmlDocServices,RubberduckServices.Abstract.ISyntaxHighlighterService,Rubberduck.ContentServices.RubberduckDbContext)">
             <summary>
             Creates a controller that exposes endpoints providing an interface to download xmldoc assets.
             </summary>
@@ -116,7 +116,7 @@
             A controller that exposes an endpoint that runs quick checks periodically.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.HealthController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.HealthController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Feature},RubberduckServices.Abstract.IIndenterService,Rubberduck.API.Services.Abstract.IGitHubDataServices)">
+        <member name="M:Rubberduck.API.Controllers.HealthController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.HealthController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Feature},RubberduckServices.Abstract.IIndenterService,Rubberduck.API.Services.Abstract.IGitHubDataServices)">
             <summary>
             Creates a controller that exposes an endpoint that runs quick checks periodically.
             </summary>
@@ -131,7 +131,7 @@
             Exposes endpoints providing the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.PublicController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.PublicController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Tag},RubberduckServices.Abstract.IIndenterService)">
+        <member name="M:Rubberduck.API.Controllers.PublicController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.PublicController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Tag},RubberduckServices.Abstract.IIndenterService)">
             <summary>
             Creates a controller that exposes endpoints providing the website's dynamic content.
             </summary>
@@ -205,11 +205,12 @@
             A service that queries GitHub.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetTag(System.String)">
+        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetTag(System.String,System.Nullable{System.Int32})">
             <summary>
             Gets the specified tag, or the latest release tag if not specified.
             </summary>
             <param name="name">The name of the tag to retrieve.</param>
+            <param name="id">The <c>Id</c> to optionally set the DTO with.</param>
         </member>
         <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetAllTags">
             <summary>
@@ -237,7 +238,7 @@
             Regroups content writer service implementations.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.#ctor(Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Feature},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Example},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.Example},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.Tag},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.Tag},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Entity.TagAsset},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Entity.TagAsset})">
+        <member name="M:Rubberduck.API.Services.ContentServices.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Services.ContentServices},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Feature},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Example},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.Example},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Tag},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.Tag},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.TagAsset},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.TagAsset})">
             <summary>
             Creates a new service to orchestrate data access.
             </summary>
@@ -401,26 +402,6 @@
         <member name="P:Rubberduck.API.DTO.IndenterViewModel.LinesBetweenProcedures">
             <summary>
             The number of empty lines between procedures.
-            </summary>
-        </member>
-        <member name="T:Rubberduck.API.DTO.InspectionDefaultConfig">
-            <summary>
-            Encapsulates the inspection type and default severity setting override for an inspection.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.InspectionDefaultConfig.InspectionName">
-            <summary>
-            Get/sets the name (unique) of the inspection.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.InspectionDefaultConfig.InspectionType">
-            <summary>
-            Gets/sets the type of inspection.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.InspectionDefaultConfig.DefaultSeverity">
-            <summary>
-            Gets/sets the default severity setting value.
             </summary>
         </member>
     </members>

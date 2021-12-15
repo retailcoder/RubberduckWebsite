@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.API.DTO;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.API.Controllers
@@ -79,6 +79,11 @@ namespace Rubberduck.API.Controllers
                     return NotFound();
                 }
                 return Ok(FeatureItem.ToDTO(item));
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogWarning(e, "A NotFound (404) result will be returned.");
+                return NotFound();
             }
             catch (Exception e)
             {

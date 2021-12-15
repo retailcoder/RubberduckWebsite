@@ -2,22 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Rubberduck.Model.Entity
+namespace Rubberduck.Model.Internal
 {
-    public class Example : IEntity
+    public class Example : EntityBase
     {
         public static Example FromDTO(DTO.Example dto) => new(dto);
         public static Example FromDTO(DTO.Example dto, IEnumerable<ExampleModule> modules) => new(dto, modules);
-        public static DTO.Example ToDTO(Example entity) => new()
+        public static DTO.ExampleEntity ToDTO(Example entity) => new()
         {
-            DateInserted = DateTime.Now,
+            Id = entity.Id,
+            DateInserted = entity.DateInserted,
+            DateUpdated = entity.DateUpdated,
+
             FeatureItemId = entity.FeatureItemId,
-            Description = entity.Description
+            Description = entity.Description,
+            Modules = entity.Modules.Select(e => ExampleModule.ToDTO(e)).ToList()
         };
 
         internal Example(DTO.Example dto)
+            : base(dto.Id, dto.DateInserted, dto.DateUpdated)
         {
-            Id = dto.Id;
             FeatureItemId = dto.FeatureItemId;
             Description = dto.Description;
             SortOrder = dto.SortOrder;
@@ -30,13 +34,10 @@ namespace Rubberduck.Model.Entity
             Modules = modules ?? Enumerable.Empty<ExampleModule>();
         }
 
-        public int Id { get; }
         public int FeatureItemId { get; }
         public int SortOrder { get; }
         public string Description { get; }
         
         public IEnumerable<ExampleModule> Modules { get; }
-
-        public object Key() => new { FeatureItemId, SortOrder };
     }
 }

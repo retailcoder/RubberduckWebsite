@@ -1,4 +1,10 @@
-﻿namespace Rubberduck.API.DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Rubberduck.Model.DTO
 {
     /// <summary>
     /// Encapsulates the inspection type and default severity setting override for an inspection.

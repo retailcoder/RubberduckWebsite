@@ -1,27 +1,31 @@
-﻿using System.Threading.Tasks;
-using Rubberduck.ContentServices.Repository.Abstract;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.Reader
 {
-    public class ExampleModuleContentReaderService : ContentReaderService<ExampleModule, Model.DTO.ExampleModule>
+    public class ExampleModuleContentReaderService : IContentReaderService<ExampleModule>
     {
-        private readonly IReaderDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public ExampleModuleContentReaderService(IReaderDbContext context)
+        public ExampleModuleContentReaderService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        protected override IAsyncReadRepository<Model.DTO.ExampleModule> Repository => _context.ExampleModulesRepository;
-        protected override Model.DTO.ExampleModule GetDTO(ExampleModule entity) => ExampleModule.ToDTO(entity);
-        protected override ExampleModule GetEntity(Model.DTO.ExampleModule dto) => ExampleModule.FromDTO(dto);
+        private IQueryable<Model.DTO.ExampleModuleEntity> Repository =>
+            _context.ExampleModules.AsNoTracking();
 
-        public override async Task<ExampleModule> GetByIdAsync(int id) =>
-            await Repository.GetByIdAsync(id).ContinueWith(t => ExampleModule.FromDTO(t.Result));
+        public async Task<ExampleModule> GetByIdAsync(int id) =>
+            await Task.FromResult(ExampleModule.FromDTO(Repository.Single(e => e.Id == id)));
 
-        public override async Task<ExampleModule> GetByEntityKeyAsync(object key) =>
-            await Repository.GetByKeyAsync(key).ContinueWith(t => ExampleModule.FromDTO(t.Result));
+        public async Task<ExampleModule> GetByEntityKeyAsync(ExampleModule key) =>
+            await Task.FromResult(Repository.Where(e => e.Id == key.Id || (e.ExampleId == key.ExampleId && e.ModuleName == key.ModuleName)).Select(ExampleModule.FromDTO).SingleOrDefault());
+
+        public async Task<IEnumerable<ExampleModule>> GetAllAsync() =>
+            await Task.FromResult(Repository.Select(ExampleModule.FromDTO).ToList());
     }
 }

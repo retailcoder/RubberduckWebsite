@@ -1,99 +1,70 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rubberduck.ContentServices.Repository.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Entity;
+using Rubberduck.Model.Internal;
+using Microsoft.EntityFrameworkCore;
 
 namespace Rubberduck.ContentServices.Reader
 {
-    public class FeatureContentReaderService : ContentReaderService<Feature, Model.DTO.Feature>
+    public class FeatureContentReaderService : IContentReaderService<Feature>
     {
-        private readonly IReaderDbContext _context;
+        private readonly RubberduckDbContext _context;
 
-        public FeatureContentReaderService(IReaderDbContext context)
+        public FeatureContentReaderService(RubberduckDbContext context)
         {
             _context = context;
         }
 
-        protected override IAsyncReadRepository<Model.DTO.Feature> Repository => _context.FeaturesRepository;
+        private IQueryable<Model.DTO.FeatureEntity> Repository =>
+            _context.Features.AsNoTracking()
+                .Include(e => e.FeatureItems)
+                .Include(e => e.SubFeatures);
 
-        protected override Model.DTO.Feature GetDTO(Feature entity) => Feature.ToDTO(entity);
-        protected override Feature GetEntity(Model.DTO.Feature dto) => Feature.FromDTO(dto);
-
-        public override async Task<IEnumerable<Feature>> GetAllAsync() => 
-            await await Repository.GetAllAsync().ContinueWith(async t => await GetFeaturesAsync(t.Result));
-
-        public override async Task<Feature> GetByIdAsync(int id) =>
-            await await Repository.GetByIdAsync(id).ContinueWith(async t => await GetFeatureAsync(t.Result));
-
-        public override async Task<Feature> GetByEntityKeyAsync(object key) =>
-            await await Repository.GetByKeyAsync(key).ContinueWith(async t => await GetFeatureAsync(t.Result));
-
-        private async Task<IEnumerable<Feature>> GetFeaturesAsync(IEnumerable<Model.DTO.Feature> features)
+        public async Task<Feature> GetByIdAsync(int id)
         {
-            var results = new List<Feature>();
-            foreach (var feature in features)
-            {
-                var model = await GetFeatureAsync(feature);
-                results.Add(model);
-            }
-            return results;
+            var feature = Repository.Single(e => e.Id == id);
+            var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+            var subFeatures = Traverse(feature).ToArray();
+            return await Task.FromResult(Feature.FromDTO(feature, subFeatures, items));
         }
 
-        private async Task<Feature> GetFeatureAsync(Model.DTO.Feature dto)
+        private IEnumerable<Feature> Traverse(Model.DTO.FeatureEntity parent)
         {
-            if (dto is null)
+            if (parent?.SubFeatures is null)
+            {
+                yield break;
+            }
+            foreach (var feature in parent.SubFeatures)
+            {
+                var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+                var subFeatures = Traverse(feature).ToArray();
+                yield return Feature.FromDTO(feature, subFeatures, items);
+            }
+        }
+
+        public async Task<Feature> GetByEntityKeyAsync(Feature key)
+        {
+            var feature = Repository.SingleOrDefault(e => e.Name == key.Name);
+            if (feature is null)
             {
                 return null;
             }
-
-            if (dto.XmlDocSource is null)
-            {
-                var subFeatures = await GetSubFeaturesAsync(dto);
-                return Feature.FromDTO(dto, subFeatures);
-            }
-            else
-            {
-                var items = await GetFeatureItemsAsync(dto);
-                return Feature.FromDTO(dto, items);
-            }
+            var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+            var subFeatures = Traverse(feature).ToArray();
+            return await Task.FromResult(Feature.FromDTO(feature, subFeatures, items));
         }
 
-        private async Task<IEnumerable<Feature>> GetSubFeaturesAsync(Model.DTO.Feature dto)
+        public async Task<IEnumerable<Feature>> GetAllAsync()
         {
-            if (dto is null)
+            var features = new List<Feature>();
+            foreach (var feature in Repository.Where(e => !e.ParentId.HasValue))
             {
-                return Enumerable.Empty<Feature>();
+                var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+                var subFeatures = Traverse(feature).ToArray();
+                features.Add(Feature.FromDTO(feature, subFeatures, items));
             }
-            return await await Repository.GetAllAsync(dto.Id)
-                .ContinueWith(async t =>
-                {
-                    var features = new List<Feature>();
-                    foreach (var feature in t.Result)
-                    {
-                        if (feature.XmlDocSource is null)
-                        {
-                            var subFeatures = await GetSubFeaturesAsync(feature); // recursive
-                            features.Add(Feature.FromDTO(feature, subFeatures));
-                        }
-                        else
-                        {
-                            var items = await GetFeatureItemsAsync(feature);
-                            features.Add(Feature.FromDTO(feature, items));
-                        }
-                    }
-                    return features;
-                });
-        }
-
-        private async Task<IEnumerable<FeatureItem>> GetFeatureItemsAsync(Model.DTO.Feature dto)
-        {
-            if (dto is null)
-            {
-                return Enumerable.Empty<FeatureItem>();
-            }
-            return await _context.FeatureItemsRepository.GetAllAsync(dto.Id).ContinueWith(t => t.Result.Select(FeatureItem.FromDTO));
+            return await Task.FromResult(features);
         }
     }
 }

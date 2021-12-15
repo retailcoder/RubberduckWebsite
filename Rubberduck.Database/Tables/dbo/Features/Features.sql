@@ -10,6 +10,6 @@
 	[ContentUrl] NVARCHAR(1023) NULL,
 	[IsNew] BIT NOT NULL,
 	[IsHidden] BIT NOT NULL,
-	[SortOrder] SMALLINT NOT NULL,
+	[SortOrder] INT NOT NULL,
 	[XmlDocSource] NVARCHAR(1023) NULL
 );

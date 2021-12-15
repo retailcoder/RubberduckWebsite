@@ -5,12 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.12" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Rubberduck.Model\Rubberduck.Model.csproj" />
+    <ProjectReference Include="..\RubberduckServices\RubberduckServices.csproj" />
   </ItemGroup>
 
 </Project>

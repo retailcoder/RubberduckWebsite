@@ -11,26 +11,26 @@ namespace Rubberduck.API.Services.Abstract
         /// <summary>
         /// Inserts or updates the specified data object.
         /// </summary>
-        Task<Model.Entity.Feature> SaveAsync(Feature dto);
+        Task<Model.Internal.Feature> SaveAsync(Feature dto);
         /// <summary>
         /// Inserts or updates the specified data object.
         /// </summary>
-        Task<Model.Entity.FeatureItem> SaveAsync(FeatureItem dto);
+        Task<Model.Internal.FeatureItem> SaveAsync(FeatureItem dto);
         /// <summary>
         /// Inserts or updates the specified data object.
         /// </summary>
-        Task<Model.Entity.Example> SaveAsync(Example dto);
+        Task<Model.Internal.Example> SaveAsync(Example dto);
         /// <summary>
         /// Inserts or updates the specified data object.
         /// </summary>
-        Task<Model.Entity.ExampleModule> SaveAsync(ExampleModule dto);
+        Task<Model.Internal.ExampleModule> SaveAsync(ExampleModule dto);
         /// <summary>
         /// Inserts or updates the specified data object.
         /// </summary>
-        Task<Model.Entity.Tag> SaveAsync(Tag dto);
+        Task<Model.Internal.Tag> SaveAsync(Tag dto);
         /// <summary>
         /// Inserts or updates the specified data object.
         /// </summary>
-        Task<Model.Entity.TagAsset> SaveAsync(TagAsset dto);
+        Task<Model.Internal.TagAsset> SaveAsync(TagAsset dto);
     }
 }
