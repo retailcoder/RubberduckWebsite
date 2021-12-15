@@ -19,7 +19,7 @@
             Exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.ContentController},Rubberduck.API.Services.Abstract.IContentServices)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.ContentController},Rubberduck.API.Services.Abstract.IContentServices,Rubberduck.ContentServices.RubberduckDbContext)">
             <summary>
             Creates a controller that exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
@@ -95,7 +95,7 @@
             Exposes endpoints providing an interface to download xmldoc assets.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController},Rubberduck.API.Services.Abstract.IXmlDocServices,RubberduckServices.Abstract.ISyntaxHighlighterService)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController},Rubberduck.API.Services.Abstract.IXmlDocServices,RubberduckServices.Abstract.ISyntaxHighlighterService,Rubberduck.ContentServices.RubberduckDbContext)">
             <summary>
             Creates a controller that exposes endpoints providing an interface to download xmldoc assets.
             </summary>
@@ -205,11 +205,12 @@
             A service that queries GitHub.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetTag(System.String)">
+        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetTag(System.String,System.Nullable{System.Int32})">
             <summary>
             Gets the specified tag, or the latest release tag if not specified.
             </summary>
             <param name="name">The name of the tag to retrieve.</param>
+            <param name="id">The <c>Id</c> to optionally set the DTO with.</param>
         </member>
         <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetAllTags">
             <summary>

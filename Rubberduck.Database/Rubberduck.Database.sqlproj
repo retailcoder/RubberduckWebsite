@@ -133,5 +133,6 @@
     <None Include="README.md" />
     <None Include="Rubberduck.Database.publish.xml" />
     <None Include="rubberduckdb.godaddy.publish.xml" />
+    <None Include="PostDeployment\Script.InitialData.dbo.Features.sql" />
   </ItemGroup>
 </Project>

@@ -69,7 +69,7 @@ namespace Rubberduck.API.Services
             }
         }
 
-        public async Task<Tag> GetTag(string name = null)
+        public async Task<Tag> GetTag(string name = null, int? id = null)
         {
             var tokenAuth = new Credentials(_apiKey);
             var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
@@ -88,9 +88,12 @@ namespace Rubberduck.API.Services
                 InstallerDownloads = installer?.DownloadCount ?? 0,
             };
 
+            tag.Id = id ?? default;
+
             var assets = release.Assets.Where(ReleaseAssetExtensions.IsXmlDocAsset)
                 .Select(a => new Model.DTO.TagAsset
                 {
+                    TagId = id ?? default,
                     Name = a.Name,
                     DownloadUrl = a.BrowserDownloadUrl
                 })

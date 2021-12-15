@@ -27,28 +27,27 @@ namespace Rubberduck.ContentServices.Writer
             dto.DateInserted = DateTime.Now;
 
             await _context.TagAssets.AddAsync(dto);
-
             await _context.SaveChangesAsync();
             return TagAsset.FromDTO(dto);
         }
 
-        public async Task<TagAsset> UpdateAsync(TagAsset entity)
+        public async Task<TagAsset> UpdateAsync(TagAsset entity) => await Task.Run(() =>
         {
-            var dto = _context.TagAssets.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
-            dto.DateUpdated = DateTime.Now;
-            dto.DownloadUrl = entity.DownloadUrl.ToString();
-            dto.Name = entity.Name;
-
-            await _context.SaveChangesAsync();
+            var dto = _context.TagAssets.AsTracking().SingleOrDefault(e => e.Id == entity.Id || (e.TagId == entity.TagId && e.Name == entity.Name));
+            if (IsDirty(entity, dto))
+            {
+                dto.DateUpdated = DateTime.Now;
+                dto.DownloadUrl = entity.DownloadUrl.ToString();
+                dto.Name = entity.Name;
+            }
             return TagAsset.FromDTO(dto);
-        }
+        });
+        private static bool IsDirty(TagAsset model, Model.DTO.TagAsset dto) => false; // let's keep download urls immutable
 
-        public async Task DeleteAsync(TagAsset entity)
+        public async Task DeleteAsync(TagAsset entity) => await Task.Run(() =>
         {
             var dto = _context.TagAssets.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
             _context.Remove(dto);
-
-            await _context.SaveChangesAsync();
-        }
+        });
     }
 }

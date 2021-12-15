@@ -29,7 +29,7 @@ namespace Rubberduck.ContentServices.Reader
 
         public async Task<Example> GetByEntityKeyAsync(Example key)
         {
-            var example = Repository.SingleOrDefault(e => e.FeatureItemId == key.FeatureItemId && e.SortOrder == key.SortOrder);
+            var example = Repository.SingleOrDefault(e => e.Id == key.Id || (e.FeatureItemId == key.FeatureItemId && e.SortOrder == key.SortOrder));
             var modules = example.Modules.Select(ExampleModule.FromDTO);
             return await Task.FromResult(Example.FromDTO(example, modules));
         }

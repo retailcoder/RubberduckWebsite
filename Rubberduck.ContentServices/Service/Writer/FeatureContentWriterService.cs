@@ -27,35 +27,42 @@ namespace Rubberduck.ContentServices.Writer
             dto.DateInserted = DateTime.Now;
 
             await _context.Features.AddAsync(dto);
-
             await _context.SaveChangesAsync();
             return Feature.FromDTO(dto);
         }
 
-        public async Task<Feature> UpdateAsync(Feature entity)
+        public async Task<Feature> UpdateAsync(Feature entity) => await Task.Run(() =>
         {
-            var dto = _context.Features.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
-            dto.DateUpdated = DateTime.Now;
-            dto.ContentUrl = entity.ContentUrl.ToString();
-            dto.Description = entity.Description;
-            dto.IsHidden = entity.IsHidden;
-            dto.IsNew = entity.IsNew;
-            dto.Name = entity.Name;
-            dto.ParentId = entity.ParentId;
-            dto.SortOrder = entity.SortOrder;
-            dto.Title = entity.Title;
-            dto.XmlDocSource = entity.XmlDocSource;
-
-            await _context.SaveChangesAsync();
+            var dto = _context.Features.AsTracking().SingleOrDefault(e => e.Id == entity.Id || e.Name == entity.Name);
+            if (IsDirty(entity, dto))
+            {
+                dto.DateUpdated = DateTime.Now;
+                dto.ContentUrl = entity.ContentUrl.ToString();
+                dto.Description = entity.Description;
+                dto.IsHidden = entity.IsHidden;
+                dto.IsNew = entity.IsNew;
+                dto.Name = entity.Name;
+                dto.SortOrder = entity.SortOrder;
+                dto.Title = entity.Title;
+                dto.XmlDocSource = entity.XmlDocSource;
+            }
             return Feature.FromDTO(dto);
-        }
+        });
 
-        public async Task DeleteAsync(Feature entity)
+        private static bool IsDirty(Feature model, Model.DTO.FeatureEntity dto) =>
+            model.ContentUrl.ToString() != dto.ContentUrl
+            || model.Description != dto.Description 
+            || model.SortOrder != dto.SortOrder
+            || model.IsHidden != dto.IsHidden
+            || model.IsNew != dto.IsNew
+            || model.Title != dto.Title
+            || model.XmlDocSource != dto.XmlDocSource;
+
+
+        public async Task DeleteAsync(Feature entity) => await Task.Run(() =>
         {
             var dto = _context.Features.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
             _context.Remove(dto);
-
-            await _context.SaveChangesAsync();
-        }
+        });
     }
 }

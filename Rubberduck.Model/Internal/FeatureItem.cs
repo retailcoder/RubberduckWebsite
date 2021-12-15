@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Rubberduck.Model.Internal
 {
-    public class FeatureItem : EntityBase
+    public class FeatureItem : EntityBase, IEquatable<FeatureItem>
     {
         public static FeatureItem FromDTO(DTO.FeatureItem dto) => new(dto);
         public static FeatureItem FromDTO(DTO.FeatureItem dto, IEnumerable<Example> examples) => new(dto, examples);
@@ -16,9 +16,9 @@ namespace Rubberduck.Model.Internal
 
             FeatureId = entity.FeatureId,
             TagAssetId = entity.TagAssetId,
-            Name = entity.Name,
-            Title = entity.Title,
-            Description = entity.Description,
+            Name = entity.Name ?? string.Empty,
+            Title = entity.Title ?? string.Empty,
+            Description = entity.Description ?? string.Empty,
             IsHidden = entity.IsHidden,
             IsDiscontinued = isDiscontinued ?? entity.IsDiscontinued,
             IsNew = isNew ?? entity.IsNew,
@@ -30,6 +30,31 @@ namespace Rubberduck.Model.Internal
             XmlDocInfo = entity.Info,
             XmlDocMetadata = entity.Metadata
         };
+
+        public bool Equals(FeatureItem other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (other.GetType() != GetType())
+            {
+                return false;
+            }
+
+            return other.FeatureId == FeatureId
+                && other.Name == Name;
+        }
+
+        public override bool Equals(object obj) => Equals(obj as FeatureItem);
+
+        public override int GetHashCode() => HashCode.Combine(FeatureId, Name);
 
         internal FeatureItem(DTO.FeatureItem dto, IEnumerable<Example> examples)
             : this(dto)

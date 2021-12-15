@@ -8,8 +8,8 @@ namespace Rubberduck.ContentServices.XmlDoc
     {
         public BeforeAndAfterCodeExample(IEnumerable<ExampleModule> modulesBefore, IEnumerable<ExampleModule> modulesAfter)
         {
-            ModulesBefore = modulesBefore;
-            ModulesAfter = modulesAfter;
+            ModulesBefore = modulesBefore ?? Enumerable.Empty<ExampleModule>();
+            ModulesAfter = modulesAfter ?? Enumerable.Empty<ExampleModule>();
         }
 
         public IEnumerable<ExampleModule> ModulesBefore { get; }

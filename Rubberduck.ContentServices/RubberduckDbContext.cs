@@ -23,36 +23,36 @@ namespace Rubberduck.ContentServices
                 .Entity<FeatureEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
-                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
-                    entity.HasIndex(e => e.Name).IsUnique(true);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired();
+                    entity.HasIndex(e => e.Name).IsUnique();
+                    entity.HasMany(e => e.FeatureItems).WithOne(e => e.Feature).HasForeignKey(e => e.FeatureId).IsRequired();
                     entity.HasOne(e => e.ParentFeature).WithMany(e => e.SubFeatures).HasForeignKey(e => e.ParentId).IsRequired(false);
-                    entity.HasMany(e => e.FeatureItems).WithOne(e => e.Feature).HasForeignKey(e => e.FeatureId);
                 })
                 .Entity<FeatureItemEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
-                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
-                    entity.HasOne(e => e.Feature).WithMany(e => e.FeatureItems).HasForeignKey(e => e.FeatureId);
-                    entity.HasMany(e => e.Examples).WithOne(e => e.FeatureItem).HasForeignKey(e => e.FeatureItemId);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired();
+                    entity.HasIndex(e => new { e.FeatureId, e.Name}).IsUnique();
+                    entity.HasMany(e => e.Examples).WithOne(e => e.FeatureItem).HasForeignKey(e => e.FeatureItemId).IsRequired();
                 })
                 .Entity<ExampleEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
-                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
-                    entity.HasOne(e => e.FeatureItem).WithMany(e => e.Examples).HasForeignKey(e => e.FeatureItemId);
-                    entity.HasMany(e => e.Modules).WithOne(e => e.Example).HasForeignKey(e => e.ExampleId);
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired();
+                    entity.HasMany(e => e.Modules).WithOne(e => e.Example).HasForeignKey(e => e.ExampleId).IsRequired();
                 })
                 .Entity<TagEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
-                    entity.HasIndex(e => e.Name).IsUnique(true);
-                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
-                    entity.HasMany(e => e.TagAssets).WithOne(e => e.Tag).HasForeignKey(e => e.TagId);
+                    entity.HasIndex(e => e.Name).IsUnique();
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired();
+                    entity.HasMany(e => e.TagAssets).WithOne().HasForeignKey(e => e.TagId).IsRequired();
                 })
                 .Entity<TagAssetEntity>(entity =>
                 {
                     entity.HasKey(e => e.Id);
-                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired(true);
+                    entity.HasIndex(e => new { e.TagId, e.Name }).IsUnique();
+                    entity.Property(e => e.Id).ValueGeneratedOnAdd().IsRequired();
                 });
         }
     }

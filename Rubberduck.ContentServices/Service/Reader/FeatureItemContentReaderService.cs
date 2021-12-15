@@ -23,7 +23,7 @@ namespace Rubberduck.ContentServices.Reader
             await Task.FromResult(FeatureItem.FromDTO(Repository.Single(e => e.Id == id)));
 
         public async Task<FeatureItem> GetByEntityKeyAsync(FeatureItem key) =>
-            await Task.FromResult(FeatureItem.FromDTO(Repository.Single(e => e.FeatureId == key.FeatureId && e.Name == key.Name)));
+            await Task.FromResult(Repository.Where(e => e.Id == key.Id || (e.FeatureId == key.FeatureId && e.Name == key.Name)).Select(FeatureItem.FromDTO).SingleOrDefault());
 
         public async Task<IEnumerable<FeatureItem>> GetAllAsync() =>
             await Task.FromResult(Repository.Select(FeatureItem.FromDTO).ToList());

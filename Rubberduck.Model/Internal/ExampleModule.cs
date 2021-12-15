@@ -25,6 +25,7 @@ namespace Rubberduck.Model.Internal
             DateUpdated = entity.DateUpdated,
 
             ExampleId = entity.ExampleId,
+            SortOrder = entity.SortOrder,
             Description = entity.Description,
             ModuleName = entity.ModuleName,
             ModuleType = (int)entity.ModuleType,
@@ -36,6 +37,7 @@ namespace Rubberduck.Model.Internal
         {
 
             ExampleId = dto.ExampleId;
+            SortOrder = dto.SortOrder;
             ModuleName = dto.ModuleName;
 
             ModuleType = (ExampleModuleType)dto.ModuleType;
@@ -45,6 +47,7 @@ namespace Rubberduck.Model.Internal
 
 
         public int ExampleId { get; }
+        public int SortOrder { get; }
         public string ModuleName { get; }
 
         public ExampleModuleType ModuleType { get; }

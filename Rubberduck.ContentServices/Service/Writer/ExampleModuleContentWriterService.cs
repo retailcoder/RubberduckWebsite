@@ -27,29 +27,35 @@ namespace Rubberduck.ContentServices.Writer
             dto.DateInserted = DateTime.Now;
 
             await _context.ExampleModules.AddAsync(dto);
-
             await _context.SaveChangesAsync();
             return ExampleModule.FromDTO(dto);
         }
 
-        public async Task<ExampleModule> UpdateAsync(ExampleModule entity)
+        public async Task<ExampleModule> UpdateAsync(ExampleModule entity) => await Task.Run(() =>
         {
-            var dto = _context.ExampleModules.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
-            dto.DateUpdated = DateTime.Now;
-            dto.Description = entity.Description;
-            dto.HtmlContent = entity.HtmlContent;
-            dto.ModuleType = (int)entity.ModuleType;
-
-            await _context.SaveChangesAsync();
+            var dto = _context.ExampleModules.AsTracking().SingleOrDefault(e => e.Id == entity.Id || (e.ExampleId == entity.ExampleId && e.SortOrder == entity.SortOrder));
+            if (IsDirty(entity, dto))
+            {
+                dto.DateUpdated = DateTime.Now;
+                dto.SortOrder = entity.SortOrder;
+                dto.Description = entity.Description;
+                dto.HtmlContent = entity.HtmlContent;
+                dto.ModuleType = (int)entity.ModuleType;
+            }
             return ExampleModule.FromDTO(dto);
-        }
+        });
 
-        public async Task DeleteAsync(ExampleModule entity)
+        private static bool IsDirty(ExampleModule model, Model.DTO.ExampleModuleEntity dto) =>
+            model.Description != dto.Description 
+            || model.SortOrder != dto.SortOrder
+            || model.HtmlContent != dto.HtmlContent 
+            || model.ModuleName != dto.ModuleName 
+            || (int)model.ModuleType != dto.ModuleType;
+
+        public async Task DeleteAsync(ExampleModule entity) => await Task.Run(() =>
         {
             var dto = _context.ExampleModules.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
             _context.Remove(dto);
-
-            await _context.SaveChangesAsync();
-        }
+        });
     }
 }

@@ -24,8 +24,8 @@ namespace Rubberduck.ContentServices.Reader
         public async Task<Feature> GetByIdAsync(int id)
         {
             var feature = Repository.Single(e => e.Id == id);
-            var items = feature.FeatureItems.Cast<FeatureItem>();
-            var subFeatures = Traverse(feature).ToList();
+            var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+            var subFeatures = Traverse(feature).ToArray();
             return await Task.FromResult(Feature.FromDTO(feature, subFeatures, items));
         }
 
@@ -37,8 +37,8 @@ namespace Rubberduck.ContentServices.Reader
             }
             foreach (var feature in parent.SubFeatures)
             {
-                var items = feature.FeatureItems.Cast<FeatureItem>();
-                var subFeatures = Traverse(feature).ToList();
+                var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+                var subFeatures = Traverse(feature).ToArray();
                 yield return Feature.FromDTO(feature, subFeatures, items);
             }
         }
@@ -50,8 +50,8 @@ namespace Rubberduck.ContentServices.Reader
             {
                 return null;
             }
-            var items = feature.FeatureItems.Cast<FeatureItem>();
-            var subFeatures = Traverse(feature).ToList();
+            var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+            var subFeatures = Traverse(feature).ToArray();
             return await Task.FromResult(Feature.FromDTO(feature, subFeatures, items));
         }
 
@@ -60,8 +60,8 @@ namespace Rubberduck.ContentServices.Reader
             var features = new List<Feature>();
             foreach (var feature in Repository.Where(e => !e.ParentId.HasValue))
             {
-                var items = feature.FeatureItems.Cast<FeatureItem>();
-                var subFeatures = Traverse(feature).ToList();
+                var items = feature.FeatureItems.Select(FeatureItem.FromDTO).ToArray();
+                var subFeatures = Traverse(feature).ToArray();
                 features.Add(Feature.FromDTO(feature, subFeatures, items));
             }
             return await Task.FromResult(features);

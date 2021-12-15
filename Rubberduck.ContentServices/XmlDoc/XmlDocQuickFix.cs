@@ -49,12 +49,12 @@ namespace Rubberduck.ContentServices.XmlDoc
                 scopeInfo = $"This quickfix addresses the selected inspection result, but can also be applied to all similar inspection results in the following scopes (as a single operation):<ul>{applicableScopes}</ul>";
             }
 
-            string inspectionInfo = string.Empty;
-            if (Inspections.Count() == 1)
+            string inspectionInfo = null;
+            if (Inspections?.Count() == 1)
             {
                 inspectionInfo = Inspections.Single();
             }
-            else if (Inspections.Any())
+            else if (Inspections?.Any() ?? false)
             {
                 inspectionInfo = string.Join(",", Inspections);
             }
@@ -66,7 +66,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                 Name = QuickFixName,
                 IsHidden = false,
                 IsNew = IsPreRelease,
-                Title = Summary,
+                Title = QuickFixName,
                 Description = scopeInfo,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
@@ -107,7 +107,8 @@ namespace Rubberduck.ContentServices.XmlDoc
         private IEnumerable<BeforeAndAfterCodeExample> ParseExamples(XElement node)
         {
             var moduleTypes = typeof(ExampleModuleType).GetMembers()
-                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().Single().Description))
+                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
+                .Where(m => m.Description != null)
                 .ToDictionary(m => m.Description, m => (ExampleModuleType)Enum.Parse(typeof(ExampleModuleType), m.Name, true));
 
             var results = new List<BeforeAndAfterCodeExample>();

@@ -5,14 +5,18 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Rubberduck.ContentServices.Service.Abstract;
 using Rubberduck.Model.Internal;
 
 namespace Rubberduck.ContentServices.XmlDoc.Abstract
 {
     public abstract class XmlDocParserBase : IXmlDocParser
     {
-        protected XmlDocParserBase(string assetName)
+        private readonly IContentReaderService<TagAsset> _assets;
+
+        protected XmlDocParserBase(IContentReaderService<TagAsset> reader, string assetName)
         {
+            _assets = reader;
             AssetName = assetName;
         }
 
@@ -21,7 +25,13 @@ namespace Rubberduck.ContentServices.XmlDoc.Abstract
         public async Task<IEnumerable<FeatureItem>> ParseAsync(Tag tag)
         {
             var asset = tag.Assets.SingleOrDefault(a => a.Name.Contains(AssetName))
-                ?? throw new InvalidOperationException($"Asset '{AssetName}' was not found under the specified tag.");
+                ?? throw new InvalidOperationException($"Asset '{AssetName}' was not found under tag {tag.Name}.");
+
+            var dto = TagAsset.ToDTO(asset);
+            dto.TagId = tag.Id;
+
+            asset = await _assets.GetByEntityKeyAsync(TagAsset.FromDTO(dto)) 
+                ?? throw new InvalidOperationException($"Asset '{AssetName}' ({tag.Name}) does not have an internal ID.");
 
             var uri = asset.DownloadUrl;
             if (uri.Host != "github.com")

@@ -11,6 +11,7 @@ namespace Rubberduck.Model.DTO
         };
 
         public int ExampleId { get; set; }
+        public int SortOrder { get; set; }
         public string ModuleName { get; set; }
         public int ModuleType { get; set; }
         public string Description { get; set; }

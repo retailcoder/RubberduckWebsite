@@ -12,6 +12,6 @@ namespace Rubberduck.Model.DTO
     [Table("TagAssets")]
     public class TagAssetEntity : TagAsset
     {
-        public virtual TagEntity Tag { get; set; }
+        //public virtual TagEntity Tag { get; set; }
     }
 }

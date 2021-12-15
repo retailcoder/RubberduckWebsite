@@ -55,7 +55,7 @@ namespace Rubberduck.ContentServices.XmlDoc
 
                 Name = AnnotationName,
                 IsNew = IsPreRelease,
-                Title = Summary,
+                Title = $"@{AnnotationName}",
                 Description = Remarks,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
@@ -155,7 +155,8 @@ namespace Rubberduck.ContentServices.XmlDoc
         }
 
         private static readonly IDictionary<string, ExampleModuleType> ModuleTypes = typeof(ExampleModuleType).GetMembers()
-            .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().Single().Description))
+            .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
+            .Where(m => m.Description != null)
             .ToDictionary(m => m.Description, m => (ExampleModuleType)Enum.Parse(typeof(ExampleModuleType), m.Name, true));
 
         private ExampleModule FormatCodeExample(XElement cdataParent, string description = null)

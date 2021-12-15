@@ -79,7 +79,7 @@ namespace Rubberduck.Model.Internal
         public bool IsHidden { get; }
         public int SortOrder { get; }
         public string XmlDocSource { get; }
-        public IEnumerable<Feature> SubFeatures { get; } = Enumerable.Empty<Feature>();
-        public IEnumerable<FeatureItem> Items { get; } = Enumerable.Empty<FeatureItem>();
+        public IEnumerable<Feature> SubFeatures { get; }
+        public IEnumerable<FeatureItem> Items { get; }
     }
 }

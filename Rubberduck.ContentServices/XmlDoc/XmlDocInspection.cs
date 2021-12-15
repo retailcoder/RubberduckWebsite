@@ -61,7 +61,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                 Name = InspectionName,
                 IsHidden = IsHidden,
                 IsNew = IsPreRelease,
-                Title = Summary,
+                Title = InspectionName,
                 Description = Reasoning,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
@@ -102,7 +102,8 @@ namespace Rubberduck.ContentServices.XmlDoc
         private IEnumerable<Example> ParseExamples(XElement node)
         {
             var moduleTypes = typeof(ExampleModuleType).GetMembers()
-                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().Single().Description))
+                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
+                .Where(m => m.Description != null)
                 .ToDictionary(m => m.Description, m => (ExampleModuleType)Enum.Parse(typeof(ExampleModuleType), m.Name, true));
 
             return node.Elements(XmlDocSchema.Inspection.Example.ElementName)

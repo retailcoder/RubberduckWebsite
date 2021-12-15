@@ -17,8 +17,10 @@ namespace Rubberduck.ContentServices.XmlDoc
         private readonly ISyntaxHighlighterService _syntaxHighlighterService;
         private readonly IDictionary<string, InspectionDefaultConfig> _inspectionDefaults;
 
-        public CodeAnalysisXmlDocParser(IContentReaderService<Feature> features, ISyntaxHighlighterService syntaxHighlighterService, IEnumerable<InspectionDefaultConfig> inspectionDefaults)
-            : base("Rubberduck.CodeAnalysis")
+        public CodeAnalysisXmlDocParser(IContentReaderService<Feature> features, IContentReaderService<TagAsset> assets, 
+            ISyntaxHighlighterService syntaxHighlighterService, 
+            IEnumerable<InspectionDefaultConfig> inspectionDefaults)
+            : base(assets, "Rubberduck.CodeAnalysis.xml")
         {
             _features = features;
             _syntaxHighlighterService = syntaxHighlighterService;
@@ -28,11 +30,14 @@ namespace Rubberduck.ContentServices.XmlDoc
         protected override async Task<IEnumerable<FeatureItem>> ParseAsync(int assetId, XDocument document, bool isPreRelease)
         {
             var quickfixesKey = Feature.FromDTO(new Model.DTO.Feature { Name = "QuickFixes" }); 
-            var quickfixesFeatureId = (await _features.GetByEntityKeyAsync(quickfixesKey)).Id;
+            var quickfixesFeatureId = (await _features.GetByEntityKeyAsync(quickfixesKey))?.Id
+                ?? throw new InvalidOperationException("Could not retrieve a FeatureId for the 'QuickFixes' feature.");
+
             var quickFixes = ReadQuickFixes(assetId, quickfixesFeatureId, document, !isPreRelease);
 
-            var inspectionsKey = Feature.FromDTO(new Model.DTO.Feature { Name = "CodeInspections" }); 
-            var inspectionsFeatureId = (await _features.GetByEntityKeyAsync(inspectionsKey)).Id;
+            var inspectionsKey = Feature.FromDTO(new Model.DTO.Feature { Name = "Inspections" }); 
+            var inspectionsFeatureId = (await _features.GetByEntityKeyAsync(inspectionsKey))?.Id
+                ?? throw new InvalidOperationException("Could not retrieve a FeatureId for the 'Inspections' feature.");
             var inspections = ReadInspections(assetId, inspectionsFeatureId, document, !isPreRelease, quickFixes);
 
             return inspections.Concat(quickFixes);

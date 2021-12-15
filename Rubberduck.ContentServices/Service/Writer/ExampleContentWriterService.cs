@@ -27,28 +27,29 @@ namespace Rubberduck.ContentServices.Writer
             dto.DateInserted = DateTime.Now;
 
             await _context.Examples.AddAsync(dto);
-
             await _context.SaveChangesAsync();
             return Example.FromDTO(dto);
         }
 
-        public async Task<Example> UpdateAsync(Example entity)
+        public async Task<Example> UpdateAsync(Example entity) => await Task.Run(() =>
         {
             var dto = _context.Examples.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
-            dto.DateUpdated = DateTime.Now;
-            dto.Description = entity.Description;
-            dto.SortOrder = entity.SortOrder;
-
-            await _context.SaveChangesAsync();
+            if (IsDirty(entity, dto))
+            {
+                dto.DateUpdated = DateTime.Now;
+                dto.Description = entity.Description;
+                dto.SortOrder = entity.SortOrder;
+            }
             return Example.FromDTO(dto);
-        }
+        });
 
-        public async Task DeleteAsync(Example entity)
+        private static bool IsDirty(Example model, Model.DTO.ExampleEntity dto) => 
+            model.Description != dto.Description || model.SortOrder != dto.SortOrder;
+
+        public async Task DeleteAsync(Example entity) => await Task.Run(() =>
         {
             var dto = _context.Examples.AsTracking().SingleOrDefault(e => e.Id == entity.Id);
             _context.Remove(dto);
-
-            await _context.SaveChangesAsync();
-        }
+        });
     }
 }
