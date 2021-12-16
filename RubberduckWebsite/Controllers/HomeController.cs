@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rubberduck.Client.Abstract;
 using RubberduckWebsite.Models;
 using System;
 using System.Collections.Generic;
@@ -12,15 +13,18 @@ namespace RubberduckWebsite.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IPublicApiClient _api;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IPublicApiClient api)
         {
             _logger = logger;
+            _api = api;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var tags = await _api.GetLatestTagsAsync();
+            return View(new { tags });
         }
 
         public IActionResult Privacy()

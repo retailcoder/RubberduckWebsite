@@ -14,101 +14,31 @@
             Invoked to configure a SwaggerGenOptions instance.
             </summary>
         </member>
-        <member name="T:Rubberduck.API.Controllers.Authenticated.ContentController">
+        <member name="T:Rubberduck.API.Controllers.Authenticated.AdminController">
             <summary>
             Exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.ContentController},Rubberduck.API.Services.Abstract.IContentServices,Rubberduck.ContentServices.RubberduckDbContext)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.AdminController},Rubberduck.ContentServices.RubberduckDbContext,Rubberduck.API.Services.Abstract.IContentServices,Rubberduck.API.Services.Abstract.IXmlDocServices)">
             <summary>
             Creates a controller that exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.SaveAsync(Rubberduck.Model.DTO.Feature)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.DTO.Feature)">
             <summary>
             Creates a new feature (or sub-feature), or updates an existing one.
             </summary>
             <param name="dto">The feature (or sub-feature) to save.</param>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
             <summary>
             Creates a new feature item, or updates an existing one.
             </summary>
             <param name="dto">The feature item to save.</param>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.SaveAsync(Rubberduck.Model.DTO.Example)">
-            <summary>
-            Creates a new example, or updates an existing one.
-            </summary>
-            <param name="dto">The example to save.</param>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.SaveAsync(Rubberduck.Model.DTO.ExampleModule)">
-            <summary>
-            Creates a new example code module, or updates an existing one.
-            </summary>
-            <param name="dto">The example code module to save.</param>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.SaveAsync(Rubberduck.Model.DTO.Tag)">
-            <summary>
-            Creates or updates the specified tag.
-            </summary>
-            <param name="dto">The tag to save.</param>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.ContentController.SaveAsync(Rubberduck.Model.DTO.TagAsset)">
-            <summary>
-            Creates or updates the specified tag asset.
-            </summary>
-            <param name="dto">The tag asset to save.</param>
-        </member>
-        <member name="T:Rubberduck.API.Controllers.Authenticated.GitHubController">
-            <summary>
-            Exposes endpoints providing an interface to retrieve content from GitHub.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.GitHubController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.GitHubController},Rubberduck.API.Services.Abstract.IGitHubDataServices)">
-            <summary>
-            A controller that exposes endpoints providing an interface to retrieve content from GitHub.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.GitHubController.GetAllTagsAsync">
-            <summary>
-            Gets metadata for every tag that ever was.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.GitHubController.GetLatestReleaseAsync">
-            <summary>
-            Gets metadata about the current latest release tag.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.GitHubController.GetTagAsync(System.String)">
-            <summary>
-            Gets metadata about the specified tag.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.GitHubController.GetInspectionDefaultsAsync">
-            <summary>
-            Gets the current inspection default settings (inspection type and severity) configuration.
-            </summary>
-        </member>
-        <member name="T:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController">
-            <summary>
-            Exposes endpoints providing an interface to download xmldoc assets.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController},Rubberduck.API.Services.Abstract.IXmlDocServices,RubberduckServices.Abstract.ISyntaxHighlighterService,Rubberduck.ContentServices.RubberduckDbContext)">
-            <summary>
-            Creates a controller that exposes endpoints providing an interface to download xmldoc assets.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.UpdateXmlDocContentAsync">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.UpdateXmlDocContentAsync">
             <summary>
             Gets the latest release and pre-release tags, downloads xmldoc assets, and processes them.
-            </summary>
-            <returns>If successful, the number of milliseconds elapsed while processing the request.</returns>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.XmlDocAssetsController.GetFormattedCodeModuleAsync(System.String)">
-            <summary>
-            Parses and formats the provided code string.
             </summary>
         </member>
         <member name="T:Rubberduck.API.Controllers.HealthController">
