@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Rubberduck.Client
+namespace Rubberduck.Client.Abstract
 {
     public abstract class ApiClientBase
     {
