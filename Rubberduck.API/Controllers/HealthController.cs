@@ -95,7 +95,7 @@ namespace Rubberduck.API.Controllers
             try
             {
                 var vm = new IndenterViewModel { Code = "Option Explicit" };
-                _ = await _indenter.IndentAsync(vm.Code, vm);
+                _ = await _indenter.IndentAsync(vm);
                 return Ok();
             }
             catch (Exception e)

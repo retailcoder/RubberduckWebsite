@@ -1,4 +1,4 @@
-﻿using RubberduckServices.Abstract;
+﻿using Rubberduck.Model.Abstract;
 
 namespace Rubberduck.API.DTO
 {

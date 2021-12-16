@@ -151,11 +151,11 @@ namespace Rubberduck.API.Controllers
         [Route("Indent")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(string[]), 200)]
-        public async Task<ActionResult<string>> IndentAsync([FromBody]IndenterViewModel viewModel)
+        public async Task<ActionResult<string[]>> IndentAsync([FromBody]IndenterViewModel viewModel)
         {
             try
             {
-                var result = await _indenterService.IndentAsync(viewModel.Code, viewModel);
+                var result = await _indenterService.IndentAsync(viewModel);
                 return Ok(result);
             }
             catch (Exception e)
