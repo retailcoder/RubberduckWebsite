@@ -27,7 +27,7 @@ namespace Rubberduck.ContentServices.Writer
             }
 
             var dto = Tag.ToDTO(entity);
-            dto.DateInserted = DateTime.Now;
+            dto.DateInserted = DateTime.UtcNow;
 
             await _context.Tags.AddAsync(dto);
             await _context.SaveChangesAsync();
@@ -40,7 +40,7 @@ namespace Rubberduck.ContentServices.Writer
             var dto = _context.Tags.AsTracking().SingleOrDefault(e => e.Id == entity.Id || e.Name == entity.Name);
             if (IsDirty(entity, dto))
             {
-                dto.DateUpdated = DateTime.Now;
+                dto.DateUpdated = DateTime.UtcNow;
                 dto.IsPreRelease = entity.IsPreRelease;
                 dto.InstallerDownloads = entity.InstallerDownloads;
                 _logger.LogInformation($"Tag {dto.Name} has had {entity.InstallerDownloads - dto.InstallerDownloads} installer downloads since last update ({dto.DateUpdated ?? dto.DateInserted}).");

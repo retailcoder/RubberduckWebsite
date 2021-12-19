@@ -24,7 +24,7 @@ namespace Rubberduck.ContentServices.Writer
             }
 
             var dto = ExampleModule.ToDTO(entity);
-            dto.DateInserted = DateTime.Now;
+            dto.DateInserted = DateTime.UtcNow;
 
             await _context.ExampleModules.AddAsync(dto);
             await _context.SaveChangesAsync();
@@ -36,7 +36,7 @@ namespace Rubberduck.ContentServices.Writer
             var dto = _context.ExampleModules.AsTracking().SingleOrDefault(e => e.Id == entity.Id || (e.ExampleId == entity.ExampleId && e.SortOrder == entity.SortOrder));
             if (IsDirty(entity, dto))
             {
-                dto.DateUpdated = DateTime.Now;
+                dto.DateUpdated = DateTime.UtcNow;
                 dto.SortOrder = entity.SortOrder;
                 dto.Description = entity.Description;
                 dto.HtmlContent = entity.HtmlContent;

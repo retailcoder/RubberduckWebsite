@@ -24,7 +24,7 @@ namespace Rubberduck.ContentServices.Writer
             }
 
             var dto = TagAsset.ToDTO(entity);
-            dto.DateInserted = DateTime.Now;
+            dto.DateInserted = DateTime.UtcNow;
 
             await _context.TagAssets.AddAsync(dto);
             await _context.SaveChangesAsync();
@@ -36,7 +36,7 @@ namespace Rubberduck.ContentServices.Writer
             var dto = _context.TagAssets.AsTracking().SingleOrDefault(e => e.Id == entity.Id || (e.TagId == entity.TagId && e.Name == entity.Name));
             if (IsDirty(entity, dto))
             {
-                dto.DateUpdated = DateTime.Now;
+                dto.DateUpdated = DateTime.UtcNow;
                 dto.DownloadUrl = entity.DownloadUrl.ToString();
                 dto.Name = entity.Name;
             }

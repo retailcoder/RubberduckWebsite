@@ -24,7 +24,7 @@ namespace Rubberduck.ContentServices.Writer
             }
 
             var dto = Feature.ToDTO(entity);
-            dto.DateInserted = DateTime.Now;
+            dto.DateInserted = DateTime.UtcNow;
 
             await _context.Features.AddAsync(dto);
             await _context.SaveChangesAsync();
@@ -36,7 +36,7 @@ namespace Rubberduck.ContentServices.Writer
             var dto = _context.Features.AsTracking().SingleOrDefault(e => e.Id == entity.Id || e.Name == entity.Name);
             if (IsDirty(entity, dto))
             {
-                dto.DateUpdated = DateTime.Now;
+                dto.DateUpdated = DateTime.UtcNow;
                 dto.ContentUrl = entity.ContentUrl.ToString();
                 dto.Description = entity.Description;
                 dto.IsHidden = entity.IsHidden;
