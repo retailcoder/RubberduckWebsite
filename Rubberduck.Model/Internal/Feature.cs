@@ -66,7 +66,7 @@ namespace Rubberduck.Model.Internal
         internal Feature(DTO.Feature dto, IEnumerable<Feature> subFeatures, IEnumerable<FeatureItem> items)
             : this(dto)
         {
-            SubFeatures = subFeatures?.ToArray) ?? Enumerable.Empty<Feature>();
+            SubFeatures = subFeatures?.ToArray() ?? Enumerable.Empty<Feature>();
             Items = items?.ToArray() ?? Enumerable.Empty<FeatureItem>();
         }
 
