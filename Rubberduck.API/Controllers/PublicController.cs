@@ -103,10 +103,16 @@ namespace Rubberduck.API.Controllers
         {
             try
             {
-                var tags = await _tagsReader
-                    .GetAllAsync() // FIXME behavior is overridden at the repository level to return the latest tags
-                    .ContinueWith(t => t.Result.Select(Tag.ToDTO));
-                return Ok(tags);
+                var dbTags = await _tagsReader.GetAllAsync();
+                var tags = dbTags.OrderByDescending(tag => tag.DateCreated).ToHashSet();
+
+                var filtered = tags
+                    .Where(tag => !tag.IsPreRelease).Take(1)
+                    .Union(tags.Where(tag => tag.IsPreRelease).Take(1))
+                    .Select(Tag.ToDTO)
+                    .ToHashSet();
+
+                return Ok(filtered);
             }
             catch (Exception e)
             {

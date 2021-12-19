@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
 using RubberduckWebsite.Models;
@@ -19,6 +20,11 @@ namespace RubberduckWebsite.Controllers
         {
             _logger = logger;
             _api = api;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            _logger.LogInformation($"Executing action {context.ActionDescriptor.DisplayName}. Request path: {Request.Path}");
         }
 
         public async Task<IActionResult> Index()

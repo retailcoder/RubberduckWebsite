@@ -20,7 +20,7 @@ namespace Rubberduck.Model.Internal
             IsPreRelease = entity.IsPreRelease,
             InstallerDownloadUrl = entity.InstallerDownloadUrl?.ToString(),
             InstallerDownloads = entity.InstallerDownloads,
-            TagAssets = entity.Assets.Select(TagAsset.ToDTO).ToArray()
+            TagAssets = entity.Assets.Select(TagAsset.ToDTO).ToList()
         };
 
         internal Tag(DTO.Tag dto)

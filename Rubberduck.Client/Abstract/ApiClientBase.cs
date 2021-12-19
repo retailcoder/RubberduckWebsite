@@ -32,7 +32,7 @@ namespace Rubberduck.Client.Abstract
 
         protected virtual HttpClient GetClient()
         {
-            var client = new HttpClient { Timeout = _timeout };
+            var client = new HttpClient(); //{ Timeout = _timeout };
             client.DefaultRequestHeaders.UserAgent.Add(UserAgent);
             return client;
         }
