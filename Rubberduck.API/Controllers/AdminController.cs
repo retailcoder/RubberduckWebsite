@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rubberduck.API.Authorization;
 using Rubberduck.API.Services.Abstract;
 using Rubberduck.ContentServices;
 using Rubberduck.Model.Internal;
@@ -13,6 +15,8 @@ namespace Rubberduck.API.Controllers.Authenticated
     /// Exposes endpoints providing an interface to manipulate the website's dynamic content.
     /// </summary>
     [ApiController]
+    [Authorize]
+    [TypeFilter(typeof(GitHubAuthorizeAttribute))]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
     {

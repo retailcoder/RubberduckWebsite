@@ -24,7 +24,7 @@ namespace Rubberduck.Client
 
             try
             {
-                return await GetResponse<IEnumerable<Feature>>(endpoint);
+                return await GetResponse<Feature[]>(endpoint);
             }
             catch (ApiException)
             {
@@ -52,7 +52,7 @@ namespace Rubberduck.Client
 
             try
             {
-                return await GetResponse<IEnumerable<Tag>>(endpoint);
+                return await GetResponse<Tag[]>(endpoint);
             }
             catch (ApiException)
             {

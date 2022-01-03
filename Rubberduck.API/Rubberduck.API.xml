@@ -4,6 +4,26 @@
         <name>Rubberduck.API</name>
     </assembly>
     <members>
+        <member name="T:Rubberduck.API.Authorization.GitHubAuthorizeAttribute">
+            <summary>
+            Requires GitHub authentication and membership with rubberduck-vba organization.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Authorization.GitHubAuthorizeAttribute.#ctor">
+            <summary>
+            Requires GitHub authentication and membership with rubberduck-vba organization.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Authorization.GitHubAuthorizeAttribute.OnAuthorization(Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext)">
+            <summary>
+            Called early in the filter pipeline to confirm request is authorized.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Authorization.GitHubAuthorizeAttribute.OnAuthorizationAsync(Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext)">
+            <summary>
+            Called early in the filter pipeline to confirm request is authorized.
+            </summary>
+        </member>
         <member name="T:Rubberduck.API.ConfigureSwaggerGenOptions">
             <summary>
             Configures Swagger generation options.
@@ -39,6 +59,16 @@
         <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.UpdateXmlDocContentAsync">
             <summary>
             Gets the latest release and pre-release tags, downloads xmldoc assets, and processes them.
+            </summary>
+        </member>
+        <member name="T:Rubberduck.API.Controllers.AuthController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.AuthController.Login(System.String)">
+            <summary>
+            Login with GitHub.
             </summary>
         </member>
         <member name="T:Rubberduck.API.Controllers.HealthController">

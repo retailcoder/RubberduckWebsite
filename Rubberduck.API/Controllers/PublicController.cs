@@ -46,8 +46,8 @@ namespace Rubberduck.API.Controllers
         [HttpGet]
         [Route("Features")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.Feature>), 200)]
-        public async Task<ActionResult<IEnumerable<Model.DTO.Feature>>> GetFeaturesAsync()
+        [ProducesResponseType(typeof(Model.DTO.Feature[]), 200)]
+        public async Task<ActionResult<Model.DTO.Feature[]>> GetFeaturesAsync()
         {
             try
             {
@@ -98,8 +98,8 @@ namespace Rubberduck.API.Controllers
         [HttpGet]
         [Route("Tags")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.Tag>), 200)]
-        public async Task<ActionResult<IEnumerable<Model.DTO.Tag>>> GetLatestTagsAsync()
+        [ProducesResponseType(typeof(Model.DTO.Tag[]), 200)]
+        public async Task<ActionResult<Model.DTO.Tag[]>> GetLatestTagsAsync()
         {
             try
             {
@@ -110,7 +110,7 @@ namespace Rubberduck.API.Controllers
                     .Where(tag => !tag.IsPreRelease).Take(1)
                     .Union(tags.Where(tag => tag.IsPreRelease).Take(1))
                     .Select(Tag.ToDTO)
-                    .ToHashSet();
+                    .ToArray();
 
                 return Ok(filtered);
             }
@@ -128,8 +128,8 @@ namespace Rubberduck.API.Controllers
         [HttpGet]
         [Route("TagAssets/{id}")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.TagAsset>), 200)]
-        public async Task<ActionResult<IEnumerable<Model.DTO.TagAsset>>> GetTagAssets([FromRoute]int id)
+        [ProducesResponseType(typeof(Model.DTO.TagAsset[]), 200)]
+        public async Task<ActionResult<Model.DTO.TagAsset[]>> GetTagAssets([FromRoute]int id)
         {
             try
             {

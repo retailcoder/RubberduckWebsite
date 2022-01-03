@@ -29,8 +29,16 @@ namespace RubberduckWebsite.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var tags = await _api.GetLatestTagsAsync();
-            return View(new { tags });
+            var model = await GetViewModelAsync();
+            return View(model);
+        }
+
+        private async Task<HomeViewModel> GetViewModelAsync()
+        {
+            var latestTags = await _api.GetLatestTagsAsync();
+            var features = await _api.GetFeaturesAsync();
+
+            return new HomeViewModel(latestTags, features);
         }
 
         public IActionResult Privacy()
