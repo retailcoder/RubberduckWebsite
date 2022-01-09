@@ -39,18 +39,18 @@
             Exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.AdminController},Rubberduck.ContentServices.RubberduckDbContext,Rubberduck.API.Services.Abstract.IContentServices,Rubberduck.API.Services.Abstract.IXmlDocServices)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.Authenticated.AdminController},Rubberduck.ContentServices.Service.Abstract.IContentService,Rubberduck.API.Services.Abstract.IXmlDocServices)">
             <summary>
             Creates a controller that exposes endpoints providing an interface to manipulate the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.DTO.Feature)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.Entities.Feature)">
             <summary>
             Creates a new feature (or sub-feature), or updates an existing one.
             </summary>
             <param name="dto">The feature (or sub-feature) to save.</param>
         </member>
-        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.Entities.FeatureItem)">
             <summary>
             Creates a new feature item, or updates an existing one.
             </summary>
@@ -76,7 +76,7 @@
             A controller that exposes an endpoint that runs quick checks periodically.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.HealthController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.HealthController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Feature},RubberduckServices.Abstract.IIndenterService,Rubberduck.API.Services.Abstract.IGitHubDataServices)">
+        <member name="M:Rubberduck.API.Controllers.HealthController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.HealthController},Rubberduck.ContentServices.Service.Abstract.IContentService,RubberduckServices.Abstract.IIndenterService,Rubberduck.API.Services.Abstract.IGitHubDataServices)">
             <summary>
             Creates a controller that exposes an endpoint that runs quick checks periodically.
             </summary>
@@ -91,88 +91,52 @@
             Exposes endpoints providing the website's dynamic content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.PublicController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.PublicController},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Tag},RubberduckServices.Abstract.IIndenterService)">
+        <member name="M:Rubberduck.API.Controllers.PublicController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.PublicController},Rubberduck.ContentServices.Service.Abstract.IContentService,RubberduckServices.Abstract.IIndenterService)">
             <summary>
             Creates a controller that exposes endpoints providing the website's dynamic content.
             </summary>
         </member>
         <member name="M:Rubberduck.API.Controllers.PublicController.GetFeaturesAsync">
             <summary>
-            Gets all features, sub-features, and feature items.
+            Gets all top-level features, along with their sub-features and feature items.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.PublicController.GetFeatureItem(System.Int32)">
+        <member name="M:Rubberduck.API.Controllers.PublicController.GetFeatureAsync(System.String)">
+            <summary>
+            Gets a feature or sub-feature along with its sub-features and feature items.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.GetFeatureItem(System.String)">
             <summary>
             Gets the specified feature item, including its examples and their respective modules.
             </summary>
-            <param name="id">The internal ID of the feature item to get.</param>
+            <param name="name">The unique name of the feature item to get.</param>
         </member>
         <member name="M:Rubberduck.API.Controllers.PublicController.GetLatestTagsAsync">
             <summary>
             Gets the latest release and prerelease tags.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Controllers.PublicController.GetTagAssets(System.Int32)">
-            <summary>
-            Gets the xmldoc assets for the specified tag.
-            </summary>
-            <param name="id">The internal ID of the tag to get assets for.</param>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.PublicController.IndentAsync(Rubberduck.API.DTO.IndenterViewModel)">
+        <member name="M:Rubberduck.API.Controllers.PublicController.IndentAsync(Rubberduck.Model.IndenterViewModel)">
             <summary>
             Gets the supplied code, indented as per specified settings.
             </summary>
             <param name="viewModel">The indenter request details.</param>
             <returns>An array of string, each element being an indented physical line of code.</returns>
         </member>
-        <member name="T:Rubberduck.API.Services.Abstract.IContentServices">
-            <summary>
-            Encapsulates CRUD operations against content entities.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.Feature)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.Example)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.ExampleModule)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.Tag)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IContentServices.SaveAsync(Rubberduck.Model.DTO.TagAsset)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
         <member name="T:Rubberduck.API.Services.Abstract.IGitHubDataServices">
             <summary>
             A service that queries GitHub.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetTag(System.String,System.Nullable{System.Int32})">
+        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetTagAsync(System.String,System.Nullable{System.Int32})">
             <summary>
             Gets the specified tag, or the latest release tag if not specified.
             </summary>
             <param name="name">The name of the tag to retrieve.</param>
             <param name="id">The <c>Id</c> to optionally set the DTO with.</param>
         </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetAllTags">
+        <member name="M:Rubberduck.API.Services.Abstract.IGitHubDataServices.GetAllTagsAsync">
             <summary>
             Gets all tags, without their assets.
             </summary>
@@ -191,177 +155,6 @@
         <member name="M:Rubberduck.API.Services.Abstract.IXmlDocServices.SynchronizeAsync">
             <summary>
             Gets the xmldoc assets from the latest release and prerelease tags, and processes/merges them into the database.
-            </summary>
-        </member>
-        <member name="T:Rubberduck.API.Services.ContentServices">
-            <summary>
-            Regroups content writer service implementations.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Services.ContentServices},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Feature},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.Feature},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.FeatureItem},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Example},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.Example},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.ExampleModule},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.Tag},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.Tag},Rubberduck.ContentServices.Service.Abstract.IContentReaderService{Rubberduck.Model.Internal.TagAsset},Rubberduck.ContentServices.Service.Abstract.IContentWriterService{Rubberduck.Model.Internal.TagAsset})">
-            <summary>
-            Creates a new service to orchestrate data access.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.Feature)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.FeatureItem)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.Example)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.ExampleModule)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.Tag)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Services.ContentServices.SaveAsync(Rubberduck.Model.DTO.TagAsset)">
-            <summary>
-            Inserts or updates the specified data object.
-            </summary>
-        </member>
-        <member name="T:Rubberduck.API.DTO.IndenterViewModel">
-            <summary>
-            Encapsulates a request to indent some code.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.Code">
-            <summary>
-            The code to indent. Expects <c>\r\n</c> line endings.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.ForceDebugPrintInColumn1">
-            <summary>
-            If true, forces all Debug.Print to appear in column 1 regardless of indent.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.VerticallySpaceProcedures">
-            <summary>
-            If true, ensures consistent vertical spacing between procedures; controlled by <see cref="P:Rubberduck.API.DTO.IndenterViewModel.LinesBetweenProcedures"/>.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentSpaces">
-            <summary>
-            The number of spaces per indent step.
-            </summary>
-            <remarks>Default value is 4.</remarks>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.EndOfLineCommentColumnSpaceAlignment">
-            <summary>
-            The column to align end-of-line comments at.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.EmptyLineHandlingMethod">
-            <summary>
-            Controls whether empty lines are ignored (left as-is), removed, or indented (default).
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.EndOfLineCommentStyle">
-            <summary>
-            Controls how end-of-line comments are indented; absolute, same-gap, standard gap, or aligned in a column.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.AlignDimColumn">
-            <summary>
-            The column to align <c>Dim</c> statements at.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.AlignDims">
-            <summary>
-            Whether to align <c>Dim</c> statements at a particular column, controlled by <see cref="P:Rubberduck.API.DTO.IndenterViewModel.AlignDimColumn"/>.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentCompilerDirectives">
-            <summary>
-            If true, precompiler directives will be indented.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.ForceCompilerDirectivesInColumn1">
-            <summary>
-            If true, precompiler directives will be forced to column 1.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.ForceStopInColumn1">
-            <summary>
-            If true, <c>Stop</c> statements will be forced to column 1.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.ForceDebugAssertInColumn1">
-            <summary>
-            If true, <c>Debug.Assert</c> statements will be forced to column 1.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.GroupRelatedProperties">
-            <summary>
-            If true, same-name property members will be consistently regrouped.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.ForceDebugStatementsInColumn1">
-            <summary>
-            If true, <c>Debug</c> statements will be forced to column 1.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentCase">
-            <summary>
-            If true, <c>Case</c> statements will be indented one level under the corresponding <c>Select Case</c> statement.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IgnoreOperatorsInContinuations">
-            <summary>
-            If true, operators will be ignored when indenting line-continuated statements.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.AlignContinuations">
-            <summary>
-            If true, line continuations wil be aligned.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.AlignCommentsWithCode">
-            <summary>
-            If true, comments will be aligned with the code.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IgnoreEmptyLinesInFirstBlocks">
-            <summary>
-            If true, empty line in the first block of a procedure will be ignored.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentFirstDeclarationBlock">
-            <summary>
-            If true, a block of declarations at the top of a procedure will be indented.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentFirstCommentBlock">
-            <summary>
-            If true, the first comments block of a procedure will be indented.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentEnumTypeAsProcedure">
-            <summary>
-            If true, <c>Enum</c> members will be indented.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.IndentEntireProcedureBody">
-            <summary>
-            If true, procedure scopes add an indent level.
-            </summary>
-        </member>
-        <member name="P:Rubberduck.API.DTO.IndenterViewModel.LinesBetweenProcedures">
-            <summary>
-            The number of empty lines between procedures.
             </summary>
         </member>
     </members>

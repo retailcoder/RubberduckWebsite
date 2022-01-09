@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Rubberduck.Model.Internal;
+using Rubberduck.ContentServices.Model;
 
 namespace Rubberduck.ContentServices.XmlDoc.Abstract
 {
     public interface IXmlDocParser
     {
         string AssetName { get; }
-        Task<IEnumerable<FeatureItem>> ParseAsync(Tag tag);
+        Task<IEnumerable<FeatureItem>> ParseAsync(Rubberduck.Model.Entities.Tag tag);
     }
 
     /// <summary>

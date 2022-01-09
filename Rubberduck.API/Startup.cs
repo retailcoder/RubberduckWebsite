@@ -112,8 +112,10 @@ namespace Rubberduck.API
                             var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
                             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+                            
                             var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
                             response.EnsureSuccessStatusCode();
+                            
                             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
                             context.RunClaimActions(json.RootElement);
 
@@ -125,14 +127,17 @@ namespace Rubberduck.API
                         OnRedirectToAuthorizationEndpoint = async context =>
                         {
                             var session = context.HttpContext.Session;
+                            await Task.CompletedTask;
                         },
                         OnTicketReceived = async context =>
                         {
                             var response = context.Response;
+                            await Task.CompletedTask;
                         },
                         OnAccessDenied = async context =>
                         {
                             var response = context.Response;
+                            await Task.CompletedTask;
                         }
                     };
                 });

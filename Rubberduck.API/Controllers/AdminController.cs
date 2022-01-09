@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.API.Authorization;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.ContentServices;
-using Rubberduck.Model.Internal;
+using Rubberduck.ContentServices.Service.Abstract;
+using Rubberduck.Model.Entities;
 
 namespace Rubberduck.API.Controllers.Authenticated
 {
@@ -15,27 +15,23 @@ namespace Rubberduck.API.Controllers.Authenticated
     /// Exposes endpoints providing an interface to manipulate the website's dynamic content.
     /// </summary>
     [ApiController]
-    [Authorize]
-    [TypeFilter(typeof(GitHubAuthorizeAttribute))]
+    //[Authorize]
+    //[TypeFilter(typeof(GitHubAuthorizeAttribute))]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
     {
         private readonly ILogger<AdminController> _logger;
-        private readonly IContentServices _contentService;
+        private readonly IContentService _contentService;
         private readonly IXmlDocServices _xmlDocService;
-
-        private readonly RubberduckDbContext _context;
 
         /// <summary>
         /// Creates a controller that exposes endpoints providing an interface to manipulate the website's dynamic content.
         /// </summary>
         public AdminController(ILogger<AdminController> logger, 
-            RubberduckDbContext context,
-            IContentServices contentService, 
+            IContentService contentService, 
             IXmlDocServices xmlDocService)
         {
             _logger = logger;
-            _context = context;
             _contentService = contentService;
             _xmlDocService = xmlDocService;
         }
@@ -47,8 +43,8 @@ namespace Rubberduck.API.Controllers.Authenticated
         [HttpPost]
         [Route("SaveFeature")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.Feature>), 200)]
-        public async Task<ActionResult<Model.DTO.Feature>> SaveAsync(Model.DTO.Feature dto)
+        [ProducesResponseType(typeof(IEnumerable<Feature>), 200)]
+        public async Task<ActionResult<Feature>> SaveAsync(Feature dto)
         {
             try
             {
@@ -57,14 +53,13 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return BadRequest();
                 }
 
-                var result = await _contentService.SaveAsync(dto);
+                var result = await _contentService.SaveFeatureAsync(dto);
                 if (result is null)
                 {
                     return NotFound();
                 }
 
-                await _context.SaveChangesAsync();
-                return Ok(Feature.ToDTO(result));
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -80,8 +75,8 @@ namespace Rubberduck.API.Controllers.Authenticated
         [HttpPost]
         [Route("SaveFeatureItem")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.FeatureItem>), 200)]
-        public async Task<ActionResult<Model.DTO.FeatureItem>> SaveAsync(Model.DTO.FeatureItem dto)
+        [ProducesResponseType(typeof(IEnumerable<FeatureItem>), 200)]
+        public async Task<ActionResult<FeatureItem>> SaveAsync(FeatureItem dto)
         {
             try
             {
@@ -90,14 +85,13 @@ namespace Rubberduck.API.Controllers.Authenticated
                     return BadRequest();
                 }
 
-                var result = await _contentService.SaveAsync(dto);
+                var result = await _contentService.SaveFeatureItemAsync(dto);
                 if (result is null)
                 {
                     return NotFound();
                 }
 
-                await _context.SaveChangesAsync();
-                return Ok(FeatureItem.ToDTO(result));
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -116,7 +110,6 @@ namespace Rubberduck.API.Controllers.Authenticated
             try
             {
                 await _xmlDocService.SynchronizeAsync();
-                await _context.SaveChangesAsync();
                 return Ok();
             }
             catch (Exception e)

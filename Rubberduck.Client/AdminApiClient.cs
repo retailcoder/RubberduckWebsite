@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
-using Rubberduck.Model.DTO;
+using Rubberduck.Model.Entities;
 
 namespace Rubberduck.Client
 {

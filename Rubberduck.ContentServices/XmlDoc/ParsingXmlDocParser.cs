@@ -1,32 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Internal;
+using Rubberduck.ContentServices.Model;
 using RubberduckServices.Abstract;
-using System;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class ParsingXmlDocParser : XmlDocParserBase, IParsingXmlDocParser
     {
-        private readonly IContentReaderService<Feature> _features;
+        private readonly IContentService _content;
         private readonly ISyntaxHighlighterService _syntaxHighlighterService;
         
-        public ParsingXmlDocParser(IContentReaderService<Feature> features, IContentReaderService<TagAsset> assets, 
-            ISyntaxHighlighterService syntaxHighlighterService)
-            : base(assets, "Rubberduck.Parsing.xml")
+        public ParsingXmlDocParser(IContentService content, ISyntaxHighlighterService syntaxHighlighterService)
+            : base("Rubberduck.Parsing.xml")
         {
-            _features = features;
+            _content = content;
             _syntaxHighlighterService = syntaxHighlighterService;
         }
 
         protected override async Task<IEnumerable<FeatureItem>> ParseAsync(int assetId, XDocument document, bool isPreRelease)
         {
-            var key = Feature.FromDTO(new Model.DTO.Feature { Name = "Annotations" });
-            var featureId = (await _features.GetByEntityKeyAsync(key))?.Id
+            var featureId = (await _content.GetFeatureAsync("Annotations"))?.Id
                 ?? throw new InvalidOperationException("Could not retrieve a FeatureId for the 'Annotations' feature.");
             return await Task.FromResult(ReadAnnotations(assetId, featureId, document, !isPreRelease));
         }

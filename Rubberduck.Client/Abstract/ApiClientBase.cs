@@ -12,7 +12,6 @@ namespace Rubberduck.Client.Abstract
     {
         private readonly ILogger _logger;
         private readonly string _baseUrl;
-        private readonly TimeSpan _timeout;
 
         private static readonly ProductInfoHeaderValue UserAgent =
             new("Rubberduck.Client", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
@@ -22,10 +21,10 @@ namespace Rubberduck.Client.Abstract
         {
             _logger = logger;
             _baseUrl = configuration.GetSection("API")["BaseUrl"];
-            if (int.TryParse(configuration.GetSection("API")["TimeoutSeconds"], out var timeoutSeconds))
-            {
-                _timeout = TimeSpan.FromSeconds(timeoutSeconds);
-            }
+            //if (int.TryParse(configuration.GetSection("API")["TimeoutSeconds"], out var timeoutSeconds))
+            //{
+            //    _timeout = TimeSpan.FromSeconds(timeoutSeconds);
+            //}
         }
 
         protected string BaseUrl => _baseUrl;

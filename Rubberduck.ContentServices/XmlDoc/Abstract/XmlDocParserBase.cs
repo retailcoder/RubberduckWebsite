@@ -5,36 +5,25 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Internal;
+using Rubberduck.ContentServices.Model;
 
 namespace Rubberduck.ContentServices.XmlDoc.Abstract
 {
     public abstract class XmlDocParserBase : IXmlDocParser
     {
-        private readonly IContentReaderService<TagAsset> _assets;
-
-        protected XmlDocParserBase(IContentReaderService<TagAsset> reader, string assetName)
+        protected XmlDocParserBase(string assetName)
         {
-            _assets = reader;
             AssetName = assetName;
         }
 
         public string AssetName { get; }
 
-        public async Task<IEnumerable<FeatureItem>> ParseAsync(Tag tag)
+        public async Task<IEnumerable<FeatureItem>> ParseAsync(Rubberduck.Model.Entities.Tag tag)
         {
-            var asset = tag.Assets.SingleOrDefault(a => a.Name.Contains(AssetName))
+            var asset = tag.TagAssets.SingleOrDefault(a => a.Name.Contains(AssetName))
                 ?? throw new InvalidOperationException($"Asset '{AssetName}' was not found under tag {tag.Name}.");
 
-            var dto = TagAsset.ToDTO(asset);
-            dto.TagId = tag.Id;
-
-            asset = await _assets.GetByEntityKeyAsync(TagAsset.FromDTO(dto)) 
-                ?? throw new InvalidOperationException($"Asset '{AssetName}' ({tag.Name}) does not have an internal ID.");
-
-            var uri = asset.DownloadUrl;
-            if (uri.Host != "github.com")
+            if (Uri.TryCreate(asset.DownloadUrl, UriKind.Absolute, out var uri) && uri.Host != "github.com")
             {
                 throw new UriFormatException($"Unexpected host in download URL '{uri}' from asset ID {asset.Id} (tag ID {tag.Id}, '{tag.Name}').");
             }

@@ -34,7 +34,10 @@
                 </a>
             }
 
+            @if (Model.MainTag != null)
+            {
             <p><small><strong>@Model.MainTag.InstallerDownloads.ToString("N0")</strong> downloads</small></p>
+            }
             <a class="btn-link small"
                title="See the release notes on GitHub"
                href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
@@ -84,37 +87,23 @@
         </div>
 
         <div>
-            <small><em>Tag/release metadata updated @Model.MainTag.DateUpdated?.ToString("yyyy-MM-dd hh:MM:ss")</em></small>
+            <small><em>Tag/release metadata updated @Model.MetadataTimestamp.ToString("yyyy-MM-dd hh:MM:ssZ")</em></small>
         </div>
     </div>
 </section>
 
 <section>
-    <h2>Quick Overview</h2>
-    <div class="row">
-        @foreach (var feature in Model.HighlightFeatures)
-        {
-            <div class="col-4">
-                <h3>@feature.Title</h3>
-                <p>@feature.Description</p>
-            </div>
-        }
-    </div>
-    <div class="col-4">
-        <a class="btn-outline-info">Learn more</a>
-    </div>
-</section>
-
-<section>
-    <h2>Rubberduck brings the VBIDE into this century</h2>
+    <h3>How Rubberduck brings the VBIDE into this century</h3>
     @foreach (var feature in Model.Features.OrderBy(f => f.SortOrder))
     {
         <div class="row">
             <div class="col-4">
-                <h3>@feature.Title</h3>
-                <p>@feature.Description</p>
+                <a href="Features/@feature.Name">
+                    <h4>@feature.Title</h4>
+                </a>
+                <p>@feature.ElevatorPitch</p>
             </div>
-            <div class="col-7">
+            <div class="col-8">
                 <img src="@feature.Name\.png" />
             </div>
         </div>

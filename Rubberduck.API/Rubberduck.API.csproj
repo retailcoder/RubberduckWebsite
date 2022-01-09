@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="ViewModel\" />
   </ItemGroup>
 
   <ItemGroup>

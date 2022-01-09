@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Rubberduck.Model.Internal;
+using Rubberduck.ContentServices.Model;
 
 namespace Rubberduck.ContentServices.XmlDoc.Abstract
 {

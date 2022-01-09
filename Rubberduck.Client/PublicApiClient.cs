@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
 using Rubberduck.Model.Abstract;
-using Rubberduck.Model.DTO;
+using Rubberduck.Model.Entities;
 
 namespace Rubberduck.Client
 {
@@ -29,20 +29,6 @@ namespace Rubberduck.Client
             catch (ApiException)
             {
                 return Enumerable.Empty<Feature>();
-            }
-        }
-
-        public async Task<FeatureItem> GetFeatureItemAsync(int id)
-        {
-            var endpoint = $"Public/FeatureItem/{id}";
-
-            try
-            {
-                return await GetResponse<FeatureItem>(endpoint);
-            }
-            catch (ApiException)
-            {
-                return null;
             }
         }
 
@@ -71,6 +57,34 @@ namespace Rubberduck.Client
             catch (ArgumentException)
             {
                 throw;
+            }
+            catch (ApiException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<Feature> GetFeatureAsync(string name)
+        {
+            var endpoint = $"Public/Features/{name}";
+
+            try
+            {
+                return await GetResponse<Feature>(endpoint);
+            }
+            catch (ApiException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<FeatureItem> GetFeatureItemAsync(string name)
+        {
+            var endpoint = $"Public/FeatureItems/{name}";
+
+            try
+            {
+                return await GetResponse<FeatureItem>(endpoint);
             }
             catch (ApiException)
             {

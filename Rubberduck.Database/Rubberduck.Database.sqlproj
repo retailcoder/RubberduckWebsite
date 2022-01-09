@@ -117,7 +117,6 @@
     <Build Include="Tables\dbo\ExampleModules\Constraints\FK_ExampleModules_ModuleTypes.sql" />
     <Build Include="Tables\dbo\FeatureItems\Constraints\FK_FeatureItems_Features.sql" />
     <Build Include="Tables\dbo\Features\Constraints\FK_Features_Features.sql" />
-    <Build Include="Views\dbo\vLatestTags.sql" />
     <Build Include="Tables\dbo\Configuration\Configuration.sql" />
     <Build Include="Tables\dbo\Configuration\Constraints\PK_Configuration.sql" />
     <Build Include="Tables\dbo\Examples\Constraints\FK_Examples_Features.sql" />

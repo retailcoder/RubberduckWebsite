@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Rubberduck.Model.DTO;
+using Rubberduck.Model.Entities;
 
 namespace RubberduckWebsite.Models
 {
@@ -14,15 +13,7 @@ namespace RubberduckWebsite.Models
             MainTag = latestTags.SingleOrDefault(tag => !tag.IsPreRelease);
             
             Features = features.ToHashSet();
-            var featuresByName = features.ToDictionary(feature => feature.Name);
-
-            HighlightFeatures = new[]
-            {
-                featuresByName["CodeInspections"],
-                featuresByName["Refactorings"],
-                featuresByName["UnitTesting"],
-                //featuresByName["Navigation"],
-            }.ToHashSet();
+            MetadataTimestamp = latestTags.Max(tag => tag.DateUpdated ?? tag.DateInserted);
         }
 
         /// <summary>
@@ -41,8 +32,8 @@ namespace RubberduckWebsite.Models
         public IReadOnlySet<Feature> Features { get; }
 
         /// <summary>
-        /// A subset of features highlighted in a dedicated section of the page.
+        /// Gets the UTC timestamp for the tag and tag assets metadata.
         /// </summary>
-        public IReadOnlySet<Feature> HighlightFeatures { get; }
+        public DateTime MetadataTimestamp { get; }
     }
 }

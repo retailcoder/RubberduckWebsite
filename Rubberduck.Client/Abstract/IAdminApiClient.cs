@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Rubberduck.Model.DTO;
+using Rubberduck.Model.Entities;
 
 namespace Rubberduck.Client.Abstract
 {
