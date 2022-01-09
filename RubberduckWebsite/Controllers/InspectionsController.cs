@@ -39,7 +39,7 @@ namespace RubberduckWebsite.Controllers
         /// Route "/Inspections" must be supported for v2.4.x Rubberduck VBIDE add-in clients.
         /// </remarks>
         public override async Task<IActionResult> Index() =>
-            await Task.Run(() => RedirectToActionPermanentPreserveMethod("Details", "Features", new { name = "Inspections" }));
+            await Task.Run(() => RedirectToActionPermanentPreserveMethod("Details/Inspections", "Features"));
 
         protected override Task<InspectionDetailsViewModel> GetViewModelAsync() =>
             throw new NotSupportedException();
