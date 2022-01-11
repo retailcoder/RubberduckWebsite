@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Octokit;
 using Rubberduck.API.Extensions;
 using Rubberduck.API.Services.Abstract;
-using Rubberduck.Model.Internal;
-using Rubberduck.Model.ViewModel;
+using Rubberduck.Model;
+using Rubberduck.Model.Entities;
 
 namespace Rubberduck.API.Services
 {
@@ -44,13 +44,12 @@ namespace Rubberduck.API.Services
                         .ContinueWith(t => ParseInspectionSettings(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
 
                     return document.Elements("CodeInspection")
-                        .Select(e => new Model.DTO.InspectionDefaultConfig
+                        .Select(e => new InspectionDefaultConfig
                         {
                             InspectionName = e.Attribute("Name").Value,
                             InspectionType = e.Attribute("InspectionType").Value,
                             DefaultSeverity = e.Attribute("Severity").Value,
-                        })
-                        .Select(InspectionDefaultConfig.FromDTO);
+                        });
                 }
                 else
                 {
@@ -69,7 +68,7 @@ namespace Rubberduck.API.Services
             }
         }
 
-        public async Task<Tag> GetTag(string name = null, int? id = null)
+        public async Task<Tag> GetTagAsync(string name = null, int? id = null)
         {
             var tokenAuth = new Credentials(_apiKey);
             var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
@@ -79,7 +78,7 @@ namespace Rubberduck.API.Services
                 : await client.Repository.Release.Get(_owner, _repository, name);
 
             var installer = release.Assets.SingleOrDefault(ReleaseAssetExtensions.IsInstallerAsset);
-            var tag = new Model.DTO.Tag
+            var tag = new Tag
             {
                 DateCreated = release.CreatedAt.UtcDateTime,
                 IsPreRelease = release.Prerelease,
@@ -91,34 +90,35 @@ namespace Rubberduck.API.Services
             tag.Id = id ?? default;
 
             var assets = release.Assets.Where(ReleaseAssetExtensions.IsXmlDocAsset)
-                .Select(a => new Model.DTO.TagAsset
+                .Select(a => new TagAsset
                 {
                     TagId = id ?? default,
                     Name = a.Name,
                     DownloadUrl = a.BrowserDownloadUrl
                 })
-                .ToArray();
+                .ToList();
 
-            return Tag.FromDTO(tag, assets.Select(TagAsset.FromDTO));
+            tag.TagAssets = assets;
+            return tag;
         }
 
-        public async Task<IEnumerable<Tag>> GetAllTags()
+        public async Task<IEnumerable<Tag>> GetAllTagsAsync()
         {
             var tokenAuth = new Credentials(_apiKey);
             var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
 
             var releases = await client.Repository.Release.GetAll(_owner, _repository);
 
-            return (from release in releases
-                    let installer = release.Assets.SingleOrDefault(ReleaseAssetExtensions.IsInstallerAsset)
-                    select new Model.DTO.Tag
-                    {
+            return from release in releases
+                   let installer = release.Assets.SingleOrDefault(ReleaseAssetExtensions.IsInstallerAsset)
+                   select new Tag
+                   {
                         DateCreated = release.CreatedAt.UtcDateTime,
                         IsPreRelease = release.Prerelease,
                         Name = release.TagName,
                         InstallerDownloadUrl = installer?.BrowserDownloadUrl ?? string.Empty,
                         InstallerDownloads = installer?.DownloadCount ?? 0,
-                    }).Select(Tag.FromDTO);
+                   };
         }
     }
 }

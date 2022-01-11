@@ -1,0 +1,126 @@
+﻿@model RubberduckWebsite.Models.AdminViewModel
+@{
+    ViewData["Title"] = "Admin";
+}
+@section Scripts {
+    <script type="text/javascript">
+    function getRelativeTimeOffset(elapsed) {
+
+        var msPerMinute = 60 * 1000;
+        var msPerHour = msPerMinute * 60;
+        var msPerDay = msPerHour * 24;
+        var msPerWeek = msPerDay * 7;
+        var msPerMonth = msPerDay * 30;
+        var msPerYear = msPerDay * 365;
+
+        if (elapsed < msPerMinute) {
+            return Math.round(elapsed / 1000) + ' seconds ago';
+        }
+
+        else if (elapsed < msPerHour) {
+            return Math.round(elapsed / msPerMinute) + ' minutes ago';
+        }
+
+        else if (elapsed < msPerDay) {
+            return Math.round(elapsed / msPerHour) + ' hours ago';
+        }
+
+        else if (elapsed < msPerWeek) {
+            return Math.round(elapsed / msPerDay) + ' days ago';
+        }
+
+        else if (elapsed < msPerMonth) {
+            return Math.round(elapsed / msPerWeek) + ' weeks ago';
+        }
+
+        else if (elapsed < msPerYear) {
+            return Math.round(elapsed / msPerMonth) + ' months ago';
+        }
+
+        else {
+            return Math.round(elapsed / msPerYear) + ' years ago';
+        }
+    }
+
+    function setTagMetadataBusy(setBusy) {
+        var button = $('#update-tags-button');
+        var indicator = $('#tag-metadata-busy-indicator');
+
+        if (setBusy) {
+            button.attr("disabled", true);
+            button.addClass("disabled");
+            $('#update-tags-button-text').text("Processing...");
+            indicator.removeAttr("hidden");
+        }
+        else {
+            button.removeClass("disabled");
+            button.removeAttr("disabled");
+            button.text("Update");
+            indicator.attr("hidden", true);
+        }
+    }
+
+    $(document).ready(function () {
+        var offset = getRelativeTimeOffset(@Model.MillisecondsSinceLastUpdate);
+        var timestamp = "@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ") (" + offset + ")";
+        $('#tag-metadata-timestamp').text(timestamp);
+        $('#update-tags-button').click(function () {
+            setTagMetadataBusy(true);
+            $.ajax({
+                url: 'Admin/UpdateTagMetadata', 
+                type: 'POST'
+            })
+            .done(function (data, textStatus, xhr) {
+                console.log("tag metadata was updated successfully.");
+                $('#tag-metadata-success-alert').addClass("show");
+            })
+            .fail(function (data, textStatus, xhr) {
+                $('#tag-metadata-error-message').text(xhr);
+                $('#tag-metadata-error-alert').addClass("show");
+                console.log(xhr);
+            })
+            .always(function () {
+                setTagMetadataBusy(false);
+            });
+        });
+    });
+    </script>
+}
+
+<section class="row">
+    <div class="col-12">
+        <h3>Tag Metadata</h3>
+        @if (Model.TagMetadataTimestamp.HasValue)
+        {
+            <p>Last updated: <span id="tag-metadata-timestamp" class="text-primary">@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ")</span></p>
+        }
+        <p>This data should be downloaded regularly to keep per-tag installer downloads up-to-date.</p>
+        <p>API downloads all tags, then identifies the latest tags in the [next] and [main] branches and proceeds to download and merge xmldoc content into the backend database.</p>
+
+        <button id="update-tags-button" class="btn btn-primary" type="button">
+            <span id="tag-metadata-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+            <span id="update-tags-button-text">Update</span>
+        </button>
+
+        <div id="tag-metadata-error-alert" class="alert alert-danger fade" role="alert">
+            <span id="tag-metadata-error-message">Error message goes here</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div id="tag-metadata-success-alert" class="alert alert-success fade" role="alert">
+            <span>Tag metadata and xmldoc content update completed successfully.</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="row">
+    <h3>Features</h3>
+    @foreach (var feature in Model.Features)
+    {
+        // grid?
+    }
+</section>

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rubberduck.Client.Abstract;
+using RubberduckWebsite.Controllers.Abstract;
 using RubberduckWebsite.Models;
 using System;
 using System.Collections.Generic;
@@ -9,29 +11,22 @@ using System.Threading.Tasks;
 
 namespace RubberduckWebsite.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : PublicApiClientController<HomeViewModel>
     {
-        private readonly ILogger<HomeController> _logger;
+        public HomeController(ILogger<HomeController> logger, IPublicApiClient apiClient)
+            : base(logger, apiClient) { }
 
-        public HomeController(ILogger<HomeController> logger)
+        protected async override Task<HomeViewModel> GetViewModelAsync()
         {
-            _logger = logger;
-        }
+            var latestTags = await ApiClient.GetLatestTagsAsync();
+            var features = await ApiClient.GetFeaturesAsync();
 
-        public IActionResult Index()
-        {
-            return View();
+            return new HomeViewModel(latestTags, features);
         }
 
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

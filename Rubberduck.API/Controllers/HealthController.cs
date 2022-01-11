@@ -3,10 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Rubberduck.API.DTO;
 using Rubberduck.API.Services.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Internal;
+using Rubberduck.Model;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.API.Controllers
@@ -23,7 +22,7 @@ namespace Rubberduck.API.Controllers
         private static readonly string _failureMessage = "health check failed";
 
         private readonly ILogger<HealthController> _logger;
-        private readonly IContentReaderService<Feature> _dbReader;
+        private readonly IContentService _content;
         private readonly IIndenterService _indenter;
         private readonly IGitHubDataServices _gitHub;
 
@@ -31,12 +30,12 @@ namespace Rubberduck.API.Controllers
         /// Creates a controller that exposes an endpoint that runs quick checks periodically.
         /// </summary>
         public HealthController(ILogger<HealthController> logger,
-            IContentReaderService<Feature> dbReader,
+            IContentService content,
             IIndenterService indenter,
             IGitHubDataServices gitHub)
         {
             _logger = logger;
-            _dbReader = dbReader;
+            _content = content;
             _indenter = indenter;
             _gitHub = gitHub;
         }
@@ -79,7 +78,7 @@ namespace Rubberduck.API.Controllers
         {
             try
             {
-                _ = await _dbReader.GetAllAsync();
+                _ = await _content.GetFeaturesAsync();
                 return Ok();
             }
             catch (Exception e)
@@ -95,7 +94,7 @@ namespace Rubberduck.API.Controllers
             try
             {
                 var vm = new IndenterViewModel { Code = "Option Explicit" };
-                _ = await _indenter.IndentAsync(vm.Code, vm);
+                _ = await _indenter.IndentAsync(vm);
                 return Ok();
             }
             catch (Exception e)
