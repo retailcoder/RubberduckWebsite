@@ -1,0 +1,25 @@
+﻿@model RubberduckWebsite.Models.FeatureDetailsViewModel
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>@Model.Feature.Title</h2>
+<p>@Model.Feature.Description</p>
+
+@foreach (var subFeature in Model.Feature.SubFeatures)
+{
+    <div class="row">
+        <div class="col-4">
+            <h3>@subFeature.Name</h3>
+            <p>@subFeature.ElevatorPitch</p>
+            <a class="btn btn-primary" href="~/Features/@subFeature.Name">Details »</a>
+        </div>
+        <div class="col-8">
+            <!--img alt="@subFeature.Title" /-->
+        </div>
+    </div>
+}
+@foreach (var item in Model.Feature.FeatureItems)
+{
+    <div><h4>@item.Name</h4></div>
+}

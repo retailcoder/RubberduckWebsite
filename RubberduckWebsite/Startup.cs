@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Rubberduck.Client;
+using Rubberduck.Client.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,8 @@ namespace RubberduckWebsite
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddScoped<IAdminApiClient, AdminApiClient>();
+            services.AddScoped<IPublicApiClient, PublicApiClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

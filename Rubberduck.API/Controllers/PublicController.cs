@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Rubberduck.API.DTO;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.Model.Internal;
+using Rubberduck.Model;
+using Rubberduck.Model.Entities;
 using RubberduckServices.Abstract;
 
 namespace Rubberduck.API.Controllers
@@ -19,39 +19,31 @@ namespace Rubberduck.API.Controllers
     public class PublicController : ControllerBase
     {
         private readonly ILogger<PublicController> _logger;
-        private readonly IContentReaderService<Feature> _featuresReader;
-        private readonly IContentReaderService<FeatureItem> _featureItemsReader;
-        private readonly IContentReaderService<Tag> _tagsReader;
+        private readonly IContentService _content;
         private readonly IIndenterService _indenterService;
 
         /// <summary>
         /// Creates a controller that exposes endpoints providing the website's dynamic content.
         /// </summary>
-        public PublicController(ILogger<PublicController> logger,
-            IContentReaderService<Feature> featuresReader,
-            IContentReaderService<FeatureItem> featureItemsReader,
-            IContentReaderService<Tag> tagsReader,
-            IIndenterService indenterService)
+        public PublicController(ILogger<PublicController> logger, IContentService content, IIndenterService indenterService)
         {
             _logger = logger;
-            _featuresReader = featuresReader;
-            _featureItemsReader = featureItemsReader;
-            _tagsReader = tagsReader;
+            _content = content;
             _indenterService = indenterService;
         }
 
         /// <summary>
-        /// Gets all features, sub-features, and feature items.
+        /// Gets all top-level features, along with their sub-features and feature items.
         /// </summary>
         [HttpGet]
         [Route("Features")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.Feature>), 200)]
-        public async Task<ActionResult<IEnumerable<Model.DTO.Feature>>> GetFeaturesAsync()
+        [ProducesResponseType(typeof(Feature[]), 200)]
+        public async Task<ActionResult<Feature[]>> GetFeaturesAsync()
         {
             try
             {
-                var features = await _featuresReader.GetAllAsync().ContinueWith(t => t.Result.Select(Feature.ToDTO));
+                var features = await _content.GetFeaturesAsync();
                 return Ok(features);
             }
             catch (Exception e)
@@ -62,23 +54,48 @@ namespace Rubberduck.API.Controllers
         }
 
         /// <summary>
-        /// Gets the specified feature item, including its examples and their respective modules.
+        /// Gets a feature or sub-feature along with its sub-features and feature items.
         /// </summary>
-        /// <param name="id">The internal ID of the feature item to get.</param>
         [HttpGet]
-        [Route("FeatureItem/{id}")]
+        [Route("Features/{name}")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(Model.DTO.FeatureItem), 200)]
-        public async Task<ActionResult<FeatureItem>> GetFeatureItem([FromRoute]int id)
+        [ProducesResponseType(typeof(Feature), 200)]
+        public async Task<ActionResult<Feature>> GetFeatureAsync([FromRoute]string name)
         {
             try
             {
-                var item = await _featureItemsReader.GetByIdAsync(id);
+                var feature = await _content.GetFeatureAsync(name);
+                if (feature is null)
+                {
+                    return NotFound();
+                }
+                return Ok(feature);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "A Problem (500) result will be returned.");
+                return Problem("An error has been logged while retrieving the requested object.", statusCode: 500);
+            }
+        }
+
+        /// <summary>
+        /// Gets the specified feature item, including its examples and their respective modules.
+        /// </summary>
+        /// <param name="name">The unique name of the feature item to get.</param>
+        [HttpGet]
+        [Route("FeatureItem/{name}")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(FeatureItem), 200)]
+        public async Task<ActionResult<FeatureItem>> GetFeatureItem([FromRoute]string name)
+        {
+            try
+            {
+                var item = await _content.GetFeatureItemAsync(name);
                 if (item is null)
                 {
                     return NotFound();
                 }
-                return Ok(FeatureItem.ToDTO(item));
+                return Ok(item);
             }
             catch (InvalidOperationException e)
             {
@@ -98,47 +115,19 @@ namespace Rubberduck.API.Controllers
         [HttpGet]
         [Route("Tags")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.Tag>), 200)]
-        public async Task<ActionResult<IEnumerable<Model.DTO.Tag>>> GetLatestTagsAsync()
+        [ProducesResponseType(typeof(Tag[]), 200)]
+        public async Task<ActionResult<Tag[]>> GetLatestTagsAsync()
         {
             try
             {
-                var tags = await _tagsReader
-                    .GetAllAsync() // FIXME behavior is overridden at the repository level to return the latest tags
-                    .ContinueWith(t => t.Result.Select(Tag.ToDTO));
-                return Ok(tags);
+                var main = await _content.GetMainTagAsync();
+                var next = await _content.GetNextTagAsync();
+                return Ok(new[] { main, next }.Where(e => e != null));
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "A Problem (500) result will be returned.");
                 return Problem("An error has been logged while retrieving the latest tags.", statusCode: 500);
-            }
-        }
-
-        /// <summary>
-        /// Gets the xmldoc assets for the specified tag.
-        /// </summary>
-        /// <param name="id">The internal ID of the tag to get assets for.</param>
-        [HttpGet]
-        [Route("TagAssets/{id}")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<Model.DTO.TagAsset>), 200)]
-        public async Task<ActionResult<IEnumerable<Model.DTO.TagAsset>>> GetTagAssets([FromRoute]int id)
-        {
-            try
-            {
-                var tag = await _tagsReader.GetByIdAsync(id);
-                if (tag is null)
-                {
-                    return NotFound();
-                }
-                var assets = tag.Assets.Select(TagAsset.ToDTO);
-                return Ok(assets);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "A Problem (500) result will be returned.");
-                return Problem("An error has been logged while retrieving assets for the specified tag.", statusCode: 500);
             }
         }
 
@@ -151,11 +140,11 @@ namespace Rubberduck.API.Controllers
         [Route("Indent")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(string[]), 200)]
-        public async Task<ActionResult<string>> IndentAsync([FromBody]IndenterViewModel viewModel)
+        public async Task<ActionResult<string[]>> IndentAsync([FromBody]IndenterViewModel viewModel)
         {
             try
             {
-                var result = await _indenterService.IndentAsync(viewModel.Code, viewModel);
+                var result = await _indenterService.IndentAsync(viewModel);
                 return Ok(result);
             }
             catch (Exception e)

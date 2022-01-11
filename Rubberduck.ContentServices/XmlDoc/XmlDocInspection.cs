@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using Rubberduck.Model.Internal;
-using Rubberduck.Model.ViewModel;
-using RubberduckServices.Abstract;
+using Rubberduck.ContentServices.Model;
+using Rubberduck.ContentServices.XmlDoc.Schema;
+using Rubberduck.Model;
+using PublicModel = Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
@@ -14,22 +15,20 @@ namespace Rubberduck.ContentServices.XmlDoc
         private static readonly string _defaultSeverity = "Warning";
         private static readonly string _defaultInspectionType = "CodeQualityIssues";
 
-        public XmlDocInspection(ISyntaxHighlighterService service, string name, XElement node, InspectionDefaultConfig config, bool isPreRelease)
+        public XmlDocInspection(string name, XElement node, InspectionDefaultConfig config, bool isPreRelease)
         {
-            SyntaxHighlighterService = service;
-
             SourceObject = name;
             TypeName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1);
 
             IsPreRelease = isPreRelease;
             InspectionName = TypeName.Replace("Inspection", string.Empty).Trim();
 
-            Summary = node.Element(XmlDocSchema.Inspection.Summary.ElementName)?.Value.Trim();
+            Summary = node.Element(XmlDocSchema.Inspection.Summary.ElementName)?.Value.Trim() ?? string.Empty;
             IsHidden = node.Element(XmlDocSchema.Inspection.Summary.ElementName)?.Attribute(XmlDocSchema.Inspection.Summary.IsHiddenAttribute)?.Value.Equals(true.ToString(), StringComparison.InvariantCultureIgnoreCase) ?? false;
-            Reasoning = node.Element(XmlDocSchema.Inspection.Reasoning.ElementName)?.Value.Trim();
+            Reasoning = node.Element(XmlDocSchema.Inspection.Reasoning.ElementName)?.Value.Trim() ?? string.Empty;
             References = node.Elements(XmlDocSchema.Inspection.Reference.ElementName).Select(e => e.Attribute(XmlDocSchema.Inspection.Reference.NameAttribute)?.Value.Trim()).ToArray();
             HostApp = node.Element(XmlDocSchema.Inspection.HostApp.ElementName)?.Attribute(XmlDocSchema.Inspection.HostApp.NameAttribute)?.Value.Trim();
-            Remarks = node.Element(XmlDocSchema.Inspection.Remarks.ElementName)?.Value;
+            Remarks = node.Element(XmlDocSchema.Inspection.Remarks.ElementName)?.Value.Trim() ?? string.Empty;
 
             DefaultSeverity = config?.DefaultSeverity ?? _defaultSeverity;
             InspectionType = config?.InspectionType ?? _defaultInspectionType;
@@ -55,7 +54,9 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public FeatureItem Parse(int assetId, int featureId, IEnumerable<FeatureItem> quickFixes)
         {
-            var dto = new Model.DTO.FeatureItem
+            var filteredFixes = quickFixes.Where(fix => fix.XmlDocMetadata?.Contains(InspectionName, StringComparison.InvariantCultureIgnoreCase) ?? false).ToList();
+
+            var dto = new FeatureItem
             {
                 FeatureId = featureId,
                 Name = InspectionName,
@@ -65,7 +66,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                 Description = Reasoning,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
-                XmlDocInfo = string.Join(",", quickFixes.Select(fix => fix.Name)),
+                XmlDocInfo = string.Empty,
                 XmlDocRemarks = Remarks,
                 XmlDocSourceObject = SourceObject,
                 XmlDocTabName = InspectionType,
@@ -87,50 +88,51 @@ namespace Rubberduck.ContentServices.XmlDoc
                 dto.XmlDocInfo += $"<p id=\"host_or_library_specific_info\"><span class=\"icon icon-info\"></span>This inspection will only run if one or a combination of the following libraries is referenced: {libraries}</p>";
             }
 
-            if (quickFixes?.Any() ?? false)
+            if (filteredFixes?.Any() ?? false)
             {
-                var sorted = quickFixes.OrderBy(fix => fix.Name.StartsWith("IgnoreOnce") ? "__0" : fix.Name);
-                var fixes = string.Join(" ", sorted.Select(fix => $"<li>{(fix.Name.StartsWith("IgnoreOnce") ? "<span class=\"icon icon-ignoreonce\"></span>" : "<span class=\"icon icon-tick\"></span>")}<a href=\"https://rubberduckvba.com/QuickFixes/Details/{fix.Name}\">{fix.Name}</a>: {fix.Summary}</li>"));
+                var sorted = filteredFixes.OrderBy(fix => fix.Name.StartsWith("IgnoreOnce") ? "__0" : fix.Name);
+                var fixes = string.Join(" ", sorted.Select(fix => $"<li>{(fix.Name.StartsWith("IgnoreOnce") ? "<span class=\"icon icon-ignoreonce\"></span>" : "<span class=\"icon icon-tick\"></span>")}<a href=\"Features/Details/{fix.Name}\">{fix.Name}</a>: {fix.XmlDocSummary}</li>"));
                 dto.XmlDocInfo += $"<div><h5>Quick-Fixes</h5><p>The following quick-fixes are available for this inspection:</p><ul style=\"margin-left: 8px; list-style: none;\">{fixes}</ul></div>";
             }
 
-            return FeatureItem.FromDTO(dto, Examples);
+            dto.Examples = Examples;
+            return dto;
         }
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
+        private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes = 
+            typeof(PublicModel.ExampleModuleType)
+                .GetMembers()
+                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
+                .Where(m => m.Description != null)
+                .ToDictionary(m => m.Description, m => (PublicModel.ExampleModuleType)Enum.Parse(typeof(PublicModel.ExampleModuleType), m.Name, true));
 
         private IEnumerable<Example> ParseExamples(XElement node)
         {
-            var moduleTypes = typeof(ExampleModuleType).GetMembers()
-                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
-                .Where(m => m.Description != null)
-                .ToDictionary(m => m.Description, m => (ExampleModuleType)Enum.Parse(typeof(ExampleModuleType), m.Name, true));
 
-            return node.Elements(XmlDocSchema.Inspection.Example.ElementName)
-                .Select((e, i) => Example.FromDTO(
-                    new Model.DTO.Example
+            return node.Elements(XmlDocSchema.Inspection.Example.ElementName).AsParallel()
+                .Select((e, i) =>
+                    new Example
                     {
                         Description = (e.Attribute(XmlDocSchema.Inspection.Example.HasResultAttribute)?.Value.Equals(true.ToString(), StringComparison.InvariantCultureIgnoreCase) ?? true)
                             ? "<span class=\"icon icon-inspection\"></span>The following code <em>should</em> trigger this inspection:"
                             : "<span class=\"icon icon-tick\"></span>The following code should <strong>NOT</strong> trigger this inspection:",
-                        SortOrder = i
-                    },
-                    e.Elements(XmlDocSchema.Inspection.Example.Module.ElementName).Select(m =>
-                        new Model.DTO.ExampleModule
-                        {
-                            HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult(),
-                            ModuleName = m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleNameAttribute)?.Value,
-                            ModuleType = (int)(moduleTypes.TryGetValue(m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleTypeAttribute).Value, out var type) ? type : ExampleModuleType.Any)
-                        })
-                        .Concat(e.Nodes().OfType<XCData>().Select(x =>
-                            new Model.DTO.ExampleModule
-                            {
-                                HtmlContent = SyntaxHighlighterService.FormatAsync(x.Value).ConfigureAwait(false).GetAwaiter().GetResult(),
-                                ModuleName = "Module1",
-                                ModuleType = (int)ExampleModuleType.Any
-                            }).Take(1))
-                        .Select(ExampleModule.FromDTO))
-                );
+                        SortOrder = i,
+                        Modules = e.Elements(XmlDocSchema.Inspection.Example.Module.ElementName)
+                            .Select(m =>
+                                new ExampleModule
+                                {
+                                    HtmlContent = m.Nodes().OfType<XCData>().Single().Value,
+                                    ModuleName = m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleNameAttribute)?.Value,
+                                    ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any)
+                                })
+                            .Concat(e.Nodes().OfType<XCData>().Select(x =>
+                                new ExampleModule
+                                {
+                                    HtmlContent = x.Value,
+                                    ModuleName = "Module1",
+                                    ModuleTypeId = (int)PublicModel.ExampleModuleType.Any
+                                }).Take(1)).ToList()
+                    });
         }
     }
 }

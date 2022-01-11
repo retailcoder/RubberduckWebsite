@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using Rubberduck.Model.Internal;
-using RubberduckServices.Abstract;
+using Rubberduck.ContentServices.XmlDoc.Schema;
+using Rubberduck.ContentServices.Model;
+using PublicModel = Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class XmlDocAnnotation
     {
-        public XmlDocAnnotation(ISyntaxHighlighterService service, string name, XElement node, bool isPreRelease)
+        public XmlDocAnnotation(string name, XElement node, bool isPreRelease)
         {
-            SyntaxHighlighterService = service;
-
             SourceObject = name;
             IsPreRelease = isPreRelease;
 
             AnnotationName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1).Replace("Annotation", string.Empty);
-            Summary = node.Element(XmlDocSchema.Annotation.Summary.ElementName)?.Value.Trim();
-            Remarks = node.Element(XmlDocSchema.Annotation.Remarks.ElementName)?.Value;
+            Summary = node.Element(XmlDocSchema.Annotation.Summary.ElementName)?.Value.Trim() ?? string.Empty;
+            Remarks = node.Element(XmlDocSchema.Annotation.Remarks.ElementName)?.Value.Trim() ?? string.Empty;
 
             Parameters = node.Elements(XmlDocSchema.Annotation.Parameter.ElementName)
                 .Select(e => (Name: node.Attribute(XmlDocSchema.Annotation.Parameter.NameAttribute)?.Value ?? string.Empty,
@@ -41,22 +40,20 @@ namespace Rubberduck.ContentServices.XmlDoc
         public IReadOnlyList<AnnotationArgInfo> Parameters { get; }
         public IReadOnlyList<BeforeAndAfterCodeExample> Examples { get; }
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
-
         public FeatureItem Parse(int assetId, int featureId)
         {
             var parameters = string.Join(string.Empty, Parameters.Select(p => $"<tr><td>{p.Name}</td><td>{p.Type}</td><td>{p.Description}</td></tr>"));
             var parameterInfo = Parameters.Count == 0 ? string.Empty
                 : $"<table class=\"parameters-table\"><caption>Parameters</caption><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>{parameters}</table>";
 
-            var dto = new Model.DTO.FeatureItem
+            var dto = new FeatureItem
             {
                 FeatureId = featureId,
 
                 Name = AnnotationName,
                 IsNew = IsPreRelease,
                 Title = $"@{AnnotationName}",
-                Description = Remarks,
+                Description = Summary,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
                 XmlDocInfo = parameterInfo,
@@ -64,10 +61,11 @@ namespace Rubberduck.ContentServices.XmlDoc
                 XmlDocSourceObject = SourceObject,
                 XmlDocTabName = null,
                 XmlDocMetadata = null,
+
+                Examples = Examples.Select((e, i) => e.AsExample(string.Empty, i)).ToList()
             };
 
-            var examples = Examples.Select((e, i) => e.AsExample(string.Empty, i));
-            return FeatureItem.FromDTO(dto, examples);
+            return dto;
         }
 
         private BeforeAndAfterCodeExample[] ParseExamples(XElement node)
@@ -85,7 +83,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                      *   </module>
                      * </example>
                     */
-                    var modules = example.Elements(XmlDocSchema.Annotation.Example.Module.ElementName);
+                    var modules = example.Elements(XmlDocSchema.Annotation.Example.Module.ElementName).AsParallel();
                     var simpleExamples = modules.Where(m => m.Nodes().OfType<XCData>().Any())
                         .Select(e => new BeforeAndAfterCodeExample(new[] { FormatCodeExample(e) }, modulesAfter: null))
                         .ToArray();
@@ -149,32 +147,34 @@ namespace Rubberduck.ContentServices.XmlDoc
             }
             catch (Exception)
             {
-                var errorExample = new[] { Model.DTO.ExampleModule.ParseError("AnnotationExample") }.Select(ExampleModule.FromDTO);
+                var errorExample = new[] { ExampleModule.ParseError("AnnotationExample") };
                 return new[] { new BeforeAndAfterCodeExample(errorExample, errorExample) };
             }
         }
 
-        private static readonly IDictionary<string, ExampleModuleType> ModuleTypes = typeof(ExampleModuleType).GetMembers()
-            .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
-            .Where(m => m.Description != null)
-            .ToDictionary(m => m.Description, m => (ExampleModuleType)Enum.Parse(typeof(ExampleModuleType), m.Name, true));
+        private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes = 
+            typeof(PublicModel.ExampleModuleType)
+                .GetMembers()
+                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
+                .Where(m => m.Description != null)
+                .ToDictionary(m => m.Description, m => (PublicModel.ExampleModuleType)Enum.Parse(typeof(PublicModel.ExampleModuleType), m.Name, true));
 
         private ExampleModule FormatCodeExample(XElement cdataParent, string description = null)
         {
             var module = cdataParent.AncestorsAndSelf(XmlDocSchema.Annotation.Example.Module.ElementName).Single();
             var name = module.Attribute(XmlDocSchema.Annotation.Example.Module.ModuleNameAttribute)?.Value;
-            var moduleType = (int)(ModuleTypes.TryGetValue(module.Attribute(XmlDocSchema.Annotation.Example.Module.ModuleTypeAttribute)?.Value, out var type) ? type : ExampleModuleType.Any);
-            var code = SyntaxHighlighterService.FormatAsync(cdataParent.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult();
+            var moduleType = (int)(ModuleTypes.TryGetValue(module.Attribute(XmlDocSchema.Annotation.Example.Module.ModuleTypeAttribute)?.Value, out var type) ? type : PublicModel.ExampleModuleType.Any);
+            var code = cdataParent.Nodes().OfType<XCData>().Single().Value;
             
-            var dto = new Model.DTO.ExampleModule
+            var dto = new ExampleModule
             {
                 ModuleName = name,
-                ModuleType = moduleType,
+                ModuleTypeId = moduleType,
                 Description = description,
                 HtmlContent = code
             };
 
-            return ExampleModule.FromDTO(dto);
+            return dto;
         }
     }
 
