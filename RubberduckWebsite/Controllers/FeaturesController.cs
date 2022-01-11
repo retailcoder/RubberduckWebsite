@@ -9,7 +9,6 @@ using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
-    [Route("{controller}")]
     public class FeaturesController : PublicApiClientController<FeaturesViewModel>
     {
         public FeaturesController(ILogger<FeaturesController> logger, IPublicApiClient apiClient)
@@ -25,7 +24,7 @@ namespace RubberduckWebsite.Controllers
         /// Gets the summary page for the specified feature, listing items and sub-feature summaries.
         /// </summary>
         [HttpGet]
-        [Route("{name}")]
+        [Route("{controller}/{name}")]
         public async Task<ActionResult<FeatureDetailsViewModel>> Details([FromRoute]string name)
         {
             var feature = await ApiClient.GetFeatureAsync(name);
@@ -42,7 +41,7 @@ namespace RubberduckWebsite.Controllers
         /// Gets the details page for the specified feature item.
         /// </summary>
         [HttpGet]
-        [Route("Details/{name}")]
+        [Route("{controller}/Details/{name}")]
         public async Task<ActionResult<FeatureDetailsViewModel>> Item([FromRoute]string name)
         {
             var item = await ApiClient.GetFeatureItemAsync(name);

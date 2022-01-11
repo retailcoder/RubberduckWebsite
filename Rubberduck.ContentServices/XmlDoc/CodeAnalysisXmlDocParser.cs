@@ -9,6 +9,7 @@ using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
 using Rubberduck.ContentServices.Model;
 using Rubberduck.Model;
+using System.Collections.Concurrent;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
@@ -41,13 +42,24 @@ namespace Rubberduck.ContentServices.XmlDoc
             return inspections.Concat(quickFixes);
         }
 
-        private IEnumerable<FeatureItem> ReadInspections(int assetId, int featureId, XDocument doc, bool hasReleased, IEnumerable<FeatureItem> quickFixes) =>
-            from node in doc.Descendants("member")
-            let name = GetInspectionNameOrDefault(node)
-            where !string.IsNullOrWhiteSpace(name)
-            let inspectionName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1)
-            let config = _inspectionDefaults.ContainsKey(inspectionName) ? _inspectionDefaults[inspectionName] : default
-            select new XmlDocInspection(_syntaxHighlighterService, name, node, config, !hasReleased).Parse(assetId, featureId, quickFixes);
+        private IEnumerable<FeatureItem> ReadInspections(int assetId, int featureId, XDocument doc, bool hasReleased, IEnumerable<FeatureItem> quickFixes)
+        {
+            var nodes = from node in doc.Descendants("member").AsParallel()
+                        let name = GetInspectionNameOrDefault(node)
+                        where !string.IsNullOrWhiteSpace(name)
+                        let inspectionName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1)
+                        let config = _inspectionDefaults.ContainsKey(inspectionName) ? _inspectionDefaults[inspectionName] : default
+                        select (name, node, config);
+
+            var results = new ConcurrentBag<FeatureItem>();
+            Parallel.ForEach(nodes, info =>
+            {
+                var xmldoc = new XmlDocInspection(_syntaxHighlighterService, info.name, info.node, info.config, !hasReleased);
+                results.Add(xmldoc.Parse(assetId, featureId, quickFixes));
+            });
+
+            return results;
+        }
 
         private static string GetInspectionNameOrDefault(XElement memberNode)
         {
@@ -60,12 +72,22 @@ namespace Rubberduck.ContentServices.XmlDoc
             return name;
         }
 
-        private IEnumerable<FeatureItem> ReadQuickFixes(int assetId, int featureId, XDocument doc, bool hasReleased) =>
-            from node in doc.Descendants("member")
-            let name = GetQuickFixNameOrDefault(node)
-            where !string.IsNullOrEmpty(name)
-            && node.Descendants(XmlDocSchema.QuickFix.CanFix.ElementName).Any() // this excludes any quickfixes added to main (master) prior to v2.5.0 
-            select new XmlDocQuickFix(_syntaxHighlighterService, name, node, !hasReleased).Parse(assetId, featureId);
+        private IEnumerable<FeatureItem> ReadQuickFixes(int assetId, int featureId, XDocument doc, bool hasReleased)
+        {
+            var nodes = from node in doc.Descendants("member").AsParallel()
+                        let name = GetQuickFixNameOrDefault(node)
+                        where !string.IsNullOrEmpty(name) && node.Descendants(XmlDocSchema.QuickFix.CanFix.ElementName).Any() // this excludes any quickfixes added to main (master) prior to v2.5.0 
+                        select (name, node);
+            //select .Parse(assetId, featureId);
+            var results = new ConcurrentBag<FeatureItem>();
+            Parallel.ForEach(nodes, info =>
+            {
+                var xmldoc = new XmlDocQuickFix(_syntaxHighlighterService, info.name, info.node, !hasReleased);
+                results.Add(xmldoc.Parse(assetId, featureId));
+            });
+
+            return results;
+        }
 
         private static string GetQuickFixNameOrDefault(XElement memberNode)
         {

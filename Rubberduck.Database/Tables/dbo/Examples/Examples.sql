@@ -5,6 +5,5 @@
 	[DateUpdated] DATETIME NULL,
 	[FeatureItemId] INT NOT NULL,
 	[SortOrder] INT NOT NULL,
-	[Description] NVARCHAR(1023) NOT NULL,
-	[HtmlContent] NVARCHAR(MAX) NOT NULL
+	[Description] NVARCHAR(1023) NOT NULL
 );

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Rubberduck.Model.Abstract;
 using PublicModel = Rubberduck.Model.Entities;
@@ -81,6 +82,26 @@ namespace Rubberduck.ContentServices.Model
                 TagAsset = this.TagAsset?.ToPublicModel(),
                 Examples = this.Examples.Select(e => e.ToPublicModel()).ToList()
             };
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+            {
+                return false;
+            }
+
+            if (obj is FeatureItem other)
+            {
+                return other.Name == this.Name;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name);
         }
     }
 }

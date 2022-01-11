@@ -6,11 +6,12 @@ namespace Rubberduck.Client.Abstract
     /// <summary>
     /// An API client that requires authentication and allows updating website content.
     /// </summary>
-    public interface IAdminApiClient
+    public interface IAdminApiClient : IPublicApiClient
     {
         /// <summary>
         /// Gets the latest release and pre-release tags, downloads xmldoc assets, and processes them.
         /// </summary>
+        /// <exception cref="TaskCanceledException" />
         Task<bool> UpdateTagMetadataAsync();
         /// <summary>
         /// Creates a new feature or sub-feature, or updates an existing one.

@@ -24,9 +24,12 @@ namespace Rubberduck.ContentServices.Model
             ModuleName = model.ModuleName;
             ModuleTypeId = (int)model.ModuleType;
             Description = model.Description;
-            HtmlContent = model.HtmlContent;
+            HtmlContent = model.HtmlContent ?? "(error parsing code example from source xmldoc)";
 
-            Example = new Example(model.Example);
+            if (model.Example != null)
+            {
+                Example = new Example(model.Example);
+            }
         }
 
         public int ExampleId { get; set; }
@@ -51,7 +54,7 @@ namespace Rubberduck.ContentServices.Model
                 ModuleName = this.ModuleName,
                 ModuleType = (PublicModel.ExampleModuleType)this.ModuleTypeId,
                 Description = this.Description,
-                HtmlContent = this.HtmlContent
+                HtmlContent = this.HtmlContent ?? "(error parsing code example from source xmldoc)"
             };
         }
     }

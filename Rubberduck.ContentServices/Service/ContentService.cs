@@ -21,7 +21,6 @@ namespace Rubberduck.ContentServices.Service
         {
             var entities = await _context.Features
                 .Include(entity => entity.SubFeatures)
-                .Include(entity => entity.FeatureItems)
                 .Where(entity => entity.ParentId == null)
                 .ToListAsync();
 
@@ -59,7 +58,7 @@ namespace Rubberduck.ContentServices.Service
                 .Include(entity => entity.TagAssets)
                 .FirstOrDefaultAsync();
 
-            return entity.ToPublicModel();
+            return entity?.ToPublicModel();
         }
 
         public async Task<Tag> GetNextTagAsync()
@@ -70,12 +69,15 @@ namespace Rubberduck.ContentServices.Service
                 .Include(entity => entity.TagAssets)
                 .FirstOrDefaultAsync();
 
-            return entity.ToPublicModel();
+            return entity?.ToPublicModel();
         }
 
         public async Task<Example> SaveExampleAsync(Example model)
         {
-            if (model.Id == default)
+            var existing = await _context.Examples.AsTracking()
+                .SingleOrDefaultAsync(entity => entity.Id == model.Id);
+
+            if (existing is null)
             {
                 var entity = new Model.Example(model)
                 {
@@ -85,10 +87,6 @@ namespace Rubberduck.ContentServices.Service
                 await _context.Examples.AddAsync(entity);
                 return entity.ToPublicModel();
             }
-
-            var existing = await _context.Examples.AsTracking()
-                .Include(entity => entity.Modules)
-                .SingleOrDefaultAsync(entity => entity.Id == model.Id);
 
             existing.DateUpdated = DateTime.UtcNow;
             existing.Description = model.Description;
@@ -100,7 +98,10 @@ namespace Rubberduck.ContentServices.Service
 
         public async Task<ExampleModule> SaveExampleModuleAsync(ExampleModule model)
         {
-            if (model.Id == default)
+            var existing = await _context.ExampleModules.AsTracking()
+                .SingleOrDefaultAsync(entity => entity.Id == model.Id);
+
+            if (existing is null)
             {
                 var entity = new Model.ExampleModule(model)
                 {
@@ -110,9 +111,6 @@ namespace Rubberduck.ContentServices.Service
                 await _context.ExampleModules.AddAsync(entity);
                 return entity.ToPublicModel();
             }
-
-            var existing = await _context.ExampleModules.AsTracking()
-                .SingleOrDefaultAsync(entity => entity.Id == model.Id);
 
             existing.DateUpdated = DateTime.UtcNow;
             existing.Description = model.Description;
@@ -127,7 +125,10 @@ namespace Rubberduck.ContentServices.Service
 
         public async Task<Feature> SaveFeatureAsync(Feature model)
         {
-            if (model.Id == default)
+            var existing = await _context.Features.AsTracking()
+                .SingleOrDefaultAsync(entity => entity.Id == model.Id || entity.Name == model.Name);
+
+            if (existing is null)
             {
                 var entity = new Model.Feature(model)
                 {
@@ -137,11 +138,6 @@ namespace Rubberduck.ContentServices.Service
                 await _context.Features.AddAsync(entity);
                 return entity.ToPublicModel();
             }
-
-            var existing = await _context.Features.AsTracking()
-                .Include(entity => entity.FeatureItems)
-                .Include(entity => entity.SubFeatures)
-                .SingleOrDefaultAsync(entity => entity.Id == model.Id || entity.Name == model.Name);
 
             existing.DateUpdated = DateTime.UtcNow;
             existing.Description = model.Description;
@@ -164,19 +160,18 @@ namespace Rubberduck.ContentServices.Service
             var saved = new List<FeatureItem>();
             foreach (var model in models)
             {
-                if (model.Id == default)
+                var existing = await _context.FeatureItems.AsTracking()
+                    .SingleOrDefaultAsync(entity => entity.Id == model.Id || entity.FeatureId == model.FeatureId && entity.Name == model.Name);
+
+                if (existing is null)
                 {
                     model.DateInserted = DateTime.UtcNow;
-
+                    await SaveExamplesAsync(model);
                     await _context.FeatureItems.AddAsync(model);
                     saved.Add(model.ToPublicModel());
                 }
                 else
                 {
-                    var existing = await _context.FeatureItems.AsTracking()
-                        .Include(entity => entity.Examples)
-                        .SingleOrDefaultAsync(entity => entity.Id == model.Id || entity.FeatureId == model.FeatureId && entity.Name == model.Name);
-
                     existing.DateUpdated = DateTime.UtcNow;
                     existing.Description = model.Description;
                     existing.IsDiscontinued = model.IsDiscontinued;
@@ -190,12 +185,62 @@ namespace Rubberduck.ContentServices.Service
                     existing.XmlDocSummary = model.XmlDocSummary;
                     existing.XmlDocTabName = model.XmlDocTabName;
 
+                    await SaveExamplesAsync(model);
+
                     saved.Add(existing.ToPublicModel());
                 }
             }
 
             await _context.SaveChangesAsync();
             return saved;
+        }
+
+        private async Task SaveExamplesAsync(Model.FeatureItem item)
+        {
+            foreach (var model in item.Examples.OrderBy(e => e.SortOrder).Select((e, i) => (example: e, index: i + 1)))
+            {
+                var existing = await _context.Examples.AsTracking()
+                    .SingleOrDefaultAsync(entity => entity.Id == model.example.Id || entity.FeatureItemId == model.example.FeatureItemId && entity.SortOrder == model.index);
+
+                if (existing is null)
+                {
+                    model.example.DateInserted = DateTime.UtcNow;
+                    model.example.SortOrder = model.index;
+
+                    await SaveExampleModulesAsync(model.example);
+                    continue;
+                }
+
+                existing.DateUpdated = DateTime.UtcNow;
+                existing.Description = model.example.Description;
+                existing.SortOrder = model.index;
+
+                await SaveExampleModulesAsync(model.example);
+            }
+        }
+
+        private async Task SaveExampleModulesAsync(Model.Example item)
+        {
+            foreach (var model in item.Modules.OrderBy(e => e.SortOrder).Select((e, i) => (module: e, index: i + 1)))
+            {
+                var existing = await _context.ExampleModules.AsTracking()
+                    .SingleOrDefaultAsync(entity => entity.Id == model.module.Id || entity.ExampleId == model.module.ExampleId && entity.SortOrder == model.index);
+
+                if (existing is null)
+                {
+                    model.module.DateInserted = DateTime.UtcNow;
+                    model.module.SortOrder = model.index;
+                    model.module.HtmlContent = model.module.HtmlContent ?? "(error parsing code example from source xmldoc)";
+                    continue;
+                }
+
+                existing.DateUpdated = DateTime.UtcNow;
+                existing.Description = model.module.Description;
+                existing.HtmlContent = model.module.HtmlContent ?? "(error parsing code example from source xmldoc)";
+                existing.ModuleName = model.module.ModuleName;
+                existing.ModuleTypeId = model.module.ModuleTypeId;
+                existing.SortOrder = model.index;
+            }
         }
 
         public async Task<IEnumerable<Tag>> SaveTagsAsync(IEnumerable<Tag> models)
@@ -213,7 +258,6 @@ namespace Rubberduck.ContentServices.Service
         private async Task<Tag> SaveTagAsync(Tag model)
         {
             var existing = await _context.Tags.AsTracking()
-                .Include(entity => entity.TagAssets)
                 .SingleOrDefaultAsync(entity => entity.Id == model.Id || entity.Name == model.Name);
 
             if (existing is null)
@@ -234,6 +278,8 @@ namespace Rubberduck.ContentServices.Service
             existing.DateUpdated = DateTime.UtcNow;
             existing.InstallerDownloads = model.InstallerDownloads;
             existing.IsPreRelease = model.IsPreRelease;
+            
+            // no need to update assets, asset download url should be immutable.
 
             return existing.ToPublicModel();
         }

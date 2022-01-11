@@ -26,12 +26,12 @@ namespace Rubberduck.ContentServices.XmlDoc
             IsPreRelease = isPreRelease;
             InspectionName = TypeName.Replace("Inspection", string.Empty).Trim();
 
-            Summary = node.Element(XmlDocSchema.Inspection.Summary.ElementName)?.Value.Trim();
+            Summary = node.Element(XmlDocSchema.Inspection.Summary.ElementName)?.Value.Trim() ?? string.Empty;
             IsHidden = node.Element(XmlDocSchema.Inspection.Summary.ElementName)?.Attribute(XmlDocSchema.Inspection.Summary.IsHiddenAttribute)?.Value.Equals(true.ToString(), StringComparison.InvariantCultureIgnoreCase) ?? false;
-            Reasoning = node.Element(XmlDocSchema.Inspection.Reasoning.ElementName)?.Value.Trim();
+            Reasoning = node.Element(XmlDocSchema.Inspection.Reasoning.ElementName)?.Value.Trim() ?? string.Empty;
             References = node.Elements(XmlDocSchema.Inspection.Reference.ElementName).Select(e => e.Attribute(XmlDocSchema.Inspection.Reference.NameAttribute)?.Value.Trim()).ToArray();
             HostApp = node.Element(XmlDocSchema.Inspection.HostApp.ElementName)?.Attribute(XmlDocSchema.Inspection.HostApp.NameAttribute)?.Value.Trim();
-            Remarks = node.Element(XmlDocSchema.Inspection.Remarks.ElementName)?.Value;
+            Remarks = node.Element(XmlDocSchema.Inspection.Remarks.ElementName)?.Value.Trim() ?? string.Empty;
 
             DefaultSeverity = config?.DefaultSeverity ?? _defaultSeverity;
             InspectionType = config?.InspectionType ?? _defaultInspectionType;
@@ -57,6 +57,8 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public FeatureItem Parse(int assetId, int featureId, IEnumerable<FeatureItem> quickFixes)
         {
+            var filteredFixes = quickFixes.Where(fix => fix.XmlDocMetadata?.Contains(InspectionName, StringComparison.InvariantCultureIgnoreCase) ?? false).ToList();
+
             var dto = new FeatureItem
             {
                 FeatureId = featureId,
@@ -67,7 +69,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                 Description = Reasoning,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
-                XmlDocInfo = string.Join(",", quickFixes.Where(fix => fix.XmlDocMetadata?.Contains(InspectionName, StringComparison.InvariantCultureIgnoreCase) ?? fix.Name == "IgnoreOnce").Select(fix => fix.Name)),
+                XmlDocInfo = string.Join(",", filteredFixes.Select(fix => fix.Name)),
                 XmlDocRemarks = Remarks,
                 XmlDocSourceObject = SourceObject,
                 XmlDocTabName = InspectionType,
@@ -89,10 +91,10 @@ namespace Rubberduck.ContentServices.XmlDoc
                 dto.XmlDocInfo += $"<p id=\"host_or_library_specific_info\"><span class=\"icon icon-info\"></span>This inspection will only run if one or a combination of the following libraries is referenced: {libraries}</p>";
             }
 
-            if (quickFixes?.Any() ?? false)
+            if (filteredFixes?.Any() ?? false)
             {
-                var sorted = quickFixes.OrderBy(fix => fix.Name.StartsWith("IgnoreOnce") ? "__0" : fix.Name);
-                var fixes = string.Join(" ", sorted.Select(fix => $"<li>{(fix.Name.StartsWith("IgnoreOnce") ? "<span class=\"icon icon-ignoreonce\"></span>" : "<span class=\"icon icon-tick\"></span>")}<a href=\"https://rubberduckvba.com/QuickFixes/Details/{fix.Name}\">{fix.Name}</a>: {fix.XmlDocSummary}</li>"));
+                var sorted = filteredFixes.OrderBy(fix => fix.Name.StartsWith("IgnoreOnce") ? "__0" : fix.Name);
+                var fixes = string.Join(" ", sorted.Select(fix => $"<li>{(fix.Name.StartsWith("IgnoreOnce") ? "<span class=\"icon icon-ignoreonce\"></span>" : "<span class=\"icon icon-tick\"></span>")}<a href=\"Features/Details/{fix.Name}\">{fix.Name}</a>: {fix.XmlDocSummary}</li>"));
                 dto.XmlDocInfo += $"<div><h5>Quick-Fixes</h5><p>The following quick-fixes are available for this inspection:</p><ul style=\"margin-left: 8px; list-style: none;\">{fixes}</ul></div>";
             }
 
@@ -102,14 +104,17 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
-        private IEnumerable<Example> ParseExamples(XElement node)
-        {
-            var moduleTypes = typeof(PublicModel.ExampleModuleType).GetMembers()
+        private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes = 
+            typeof(PublicModel.ExampleModuleType)
+                .GetMembers()
                 .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
                 .Where(m => m.Description != null)
                 .ToDictionary(m => m.Description, m => (PublicModel.ExampleModuleType)Enum.Parse(typeof(PublicModel.ExampleModuleType), m.Name, true));
 
-            return node.Elements(XmlDocSchema.Inspection.Example.ElementName)
+        private IEnumerable<Example> ParseExamples(XElement node)
+        {
+
+            return node.Elements(XmlDocSchema.Inspection.Example.ElementName).AsParallel()
                 .Select((e, i) =>
                     new Example
                     {
@@ -123,7 +128,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                                 {
                                     HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult(),
                                     ModuleName = m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleNameAttribute)?.Value,
-                                    ModuleTypeId = (int)(moduleTypes.TryGetValue(m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any)
+                                    ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any)
                                 })
                             .Concat(e.Nodes().OfType<XCData>().Select(x =>
                                 new ExampleModule

@@ -12,26 +12,31 @@ namespace Rubberduck.Client.Abstract
     {
         private readonly ILogger _logger;
         private readonly string _baseUrl;
+        protected TimeSpan GetRequestTimeout { get; }
+        protected TimeSpan PostRequestTimeout { get; }
 
         private static readonly ProductInfoHeaderValue UserAgent =
             new("Rubberduck.Client", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
 
         protected ApiClientBase(ILogger<ApiClientBase> logger, IConfiguration configuration)
         {
             _logger = logger;
             _baseUrl = configuration.GetSection("API")["BaseUrl"];
-            //if (int.TryParse(configuration.GetSection("API")["TimeoutSeconds"], out var timeoutSeconds))
-            //{
-            //    _timeout = TimeSpan.FromSeconds(timeoutSeconds);
-            //}
+            if (int.TryParse(configuration.GetSection("API")["TimeoutSeconds-GET"], out var getTimeoutSeconds))
+            {
+                GetRequestTimeout = TimeSpan.FromSeconds(getTimeoutSeconds);
+            }
+            if (int.TryParse(configuration.GetSection("API")["TimeoutSeconds-POST"], out var postTimeoutSeconds))
+            {
+                PostRequestTimeout = TimeSpan.FromSeconds(postTimeoutSeconds);
+            }
         }
 
         protected string BaseUrl => _baseUrl;
 
         protected virtual HttpClient GetClient()
         {
-            var client = new HttpClient(); //{ Timeout = _timeout };
+            var client = new HttpClient();
             client.DefaultRequestHeaders.UserAgent.Add(UserAgent);
             return client;
         }
@@ -42,13 +47,16 @@ namespace Rubberduck.Client.Abstract
             try
             {
                 using (var client = GetClient())
-                using (var response = await client.GetAsync(uri))
                 {
-                    response.EnsureSuccessStatusCode();
-                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    client.Timeout = GetRequestTimeout;
+                    using (var response = await client.GetAsync(uri))
                     {
-                        var result = await JsonSerializer.DeserializeAsync(stream, typeof(TResult), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        return (TResult)result;
+                        response.EnsureSuccessStatusCode();
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            var result = await JsonSerializer.DeserializeAsync(stream, typeof(TResult), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            return (TResult)result;
+                        }
                     }
                 }
             }
@@ -77,12 +85,15 @@ namespace Rubberduck.Client.Abstract
             try
             {
                 using (var client = GetClient())
-                using (var response = await client.PostAsync(uri, new StringContent(json)))
                 {
-                    response.EnsureSuccessStatusCode();
-                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    client.Timeout = PostRequestTimeout;
+                    using (var response = await client.PostAsync(uri, new StringContent(json)))
                     {
-                        return (TResult)await JsonSerializer.DeserializeAsync(stream, typeof(TResult));
+                        response.EnsureSuccessStatusCode();
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            return (TResult)await JsonSerializer.DeserializeAsync(stream, typeof(TResult));
+                        }
                     }
                 }
             }

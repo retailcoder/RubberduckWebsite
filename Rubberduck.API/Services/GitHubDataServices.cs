@@ -96,7 +96,7 @@ namespace Rubberduck.API.Services
                     Name = a.Name,
                     DownloadUrl = a.BrowserDownloadUrl
                 })
-                .ToArray();
+                .ToList();
 
             tag.TagAssets = assets;
             return tag;
@@ -113,11 +113,11 @@ namespace Rubberduck.API.Services
                    let installer = release.Assets.SingleOrDefault(ReleaseAssetExtensions.IsInstallerAsset)
                    select new Tag
                    {
-                    DateCreated = release.CreatedAt.UtcDateTime,
-                    IsPreRelease = release.Prerelease,
-                    Name = release.TagName,
-                    InstallerDownloadUrl = installer?.BrowserDownloadUrl ?? string.Empty,
-                    InstallerDownloads = installer?.DownloadCount ?? 0,
+                        DateCreated = release.CreatedAt.UtcDateTime,
+                        IsPreRelease = release.Prerelease,
+                        Name = release.TagName,
+                        InstallerDownloadUrl = installer?.BrowserDownloadUrl ?? string.Empty,
+                        InstallerDownloads = installer?.DownloadCount ?? 0,
                    };
         }
     }

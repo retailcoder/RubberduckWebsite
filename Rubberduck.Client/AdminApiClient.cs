@@ -9,9 +9,9 @@ using Rubberduck.Model.Entities;
 namespace Rubberduck.Client
 {
 
-    public class AdminApiClient : ApiClientBase, IAdminApiClient
+    public class AdminApiClient : PublicApiClient, IAdminApiClient
     {
-        public AdminApiClient(ILogger<ApiClientBase> logger, IConfiguration configuration) 
+        public AdminApiClient(ILogger<AdminApiClient> logger, IConfiguration configuration) 
             : base(logger, configuration)
         {
 
@@ -61,13 +61,17 @@ namespace Rubberduck.Client
             {
                 using (var client = GetClient())
                 {
-                    client.Timeout = TimeSpan.FromMinutes(2);
-                    using (var response = await client.PostAsync(uri, new StringContent(null)))
+                    client.Timeout = base.PostRequestTimeout;
+                    using (var response = await client.PostAsync(uri, null))
                     {
                         response.EnsureSuccessStatusCode();
                         return true;
                     }
                 }
+            }
+            catch (TaskCanceledException)
+            {
+                throw;
             }
             catch
             {

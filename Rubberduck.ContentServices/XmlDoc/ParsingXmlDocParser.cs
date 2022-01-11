@@ -7,6 +7,7 @@ using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
 using Rubberduck.ContentServices.Model;
 using RubberduckServices.Abstract;
+using System.Collections.Concurrent;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
@@ -29,11 +30,23 @@ namespace Rubberduck.ContentServices.XmlDoc
             return await Task.FromResult(ReadAnnotations(assetId, featureId, document, !isPreRelease));
         }
 
-        private IEnumerable<FeatureItem> ReadAnnotations(int assetId, int featureId, XDocument doc, bool hasReleased) =>
-            from node in doc.Descendants("member")
-            let name = GetAnnotationNameOrDefault(node)
-            where !string.IsNullOrWhiteSpace(name)
-            select new XmlDocAnnotation(_syntaxHighlighterService, name, node, !hasReleased).Parse(assetId, featureId);
+        private IEnumerable<FeatureItem> ReadAnnotations(int assetId, int featureId, XDocument doc, bool hasReleased)
+        {
+            var nodes = from node in doc.Descendants("member").AsParallel()
+                        let name = GetAnnotationNameOrDefault(node)
+                        where !string.IsNullOrWhiteSpace(name)
+                        select (name, node);
+
+            var results = new ConcurrentBag<FeatureItem>();
+            Parallel.ForEach(nodes, info =>
+            {
+                var xmldoc = new XmlDocAnnotation(_syntaxHighlighterService, info.name, info.node, !hasReleased);
+                results.Add(xmldoc.Parse(assetId, featureId));
+            });
+
+            return results;
+
+        }
 
         private static string GetAnnotationNameOrDefault(XElement memberNode)
         {

@@ -107,13 +107,15 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
-        private IEnumerable<BeforeAndAfterCodeExample> ParseExamples(XElement node)
-        {
-            var moduleTypes = typeof(PublicModel.ExampleModuleType).GetMembers()
+        private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes =
+            typeof(PublicModel.ExampleModuleType)
+                .GetMembers()
                 .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
                 .Where(m => m.Description != null)
                 .ToDictionary(m => m.Description, m => (PublicModel.ExampleModuleType)Enum.Parse(typeof(PublicModel.ExampleModuleType), m.Name, true));
 
+        private IEnumerable<BeforeAndAfterCodeExample> ParseExamples(XElement node)
+        {
             var results = new List<BeforeAndAfterCodeExample>();
             foreach (var exampleNode in node.Elements(XmlDocSchema.QuickFix.Example.ElementName))
             {
@@ -123,7 +125,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                         {
                             ModuleName = m.Attribute(XmlDocSchema.QuickFix.Example.Before.Module.ModuleNameAttribute)?.Value,
                             Description = "(before)",
-                            ModuleTypeId = (int)(moduleTypes.TryGetValue(m.Attribute(XmlDocSchema.QuickFix.Example.Before.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any),
+                            ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.QuickFix.Example.Before.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any),
                             HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult()
                         })
                     .Concat(exampleNode.Element(XmlDocSchema.QuickFix.Example.Before.ElementName)?.Nodes().OfType<XCData>().Take(1).Select(x =>
@@ -141,7 +143,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                         {
                             ModuleName = m.Attribute(XmlDocSchema.QuickFix.Example.After.Module.ModuleNameAttribute)?.Value,
                             Description = "(after)",
-                            ModuleTypeId = (int)(moduleTypes.TryGetValue(m.Attribute(XmlDocSchema.QuickFix.Example.After.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any),
+                            ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.QuickFix.Example.After.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any),
                             HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult()
                         })
                     .Concat(exampleNode.Element(XmlDocSchema.QuickFix.Example.After.ElementName)?.Nodes().OfType<XCData>().Take(1).Select(x =>

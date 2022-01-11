@@ -41,8 +41,8 @@ namespace Rubberduck.ContentServices.XmlDoc
 
             _logger.LogDebug($"{otherItems.Count} feature items found in both [main] and [next] branches will use content from [next].");
 
-            return otherItems.Concat(newItems).Concat(deletedItems)
-                .ToHashSet();
+            var merged = otherItems.Concat(newItems).Concat(deletedItems).ToHashSet();
+            return merged;
         }
     }
 }

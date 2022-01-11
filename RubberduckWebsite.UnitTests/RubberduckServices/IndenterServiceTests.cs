@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rubberduck.API.DTO;
+using Rubberduck.Model;
 using Rubberduck.SmartIndenter;
 using RubberduckServices;
 using RubberduckServices.Abstract;

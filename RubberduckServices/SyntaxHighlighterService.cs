@@ -47,7 +47,7 @@ namespace RubberduckServices
                 var indentedCode = indenter.Indent(code.Split('\n').Select(line => line.Replace("\r", string.Empty))).ToArray();
 
                 var builder = new StringBuilder();
-                var tokens = Tokenize(string.Join("\n", indentedCode));
+                var tokens = Tokenize(string.Join("\r\n", indentedCode));
 
                 var parser = new VBAParser(tokens)
                 {

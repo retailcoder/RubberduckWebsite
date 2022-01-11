@@ -87,7 +87,14 @@
         </div>
 
         <div>
-            <small><em>Tag/release metadata updated @Model.MetadataTimestamp.ToString("yyyy-MM-dd hh:MM:ssZ")</em></small>
+            @if (Model.MetadataTimestamp.HasValue)
+            {
+            <small><em>Tag/release metadata updated @Model.MetadataTimestamp.Value.ToString("yyyy-MM-dd hh:MM:ssZ")</em></small>
+            }
+            else
+            {
+            <small><em>(tag/release metadata unavailable)</em></small>
+            }
         </div>
     </div>
 </section>

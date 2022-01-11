@@ -9,8 +9,6 @@ using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
-
-    [Route("{controller}")]
     public class InspectionsController : PublicApiClientController<InspectionDetailsViewModel>
     {
         public InspectionsController(ILogger<InspectionsController> logger, IPublicApiClient apiClient)
@@ -19,7 +17,7 @@ namespace RubberduckWebsite.Controllers
         /// <summary>
         /// Gets the details page for the specified inspection.
         /// </summary>
-        [Route("/{name}")]
+        [Route("{controller}/{name}")]
         public async Task<IActionResult> Details([FromRoute]string name)
         {
             var item = await ApiClient.GetFeatureItemAsync(name);

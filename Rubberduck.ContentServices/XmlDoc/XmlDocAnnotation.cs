@@ -20,8 +20,8 @@ namespace Rubberduck.ContentServices.XmlDoc
             IsPreRelease = isPreRelease;
 
             AnnotationName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1).Replace("Annotation", string.Empty);
-            Summary = node.Element(XmlDocSchema.Annotation.Summary.ElementName)?.Value.Trim();
-            Remarks = node.Element(XmlDocSchema.Annotation.Remarks.ElementName)?.Value;
+            Summary = node.Element(XmlDocSchema.Annotation.Summary.ElementName)?.Value.Trim() ?? string.Empty;
+            Remarks = node.Element(XmlDocSchema.Annotation.Remarks.ElementName)?.Value.Trim() ?? string.Empty;
 
             Parameters = node.Elements(XmlDocSchema.Annotation.Parameter.ElementName)
                 .Select(e => (Name: node.Attribute(XmlDocSchema.Annotation.Parameter.NameAttribute)?.Value ?? string.Empty,
@@ -58,7 +58,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                 Name = AnnotationName,
                 IsNew = IsPreRelease,
                 Title = $"@{AnnotationName}",
-                Description = Remarks,
+                Description = Summary,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
                 XmlDocInfo = parameterInfo,
@@ -88,7 +88,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                      *   </module>
                      * </example>
                     */
-                    var modules = example.Elements(XmlDocSchema.Annotation.Example.Module.ElementName);
+                    var modules = example.Elements(XmlDocSchema.Annotation.Example.Module.ElementName).AsParallel();
                     var simpleExamples = modules.Where(m => m.Nodes().OfType<XCData>().Any())
                         .Select(e => new BeforeAndAfterCodeExample(new[] { FormatCodeExample(e) }, modulesAfter: null))
                         .ToArray();
@@ -157,10 +157,12 @@ namespace Rubberduck.ContentServices.XmlDoc
             }
         }
 
-        private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes = typeof(PublicModel.ExampleModuleType).GetMembers()
-            .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
-            .Where(m => m.Description != null)
-            .ToDictionary(m => m.Description, m => (PublicModel.ExampleModuleType)Enum.Parse(typeof(PublicModel.ExampleModuleType), m.Name, true));
+        private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes = 
+            typeof(PublicModel.ExampleModuleType)
+                .GetMembers()
+                .Select(m => (m.Name, m.GetCustomAttributes().OfType<System.ComponentModel.DescriptionAttribute>().SingleOrDefault()?.Description))
+                .Where(m => m.Description != null)
+                .ToDictionary(m => m.Description, m => (PublicModel.ExampleModuleType)Enum.Parse(typeof(PublicModel.ExampleModuleType), m.Name, true));
 
         private ExampleModule FormatCodeExample(XElement cdataParent, string description = null)
         {

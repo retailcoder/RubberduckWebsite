@@ -122,7 +122,7 @@ namespace Rubberduck.API.Controllers
             {
                 var main = await _content.GetMainTagAsync();
                 var next = await _content.GetNextTagAsync();
-                return Ok(new[] { main, next });
+                return Ok(new[] { main, next }.Where(e => e != null));
             }
             catch (Exception e)
             {
