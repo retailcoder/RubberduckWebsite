@@ -80,7 +80,7 @@ namespace Rubberduck.Client
 
         public async Task<FeatureItem> GetFeatureItemAsync(string name)
         {
-            var endpoint = $"Public/FeatureItems/{name}";
+            var endpoint = $"Public/FeatureItem/{name}";
 
             try
             {

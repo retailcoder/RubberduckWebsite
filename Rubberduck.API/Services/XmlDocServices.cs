@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
+using RubberduckServices.Abstract;
 using Rubberduck.API.Services.Abstract;
+using System.Collections.Generic;
+using Rubberduck.ContentServices.Model;
 
 namespace Rubberduck.API.Services
 {
@@ -17,13 +20,15 @@ namespace Rubberduck.API.Services
         private readonly IXmlDocParser _parsingXml;
         private readonly IXmlDocMerge _xmlMerge;
         private readonly IContentService _content;
+        private readonly ISyntaxHighlighterService _syntaxHighlighterService;
 
         public XmlDocServices(ILogger<XmlDocServices> logger, 
             IGitHubDataServices gitHub,
             IXmlDocMerge xmlMerge, 
             ICodeAnalysisXmlDocParser codeAnalysisXml, 
             IParsingXmlDocParser parsingXml, 
-            IContentService content)
+            IContentService content,
+            ISyntaxHighlighterService syntaxHighlighterService)
         {
             _logger = logger;
 
@@ -32,6 +37,7 @@ namespace Rubberduck.API.Services
             _codeAnalysisXml = codeAnalysisXml;
             _parsingXml = parsingXml;
             _content = content;
+            _syntaxHighlighterService = syntaxHighlighterService;
         }
 
         public async Task SynchronizeAsync()
@@ -45,12 +51,14 @@ namespace Rubberduck.API.Services
             var dbNext = await _content.GetNextTagAsync();
             _logger.LogInformation($"Loaded {dbNext.TagAssets.Count:N0} assets from database under tag {dbNext.Name} (next).");
 
-            _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset...");
+            _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset ({dbMain.Name})...");
             var mainCodeAnalysisItems = await _codeAnalysisXml.ParseAsync(dbMain);
+            _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset ({dbNext.Name})...");
             var nextCodeAnalysisItems = await _codeAnalysisXml.ParseAsync(dbNext);
 
-            _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset...");
+            _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset ({dbMain.Name})...");
             var mainParsingItems = await _parsingXml.ParseAsync(dbMain);
+            _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset ({dbNext.Name})...");
             var nextParsingItems = await _parsingXml.ParseAsync(dbNext);
 
             _logger.LogInformation($"Concatenating parsed feature items...");
@@ -59,6 +67,9 @@ namespace Rubberduck.API.Services
 
             _logger.LogInformation($"Merging...");
             var merged = _xmlMerge.Merge(mainItems, nextItems);
+
+            _logger.LogInformation($"Formatting code examples...");
+            FormatCodeExamples(merged.SelectMany(m => m.Examples.SelectMany(e => e.Modules)));
 
             _logger.LogInformation($"Saving changes...");
             await _content.SaveFeatureItemsAsync(merged);
@@ -98,6 +109,14 @@ namespace Rubberduck.API.Services
 
             _logger.LogInformation($"Updating installer downloads for all other tags...");
             await _content.SaveTagsAsync(githubTags.Where(tag => tag.Name != main.Name && tag.Name != next.Name));
+        }
+
+        private void FormatCodeExamples(IEnumerable<ExampleModule> modules)
+        {
+            Parallel.ForEach(modules, async module =>
+            {
+                module.HtmlContent = await _syntaxHighlighterService.FormatAsync(module.HtmlContent);
+            });
         }
     }
 }

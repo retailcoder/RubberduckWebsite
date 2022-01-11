@@ -54,7 +54,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             var results = new ConcurrentBag<FeatureItem>();
             Parallel.ForEach(nodes, info =>
             {
-                var xmldoc = new XmlDocInspection(_syntaxHighlighterService, info.name, info.node, info.config, !hasReleased);
+                var xmldoc = new XmlDocInspection(info.name, info.node, info.config, !hasReleased);
                 results.Add(xmldoc.Parse(assetId, featureId, quickFixes));
             });
 
@@ -82,7 +82,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             var results = new ConcurrentBag<FeatureItem>();
             Parallel.ForEach(nodes, info =>
             {
-                var xmldoc = new XmlDocQuickFix(_syntaxHighlighterService, info.name, info.node, !hasReleased);
+                var xmldoc = new XmlDocQuickFix(info.name, info.node, !hasReleased);
                 results.Add(xmldoc.Parse(assetId, featureId));
             });
 

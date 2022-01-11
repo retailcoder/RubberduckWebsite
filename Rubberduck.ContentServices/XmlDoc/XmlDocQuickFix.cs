@@ -5,17 +5,14 @@ using System.Reflection;
 using System.Xml.Linq;
 using Rubberduck.ContentServices.Model;
 using Rubberduck.ContentServices.XmlDoc.Schema;
-using RubberduckServices.Abstract;
 using PublicModel = Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class XmlDocQuickFix : IEquatable<XmlDocQuickFix>
     {
-        public XmlDocQuickFix(ISyntaxHighlighterService syntaxHighlighterService, string name, XElement node, bool isPreRelease)
+        public XmlDocQuickFix(string name, XElement node, bool isPreRelease)
         {
-            SyntaxHighlighterService = syntaxHighlighterService;
-
             SourceObject = name;
             QuickFixName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1).Replace("QuickFix", string.Empty).Trim();
             Summary = node.Element(XmlDocSchema.QuickFix.Summary.ElementName)?.Value.Trim();
@@ -49,6 +46,10 @@ namespace Rubberduck.ContentServices.XmlDoc
             if (applicableScopes.Any())
             {
                 scopeInfo = $"This quickfix addresses the selected inspection result, but can also be applied to all similar inspection results in the following scopes (as a single operation):<ul>{applicableScopes}</ul>";
+            }
+            else
+            {
+                scopeInfo = $"This quickfix can only be applied to a single inspection result at once.";
             }
 
             string inspectionInfo = null;
@@ -105,8 +106,6 @@ namespace Rubberduck.ContentServices.XmlDoc
         public override bool Equals(object obj) => Equals((XmlDocQuickFix)obj);
         public override int GetHashCode() => QuickFixName.GetHashCode();
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
-
         private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes =
             typeof(PublicModel.ExampleModuleType)
                 .GetMembers()
@@ -126,7 +125,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                             ModuleName = m.Attribute(XmlDocSchema.QuickFix.Example.Before.Module.ModuleNameAttribute)?.Value,
                             Description = "(before)",
                             ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.QuickFix.Example.Before.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any),
-                            HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult()
+                            HtmlContent = m.Nodes().OfType<XCData>().Single().Value
                         })
                     .Concat(exampleNode.Element(XmlDocSchema.QuickFix.Example.Before.ElementName)?.Nodes().OfType<XCData>().Take(1).Select(x =>
                         new ExampleModule
@@ -134,7 +133,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                             ModuleName = "Module1",
                             Description = "(before)",
                             ModuleTypeId = (int)PublicModel.ExampleModuleType.Any,
-                            HtmlContent = SyntaxHighlighterService.FormatAsync(x.Value).ConfigureAwait(false).GetAwaiter().GetResult()
+                            HtmlContent = x.Value
                         }));
 
                 var after = exampleNode.Element(XmlDocSchema.QuickFix.Example.After.ElementName)?
@@ -144,7 +143,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                             ModuleName = m.Attribute(XmlDocSchema.QuickFix.Example.After.Module.ModuleNameAttribute)?.Value,
                             Description = "(after)",
                             ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.QuickFix.Example.After.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any),
-                            HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult()
+                            HtmlContent = m.Nodes().OfType<XCData>().Single().Value
                         })
                     .Concat(exampleNode.Element(XmlDocSchema.QuickFix.Example.After.ElementName)?.Nodes().OfType<XCData>().Take(1).Select(x =>
                         new ExampleModule
@@ -152,7 +151,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                             ModuleName = "Module1",
                             Description = "(after)",
                             ModuleTypeId = (int)PublicModel.ExampleModuleType.Any,
-                            HtmlContent = SyntaxHighlighterService.FormatAsync(x.Value).ConfigureAwait(false).GetAwaiter().GetResult()
+                            HtmlContent = x.Value
                         }));
                 results.Add(new BeforeAndAfterCodeExample(before, after));
             }

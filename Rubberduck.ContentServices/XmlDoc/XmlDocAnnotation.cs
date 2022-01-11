@@ -5,17 +5,14 @@ using System.Reflection;
 using System.Xml.Linq;
 using Rubberduck.ContentServices.XmlDoc.Schema;
 using Rubberduck.ContentServices.Model;
-using RubberduckServices.Abstract;
 using PublicModel = Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.XmlDoc
 {
     public class XmlDocAnnotation
     {
-        public XmlDocAnnotation(ISyntaxHighlighterService service, string name, XElement node, bool isPreRelease)
+        public XmlDocAnnotation(string name, XElement node, bool isPreRelease)
         {
-            SyntaxHighlighterService = service;
-
             SourceObject = name;
             IsPreRelease = isPreRelease;
 
@@ -42,8 +39,6 @@ namespace Rubberduck.ContentServices.XmlDoc
 
         public IReadOnlyList<AnnotationArgInfo> Parameters { get; }
         public IReadOnlyList<BeforeAndAfterCodeExample> Examples { get; }
-
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
 
         public FeatureItem Parse(int assetId, int featureId)
         {
@@ -169,7 +164,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             var module = cdataParent.AncestorsAndSelf(XmlDocSchema.Annotation.Example.Module.ElementName).Single();
             var name = module.Attribute(XmlDocSchema.Annotation.Example.Module.ModuleNameAttribute)?.Value;
             var moduleType = (int)(ModuleTypes.TryGetValue(module.Attribute(XmlDocSchema.Annotation.Example.Module.ModuleTypeAttribute)?.Value, out var type) ? type : PublicModel.ExampleModuleType.Any);
-            var code = SyntaxHighlighterService.FormatAsync(cdataParent.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult();
+            var code = cdataParent.Nodes().OfType<XCData>().Single().Value;
             
             var dto = new ExampleModule
             {

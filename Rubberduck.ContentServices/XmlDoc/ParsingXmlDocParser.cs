@@ -6,7 +6,6 @@ using System.Xml.Linq;
 using Rubberduck.ContentServices.XmlDoc.Abstract;
 using Rubberduck.ContentServices.Service.Abstract;
 using Rubberduck.ContentServices.Model;
-using RubberduckServices.Abstract;
 using System.Collections.Concurrent;
 
 namespace Rubberduck.ContentServices.XmlDoc
@@ -14,13 +13,11 @@ namespace Rubberduck.ContentServices.XmlDoc
     public class ParsingXmlDocParser : XmlDocParserBase, IParsingXmlDocParser
     {
         private readonly IContentService _content;
-        private readonly ISyntaxHighlighterService _syntaxHighlighterService;
         
-        public ParsingXmlDocParser(IContentService content, ISyntaxHighlighterService syntaxHighlighterService)
+        public ParsingXmlDocParser(IContentService content)
             : base("Rubberduck.Parsing.xml")
         {
             _content = content;
-            _syntaxHighlighterService = syntaxHighlighterService;
         }
 
         protected override async Task<IEnumerable<FeatureItem>> ParseAsync(int assetId, XDocument document, bool isPreRelease)
@@ -40,7 +37,7 @@ namespace Rubberduck.ContentServices.XmlDoc
             var results = new ConcurrentBag<FeatureItem>();
             Parallel.ForEach(nodes, info =>
             {
-                var xmldoc = new XmlDocAnnotation(_syntaxHighlighterService, info.name, info.node, !hasReleased);
+                var xmldoc = new XmlDocAnnotation(info.name, info.node, !hasReleased);
                 results.Add(xmldoc.Parse(assetId, featureId));
             });
 

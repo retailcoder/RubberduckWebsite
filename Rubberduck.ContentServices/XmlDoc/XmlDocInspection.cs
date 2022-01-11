@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Xml.Linq;
 using Rubberduck.ContentServices.Model;
 using Rubberduck.ContentServices.XmlDoc.Schema;
-using RubberduckServices.Abstract;
 using Rubberduck.Model;
 using PublicModel = Rubberduck.Model.Entities;
 
@@ -16,10 +15,8 @@ namespace Rubberduck.ContentServices.XmlDoc
         private static readonly string _defaultSeverity = "Warning";
         private static readonly string _defaultInspectionType = "CodeQualityIssues";
 
-        public XmlDocInspection(ISyntaxHighlighterService service, string name, XElement node, InspectionDefaultConfig config, bool isPreRelease)
+        public XmlDocInspection(string name, XElement node, InspectionDefaultConfig config, bool isPreRelease)
         {
-            SyntaxHighlighterService = service;
-
             SourceObject = name;
             TypeName = name.Substring(name.LastIndexOf(".", StringComparison.Ordinal) + 1);
 
@@ -69,7 +66,7 @@ namespace Rubberduck.ContentServices.XmlDoc
                 Description = Reasoning,
                 TagAssetId = assetId,
                 XmlDocSummary = Summary,
-                XmlDocInfo = string.Join(",", filteredFixes.Select(fix => fix.Name)),
+                XmlDocInfo = string.Empty,
                 XmlDocRemarks = Remarks,
                 XmlDocSourceObject = SourceObject,
                 XmlDocTabName = InspectionType,
@@ -102,8 +99,6 @@ namespace Rubberduck.ContentServices.XmlDoc
             return dto;
         }
 
-        public ISyntaxHighlighterService SyntaxHighlighterService { get; }
-
         private static readonly IDictionary<string, PublicModel.ExampleModuleType> ModuleTypes = 
             typeof(PublicModel.ExampleModuleType)
                 .GetMembers()
@@ -126,14 +121,14 @@ namespace Rubberduck.ContentServices.XmlDoc
                             .Select(m =>
                                 new ExampleModule
                                 {
-                                    HtmlContent = SyntaxHighlighterService.FormatAsync(m.Nodes().OfType<XCData>().Single().Value).ConfigureAwait(false).GetAwaiter().GetResult(),
+                                    HtmlContent = m.Nodes().OfType<XCData>().Single().Value,
                                     ModuleName = m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleNameAttribute)?.Value,
                                     ModuleTypeId = (int)(ModuleTypes.TryGetValue(m.Attribute(XmlDocSchema.Inspection.Example.Module.ModuleTypeAttribute).Value, out var type) ? type : PublicModel.ExampleModuleType.Any)
                                 })
                             .Concat(e.Nodes().OfType<XCData>().Select(x =>
                                 new ExampleModule
                                 {
-                                    HtmlContent = SyntaxHighlighterService.FormatAsync(x.Value).ConfigureAwait(false).GetAwaiter().GetResult(),
+                                    HtmlContent = x.Value,
                                     ModuleName = "Module1",
                                     ModuleTypeId = (int)PublicModel.ExampleModuleType.Any
                                 }).Take(1)).ToList()

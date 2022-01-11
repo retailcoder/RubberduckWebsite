@@ -51,7 +51,7 @@ namespace RubberduckServices
 
                 var parser = new VBAParser(tokens)
                 {
-                    Interpreter = { PredictionMode = PredictionMode.Ll }
+                    Interpreter = { PredictionMode = PredictionMode.Ll } // slow but accurate
                 };
 
                 var listeners = new IntervalListener[]
