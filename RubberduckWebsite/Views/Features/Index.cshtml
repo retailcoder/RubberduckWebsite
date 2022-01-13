@@ -1,0 +1,40 @@
+﻿@model RubberduckWebsite.Models.FeaturesViewModel
+@{
+    ViewData["Title"] = "Features";
+}
+
+<section class="row">
+    <h2>Rubberduck Features</h2>
+</section>
+
+<section>
+    @foreach (var feature in Model.Features.Keys)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@feature.Title</h3>
+            </div>
+            <div class="card-body">
+                <p>@feature.ElevatorPitch</p>
+                <a class="btn btn-primary" asp-controller="Features" asp-action="Index" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>Details »</a>
+                <img class="card-img-bottom" src="~/images/features/@feature.Name\.png" />
+            </div>
+
+            <div class="card-columns">
+                @foreach (var sub in feature.SubFeatures)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">@sub.Title</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>@sub.ElevatorPitch</p>
+                            <a class="btn btn-secondary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = sub.Name }'>Details »</a>
+                            <img class="card-img-bottom" src="~/images/features/@sub.Name\.png" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</section>

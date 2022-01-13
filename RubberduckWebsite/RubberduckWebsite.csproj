@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Content\" />
+    <Folder Include="wwwroot\images\features\" />
   </ItemGroup>
 
   <ItemGroup>

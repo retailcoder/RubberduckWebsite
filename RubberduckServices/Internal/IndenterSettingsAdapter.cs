@@ -1,5 +1,5 @@
 ﻿using System;
-using RubberduckServices.Abstract;
+using Rubberduck.Model.Abstract;
 
 namespace RubberduckServices.Internal
 {
@@ -7,6 +7,8 @@ namespace RubberduckServices.Internal
     {
         public IndenterSettingsAdapter(IIndenterSettings settings)
         {
+            Code = settings.Code;
+
             ForceDebugPrintInColumn1 = settings.ForceDebugPrintInColumn1;
             VerticallySpaceProcedures = settings.VerticallySpaceProcedures;
             IndentSpaces = settings.IndentSpaces;
@@ -32,6 +34,8 @@ namespace RubberduckServices.Internal
             IndentEntireProcedureBody = settings.IndentEntireProcedureBody;
             LinesBetweenProcedures = settings.LinesBetweenProcedures;
         }
+
+        public string Code { get; set; }
 
         public bool ForceDebugPrintInColumn1 { get; set; }
         public bool VerticallySpaceProcedures { get; set; }

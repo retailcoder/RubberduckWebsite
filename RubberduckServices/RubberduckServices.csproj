@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rubberduck.Model\Rubberduck.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Rubberduck.Parsing">
       <HintPath>Libs\Rubberduck.Parsing.dll</HintPath>
       <Private>true</Private>

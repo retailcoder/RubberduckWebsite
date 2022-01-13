@@ -67,7 +67,7 @@
         $('#update-tags-button').click(function () {
             setTagMetadataBusy(true);
             $.ajax({
-                url: 'Admin/UpdateTagMetadata',
+                url: 'Admin/UpdateTagMetadata', 
                 type: 'POST'
             })
             .done(function (data, textStatus, xhr) {
@@ -114,20 +114,20 @@
             <span id="tag-metadata-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
             <span id="update-tags-button-text">Update</span>
         </button>
-    </div>
+        </div>
 </section>
 
 <section class="row">
     <div class="col-12">
-        <h3>Features</h3>
-        @foreach (var feature in Model.Features)
-        {
+    <h3>Features</h3>
+    @foreach (var feature in Model.Features)
+    {
             <div class="card" style="width: 36rem;">
                 <div class="card-header">
 
                 </div>
 
             </div>
-        }
+    }
     </div>
 </section>

@@ -3,26 +3,41 @@
     ViewData["Title"] = Model.Feature.Title;
 }
 
-<h2>@Model.Feature.Title</h2>
-<p>@Html.Raw(Model.Description)</p>
+<section>
+    <h2>@Model.Feature.Title</h2>
+    <p>@Html.Raw(Model.Description)</p>
+</section>
 
-@foreach (var subFeature in Model.Feature.SubFeatures)
-{
-    <div class="row">
-        <div class="col-4">
-            <h3>@subFeature.Name</h3>
-            <p>@subFeature.ElevatorPitch</p>
-            <a class="btn btn-primary" href="~/Features/@subFeature.Name">Details »</a>
+<section>
+    <div class="card-columns">
+
+        @foreach (var subFeature in Model.Feature.SubFeatures)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">@subFeature.Name</h3>
+                </div>
+                <div class="card-body">
+                    <p>@subFeature.ElevatorPitch</p>
+                    <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = subFeature.Name }'>Details »</a>
+                </div>
+                <img class="card-img-bottom" src="~/images/features/@subFeature.Name\.png" />
+            </div>
+        }
+    </div>
+</section>
+
+<section>
+    @foreach (var item in Model.Feature.FeatureItems)
+    {
+    <div class="card">
+        <div class="card-body">
+            <a class="card-title" asp-controller="Features" asp-action="Item" asp-all-route-data='new Dictionary<string, string> { ["name"] = item.Name }'><h4>@item.Title</h4></a>
+            <p>@item.XmlDocSummary</p>
         </div>
-        <div class="col-8">
-            <!--img alt="@subFeature.Title" /-->
+        <div class="card-footer card-footer-quiet">
+            <a class="btn btn-primary" asp-controller="Features" asp-action="Item" asp-all-route-data='new Dictionary<string, string> { ["name"] = item.Name }'>Details »</a>
         </div>
     </div>
-}
-@foreach (var item in Model.Feature.FeatureItems)
-{
-    <div>
-        <a href="Details/@item.Name"><h4>@item.Name</h4></a>
-        <p>@item.XmlDocSummary</p>
-    </div>
-}
+    }
+</section>

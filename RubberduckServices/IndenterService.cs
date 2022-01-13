@@ -16,10 +16,10 @@ namespace RubberduckServices
             _indenter = indenter;
         }
 
-        public async Task<string[]> IndentAsync(string code, Abstract.IIndenterSettings settings)
+        public async Task<string[]> IndentAsync(Rubberduck.Model.Abstract.IIndenterSettings settings)
         {
             var adapter = new IndenterSettingsAdapter(settings);
-            return await Task.FromResult(_indenter.Indent(code, adapter).ToArray());
+            return await Task.FromResult(_indenter.Indent(adapter.Code, adapter).ToArray());
         }
     }
 }

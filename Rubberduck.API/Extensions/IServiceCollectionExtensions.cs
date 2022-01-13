@@ -1,49 +1,41 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Rubberduck.API.Services.Abstract;
+using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices;
-using Rubberduck.ContentServices.Reader;
-using Rubberduck.ContentServices.Repository.Abstract;
+using Rubberduck.ContentServices.XmlDoc.Abstract;
+using Rubberduck.ContentServices.XmlDoc;
 using Rubberduck.ContentServices.Service.Abstract;
-using Rubberduck.ContentServices.Writer;
-using Rubberduck.Model.Entity;
+using Rubberduck.ContentServices.Service;
 using Rubberduck.SmartIndenter;
+using Rubberduck.API.Services.Abstract;
+using Rubberduck.API.Services;
 using RubberduckServices.Abstract;
+using RubberduckServices;
 
 namespace Rubberduck.API.Extensions
 {
     internal static class IServiceCollectionExtensions
     {
-        public static void RegisterApiServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        public static void RegisterApiServices(this IServiceCollection services, IConfiguration configuration/*, IWebHostEnvironment environment*/)
         {
             var connectionString = configuration.GetConnectionString("RubberduckDb");
-            services.AddScoped<IReaderDbContext, DbContext>(provider => new DbContext(connectionString));
-            services.AddScoped<IWriterDbContext, DbContext>(provider => new DbContext(connectionString));
+            services.AddDbContext<RubberduckDbContext>(options => options.UseSqlServer(connectionString));
 
             // API.Services
-            services.AddScoped<IContentServices, Services.ContentServices>();
-            services.AddScoped<IGitHubDataServices, Services.GitHubDataServices>();
-            services.AddScoped<IXmlDocServices, Services.XmlDocServices>();
+            services.AddScoped<IContentService, ContentService>();
+            services.AddScoped<IGitHubDataServices, GitHubDataServices>();
+            services.AddScoped<IXmlDocServices, XmlDocServices>();
 
             // ContentServices
-            services.AddScoped<IContentReaderService<Feature>, FeatureContentReaderService>();
-            services.AddScoped<IContentReaderService<FeatureItem>, FeatureItemContentReaderService>();
-            services.AddScoped<IContentReaderService<Tag>, ReleaseTagContentReaderService>();
-            services.AddScoped<IContentReaderService<TagAsset>, TagAssetContentReaderService>();
-            services.AddScoped<IContentReaderService<Example>, ExampleContentReaderService>();
-            services.AddScoped<IContentReaderService<ExampleModule>, ExampleModuleContentReaderService>();
 
-            services.AddScoped<IContentWriterService<Feature>, FeatureContentWriterService>();
-            services.AddScoped<IContentWriterService<FeatureItem>, FeatureItemContentWriterService>();
-            services.AddScoped<IContentWriterService<Example>, ExampleContentWriterService>();
-            services.AddScoped<IContentWriterService<ExampleModule>, ExampleModuleContentWriterService>();
-            services.AddScoped<IContentWriterService<Tag>, TagContentWriterService>();
-            services.AddScoped<IContentWriterService<TagAsset>, TagAssetContentWriterService>();
+            services.AddScoped<ICodeAnalysisXmlDocParser, CodeAnalysisXmlDocParser>();
+            services.AddScoped<IParsingXmlDocParser, ParsingXmlDocParser>();
+            services.AddScoped<IXmlDocMerge, XmlDocMerge>();
 
             // RubberduckServices
-            services.AddScoped<ISyntaxHighlighterService, RubberduckServices.SyntaxHighlighterService>();
-            services.AddScoped<IIndenterService, RubberduckServices.IndenterService>();
+            services.AddScoped<ISyntaxHighlighterService, SyntaxHighlighterService>();
+            services.AddScoped<IIndenterService, IndenterService>();
             services.AddScoped<ISimpleIndenter, SimpleIndenter>();
         }
     }
