@@ -1,0 +1,8 @@
+﻿@model RubberduckWebsite.Models.FeatureItemViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<p>@Html.Raw(Model.Description)</p>
+<p>@Html.Raw(Model.XmlDocInfo)</p>
