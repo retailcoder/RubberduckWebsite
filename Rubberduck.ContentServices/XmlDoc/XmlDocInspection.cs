@@ -88,8 +88,8 @@ namespace Rubberduck.ContentServices.XmlDoc
             /* TODO
             if (QuickFixes.Any())
             {
-                var sorted = QuickFixes.OrderBy(fix => fix.QuickFixName.StartsWith("IgnoreOnce") ? "__0" : fix.QuickFixName);
-                var fixes = string.Join(" ", sorted.Select(fix => $"<li>{(fix.QuickFixName.StartsWith("IgnoreOnce") ? "<span class=\"icon icon-ignoreonce\"></span>" : "<span class=\"icon icon-tick\"></span>")}<a href=\"https://rubberduckvba.com/QuickFixes/Details/{fix.QuickFixName}\">{fix.QuickFixName}</a>: {fix.Summary}</li>"));
+                var sorted = filteredFixes.OrderBy(fix => fix.Name.StartsWith("IgnoreOnce") ? "__0" : fix.Name);
+                var fixes = string.Join(" ", sorted.Select(fix => $"<li>{(fix.Name.StartsWith("IgnoreOnce") ? "<span class=\"icon icon-ignoreonce\"></span>" : "<span class=\"icon icon-tick\"></span>")}<a href=\"{fix.Name}\">{fix.Name}</a>: {fix.XmlDocSummary}</li>"));
                 dto.XmlDocInfo += $"<div><h5>Quick-Fixes</h5><p>The following quick-fixes are available for this inspection:</p><ul style=\"margin-left: 8px; list-style: none;\">{fixes}</ul></div>";
             }
             */

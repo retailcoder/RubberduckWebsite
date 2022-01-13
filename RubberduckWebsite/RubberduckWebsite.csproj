@@ -9,7 +9,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rubberduck.Client\Rubberduck.Client.csproj" />
     <ProjectReference Include="..\Rubberduck.Model\Rubberduck.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Content\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MarkdownSharp" Version="2.0.5" />
   </ItemGroup>
 
 </Project>
