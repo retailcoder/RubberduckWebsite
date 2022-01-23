@@ -13,16 +13,18 @@
 
         @foreach (var subFeature in Model.Feature.SubFeatures)
         {
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">@subFeature.Name</h3>
-                </div>
-                <div class="card-body">
-                    <p>@subFeature.ElevatorPitch</p>
-                    <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = subFeature.Name }'>Details »</a>
-                </div>
-                <img class="card-img-bottom" src="~/images/features/@subFeature.Name\.png" />
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@subFeature.Name</h3>
             </div>
+            <div class="card-body">
+                <p>@subFeature.ElevatorPitch</p>
+                <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = subFeature.Name }'>Details »</a>
+            </div>
+            <div class="card-img-bottom">
+                <img alt="Screenshot showcasing the @subFeature.Title feature" class="img-thumbnail" src="~/images/features/@(subFeature.Name).png" />
+            </div>
+        </div>
         }
     </div>
 </section>

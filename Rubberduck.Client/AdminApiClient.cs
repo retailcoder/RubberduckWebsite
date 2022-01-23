@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,10 @@ namespace Rubberduck.Client
         protected override HttpClient GetClient()
         {
             // TODO add authentication headers
-            return base.GetClient();
+            var client = base.GetClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentTypeApplicationJson));
+            client.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));
+            return client;
         }
 
         public async Task<Feature> SaveFeatureAsync(Feature dto)

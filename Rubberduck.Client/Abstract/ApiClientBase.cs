@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,8 @@ namespace Rubberduck.Client.Abstract
 {
     public abstract class ApiClientBase
     {
+        public const string ContentTypeApplicationJson = "application/json";
+
         private readonly ILogger _logger;
         private readonly string _baseUrl;
         protected TimeSpan GetRequestTimeout { get; }
@@ -87,7 +90,7 @@ namespace Rubberduck.Client.Abstract
                 using (var client = GetClient())
                 {
                     client.Timeout = PostRequestTimeout;
-                    using (var response = await client.PostAsync(uri, new StringContent(json)))
+                    using (var response = await client.PostAsync(uri, new StringContent(json, Encoding.UTF8, ContentTypeApplicationJson)))
                     {
                         response.EnsureSuccessStatusCode();
                         using (var stream = await response.Content.ReadAsStreamAsync())

@@ -1,0 +1,121 @@
+﻿@model RubberduckWebsite.Models.EditFeatureViewModel
+@{
+    ViewData["Title"] = Model.IsPersisted ? "Edit Feature" : "New Feature";
+}
+
+<section>
+    <h2>@ViewData["Title"]</h2>
+</section>
+
+<section class="row">
+
+    <div class="card w-100">
+        <div class="card-header">
+            <h5 class="card-title">Screenshot</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">Select a .png image file to upload for this feature.</p>
+            <small class="card-text text-muted">File will be renamed after the feature on the server.</small>
+            <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
+                <input type="hidden" id="feature-name" name="featureName" value="@Model.Name" hidden />
+                <input type="file" class="form-control" id="screenshot" name="screenshotFile" required />
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </form>
+        </div>
+        <div class="card-img-bottom">
+            <img class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
+        </div>
+    </div>
+
+    <div class="card w-100">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="SaveFeature">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="feature-name">Name</label>
+                        @if (Model.IsPersisted)
+                        {
+                            <small id="feature-name-help" class="form-text text-muted">This field is read-only</small>
+                            <input id="feature-name" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required readonly />
+                        }
+                        else
+                        {
+                            <small id="feature-name-help" class="form-text text-muted">Choose well: appears in URLs, cannot be modified.</small>
+                            <input id="feature-name" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required />
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label for="feature-parent">Parent</label>
+                        <small id="feature-parent-help" class="form-text text-muted">If this is a sub-feature, select its parent. Leave empty for a top-level feature.</small>
+                        <select id="feature-parent" class="form-control" name="ParentFeatureName" value="@Model.ParentFeatureName">
+                            <option>(none)</option>
+                            @foreach (var name in Model.TopLevelFeatures)
+                            {
+                                <option>@name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="feature-title">Title</label>
+                        <small id="feature-title-help" class="form-text text-muted">The display name of the feature.</small>
+                        <input id="feature-title" type="text" maxlength="255" class="form-control" name="Title" value="@Model.Title" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="feature-elevator-pitch">Elevator Pitch</label>
+                        <small id="feature-elevator-pitch-help" class="form-text text-muted">A short paragraph (2-3 sentences) that summarily describes the feature.</small>
+                        <textarea id="feature-elevator-pitch" maxlength="1023" class="form-control" rows="4" name="ElevatorPitch" required>@Model.ElevatorPitch</textarea>
+                    </div>
+                    <div class="form-group">
+                        <input id="feature-isnew" type="checkbox" class="form-check-input-nooffset" name="IsNew" value="@Model.IsNew" />
+                        <label for="feature-isnew" class="form-check-label">Mark as <span class="badge badge-primary">new</span></label>
+                        <small id="feature-isnew-help" class="form-text text-muted">Should be checked for a feature that only exists in pre-release builds.</small>
+                    </div>
+                    <div class="form-group">
+                        <input id="feature-ishidden" type="checkbox" class="form-check-input-nooffset" name="IsHidden" value="@Model.IsHidden" />
+                        <label for="feature-ishidden" class="form-check-label">Hidden</label>
+                        <small id="feature-ishidden-help" class="form-text text-muted">Check to hide this feature on the site.</small>
+                    </div>
+                    <div class="form-group">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a id="formtab-edit" class="nav-link active" style="padding: .5rem 1rem;" href="#edit" role="tab" data-toggle="tab" aria-controls="edit" aria-selected="true">Edit</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a id="formtab-preview" class="nav-link" style="padding: .5rem 1rem;" href="#preview" role="tab" data-toggle="tab" aria-controls="preview" aria-selected="false">Preview</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <label for="feature-description">Description</label>
+                                <small id="feature-description-help" class="form-text text-muted">This field contains a Markdown document; go wild!</small>
+                                <div id="nav-tabcontent" class="tab-content">
+                                    <div id="edit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="formtab-edit">
+                                        <textarea id="feature-description" maxlength="32767" class="form-control" rows="20" name="Description" required>@Model.Description</textarea>
+                                    </div>
+                                    <div id="preview" class="tab-pane fade" role="tabpanel" aria-labelledby="formtab-preview">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h2 id="preview-title">@Model.Title</h2>
+                                                <p id="preview-description">@Html.Raw(Model.DescriptionAsHtml)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="feature-sort-order">Sort Order</label>
+                        <small id="feature-sort-order-help" class="form-text text-muted">Same-value features are sorted alphabetically by their <code>Name</code>.</small>
+                        <input id="feature-sort-order" type="number" min="0" max="999" class="form-control" name="SortOrder" value="@Model.SortOrder" />
+                    </div>
+                </fieldset>
+                <button class="btn btn-primary" type="submit">Submit</button>
+                <a id="cancel-button" class="btn btn-secondary" asp-controller="Admin" asp-action="Index">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+</section>
