@@ -42,9 +42,37 @@ namespace Rubberduck.Client
             }
         }
 
+        public async Task<Feature> DeleteFeatureAsync(Feature dto)
+        {
+            var endpoint = "Admin/DeleteFeature";
+
+            try
+            {
+                return await Post(endpoint, dto);
+            }
+            catch (ApiException)
+            {
+                return null;
+            }
+        }
+
         public async Task<FeatureItem> SaveFeatureItemAsync(FeatureItem dto)
         {
             var endpoint = "Admin/SaveFeatureItem";
+
+            try
+            {
+                return await Post(endpoint, dto);
+            }
+            catch (ApiException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<FeatureItem> DeleteFeatureItemAsync(FeatureItem dto)
+        {
+            var endpoint = "Admin/DeleteFeatureItem";
 
             try
             {

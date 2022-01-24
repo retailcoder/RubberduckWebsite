@@ -2,32 +2,54 @@
 @{
     ViewData["Title"] = Model.IsPersisted ? "Edit Feature" : "New Feature";
 }
-
+@section Scripts {
+    <script type='text/javascript'>
+    $(document).ready(function () {
+        $('#feature-parent').val('@Model.ParentFeatureName');
+        $('#formtab-preview').click(function () {
+            var data = {};
+            data.markdownContent = $('#feature-description').val();
+            $.ajax({
+                url: 'MarkdownPreview',
+                data: JSON.stringify(data),
+                cache: false,
+                dataType: 'text',
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST'
+            })
+                .then(function (response) {
+                    $('#preview-description').html(response);
+                });
+        });
+    });
+    </script>
+}
 <section>
     <h2>@ViewData["Title"]</h2>
 </section>
 
 <section class="row">
-
-    <div class="card w-100">
-        <div class="card-header">
-            <h5 class="card-title">Screenshot</h5>
+    @if (Model.IsPersisted)
+    {
+        <div class="card w-100 m-2">
+            <div class="card-header">
+                <h5 class="card-title">Screenshot</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Select a .png image file to upload for this feature.</p>
+                <small class="card-text text-muted">File will be renamed after the feature on the server.</small>
+                <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
+                    <input type="hidden" id="feature-name-edit" name="featureName" value="@Model.Name" hidden />
+                    <input type="file" class="form-control" id="screenshot" name="screenshotFile" required />
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </form>
+            </div>
+            <div class="card-img-bottom">
+                <img class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
+            </div>
         </div>
-        <div class="card-body">
-            <p class="card-text">Select a .png image file to upload for this feature.</p>
-            <small class="card-text text-muted">File will be renamed after the feature on the server.</small>
-            <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
-                <input type="hidden" id="feature-name" name="featureName" value="@Model.Name" hidden />
-                <input type="file" class="form-control" id="screenshot" name="screenshotFile" required />
-                <button class="btn btn-primary" type="submit">Upload</button>
-            </form>
-        </div>
-        <div class="card-img-bottom">
-            <img class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
-        </div>
-    </div>
-
-    <div class="card w-100">
+    }
+    <div class="card w-100 m-2">
         <div class="card-body">
             <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="SaveFeature">
                 <fieldset>
@@ -36,22 +58,22 @@
                         @if (Model.IsPersisted)
                         {
                             <small id="feature-name-help" class="form-text text-muted">This field is read-only</small>
-                            <input id="feature-name" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required readonly />
+                            <input id="feature-name-label" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required readonly />
                         }
                         else
                         {
                             <small id="feature-name-help" class="form-text text-muted">Choose well: appears in URLs, cannot be modified.</small>
-                            <input id="feature-name" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required />
+                            <input id="feature-name-create" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required />
                         }
                     </div>
                     <div class="form-group">
                         <label for="feature-parent">Parent</label>
                         <small id="feature-parent-help" class="form-text text-muted">If this is a sub-feature, select its parent. Leave empty for a top-level feature.</small>
                         <select id="feature-parent" class="form-control" name="ParentFeatureName" value="@Model.ParentFeatureName">
-                            <option>(none)</option>
+                            <option value="null">(none)</option>
                             @foreach (var name in Model.TopLevelFeatures)
                             {
-                                <option>@name</option>
+                                <option value="@name">@name</option>
                             }
                         </select>
                     </div>
@@ -98,7 +120,9 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <h2 id="preview-title">@Model.Title</h2>
-                                                <p id="preview-description">@Html.Raw(Model.DescriptionAsHtml)</p>
+                                                <div id="preview-description">
+                                                    <p>@Html.Raw(Model.DescriptionAsHtml)</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -118,4 +142,53 @@
         </div>
     </div>
 
+    <div class="row">
+        @if (Model.IsPersisted)
+        {
+        <div class="card w-100 text-center m-2">
+            <div class="card-header">
+                <a class="card-title text-danger" href="#collapse-feature-danger-zone" role="button" aria-expanded="false" aria-controls="collapse-feature-danger-zone" data-toggle="collapse"><strong>Danger Zone</strong></a>
+            </div>
+            <div class="collapse">
+                <div id="collapse-feature-danger-zone" class="card-body">
+                    @if (!Model.IsProtected)
+                    {
+                        <p class="card-text text-danger">This action cannot be undone!</p>
+                        <a class="btn btn-outline-danger" asp-controller="Admin" asp-action="DeleteFeature">Delete the @Model.Name feature and all associated data</a>
+                    }
+                    else
+                    {
+                        <p class="card-text text-small">This feature is protected and cannot be deleted.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+    </div>
 </section>
+
+@if (!Model.IsProtected)
+{
+<section class="row">
+    <div class="card w-100 m-2">
+        <div class="card-header">
+            <h5 class="card-title">Feature Items</h5>
+            <p class="card-text">Feature items are child elements that render differently than sub-features. Features and sub-features alike may have such items.</p>
+            <p class="card-text">For protected features, items are provided by XML documentation in the source code and cannot be edited here.</p>
+        </div>
+        <div class="card-body">
+            @foreach (var item in Model.FeatureItems)
+            {
+                <div class="card m-2">
+                    <div class="card-header">
+                        <h6 class="card-title">@item.Name</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@item.Description</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+}

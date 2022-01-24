@@ -136,10 +136,12 @@ namespace Rubberduck.ContentServices.Service
                 };
 
                 await _context.Features.AddAsync(entity);
+                await _context.SaveChangesAsync();
                 return entity.ToPublicModel();
             }
 
             existing.DateUpdated = DateTime.UtcNow;
+            existing.ParentId = model.ParentId;
             existing.Description = model.Description;
             existing.ElevatorPitch = model.ElevatorPitch;
             existing.IsHidden = model.IsHidden;
@@ -282,6 +284,48 @@ namespace Rubberduck.ContentServices.Service
             // no need to update assets, asset download url should be immutable.
 
             return existing.ToPublicModel();
+        }
+
+        public async Task<Feature> DeleteFeatureAsync(Feature model)
+        {
+            var existing = await _context.Features.AsTracking().SingleOrDefaultAsync(e => e.Id == model.Id);
+            if (existing is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                _context.Features.Remove(existing);
+                await _context.SaveChangesAsync();
+
+                return model;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<FeatureItem> DeleteFeatureItemAsync(FeatureItem model)
+        {
+            var existing = await _context.FeatureItems.AsTracking().SingleOrDefaultAsync(e => e.Id == model.Id);
+            if (existing is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                _context.FeatureItems.Remove(existing);
+                await _context.SaveChangesAsync();
+
+                return model;
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

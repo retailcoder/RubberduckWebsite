@@ -50,11 +50,23 @@
             </summary>
             <param name="dto">The feature (or sub-feature) to save.</param>
         </member>
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.DeleteAsync(Rubberduck.Model.Entities.Feature)">
+            <summary>
+            Deletes the specified feature (or sub-feature).
+            </summary>
+            <param name="dto">The feature (or sub-feature) to delete.</param>
+        </member>
         <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.Entities.FeatureItem)">
             <summary>
             Creates a new feature item, or updates an existing one.
             </summary>
             <param name="dto">The feature item to save.</param>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.DeleteAsync(Rubberduck.Model.Entities.FeatureItem)">
+            <summary>
+            Deletes the specified feature item.
+            </summary>
+            <param name="dto">The feature item to delete.</param>
         </member>
         <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.UpdateXmlDocContentAsync">
             <summary>

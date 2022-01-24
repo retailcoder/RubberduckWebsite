@@ -130,8 +130,9 @@ namespace RubberduckWebsite.Controllers
         {
             try
             {
-                await _apiClient.SaveFeatureAsync(vm.GetModel());
-                return View("Feature", vm);
+                var features = await _apiClient.GetFeaturesAsync();
+                var model = await _apiClient.SaveFeatureAsync(vm.GetModel(features));
+                return View("Feature", new EditFeatureViewModel(model, features));
             }
             catch(Exception exception)
             {
@@ -139,6 +140,56 @@ namespace RubberduckWebsite.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteFeature(string name)
+        {
+            try
+            {
+                var model = await _apiClient.GetFeatureAsync(name);
+                if (model is null)
+                {
+                    return NotFound();
+                }
+                var result = await _apiClient.DeleteFeatureAsync(model);
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                return Problem(exception.ToString());
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteFeatureItem(string name)
+        {
+            try
+            {
+                var model = await _apiClient.GetFeatureItemAsync(name);
+                if (model is null)
+                {
+                    return NotFound();
+                }
+                if (model.Feature.IsProtected)
+                {
+                    return BadRequest();
+                }
+
+                var result = await _apiClient.DeleteFeatureItemAsync(model);
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                return Problem(exception.ToString());
+            }
+        }
+
+        [HttpPost]
+        [Route("Edit/MarkdownPreview")]
+        public async Task<IActionResult> MarkdownPreview([FromBody] MarkdownPreviewViewModel vm)
+        {
+            var html = new MarkdownSharp.Markdown().Transform(vm.MarkdownContent);
+            return await Task.FromResult(Ok(html));
+        }
 
         [HttpPost]
         public async Task<IActionResult> UploadScreenshot(string featureName, IFormFile screenshotFile)

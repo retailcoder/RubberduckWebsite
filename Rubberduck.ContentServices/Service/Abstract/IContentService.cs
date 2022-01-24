@@ -38,5 +38,8 @@ namespace Rubberduck.ContentServices.Service.Abstract
         Task<PublicModel.Example> SaveExampleAsync(PublicModel.Example model);
         Task<PublicModel.ExampleModule> SaveExampleModuleAsync(PublicModel.ExampleModule model);
         Task<IEnumerable<PublicModel.Tag>> SaveTagsAsync(IEnumerable<PublicModel.Tag> models);
+
+        Task<PublicModel.Feature> DeleteFeatureAsync(PublicModel.Feature model);
+        Task<PublicModel.FeatureItem> DeleteFeatureItemAsync(PublicModel.FeatureItem model);
     }
 }

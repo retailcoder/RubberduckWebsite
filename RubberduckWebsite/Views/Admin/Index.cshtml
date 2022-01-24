@@ -120,7 +120,9 @@
             <p>
                 Use this page to organize and maintain features and their respective sub-features.
             </p>
-            <a id="create-feature-button" class="btn btn-success" asp-controller="Admin" asp-action="EditFeature">Add top-level feature</a>
+            <div class="row m-2">
+                <a id="create-feature-button" class="btn btn-success" asp-controller="Admin" asp-action="NewFeature">Add top-level feature</a>
+            </div>
         </div>
         @foreach (var feature in Model.Features)
         {
@@ -128,31 +130,36 @@
                 <div class="card-header">
                     <h4 class="d-inline">@feature.Title</h4>
                     <a id="edit-feature-button-@feature.Name" class="btn btn-outline-primary float-left" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{feature.Name}" }'>Edit</a>
+                    <a id="expand-feature-button-@feature.Name" class="btn btn-primary float-right" href="#collapse-@feature.Name" role="button" aria-expanded="false" aria-controls="collapse-@feature.Name" data-toggle="collapse">Expand</a>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">@feature.ElevatorPitch</p>
-                    <img alt="Screenshot showcasing the @feature.Title feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
+                <div class="collapse" id="collapse-@feature.Name">
+                    <div class="card-body">
+                        <p class="card-text">@feature.ElevatorPitch</p>
+                        <img alt="Screenshot showcasing the @feature.Title feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
 
-                    @foreach (var sub in feature.SubFeatures)
-                    {
-                        <div id="@sub.Name" class="card">
-                            <div class="card-header bg-light">
-                                <h5 class="d-inline">@sub.Title</h5>
-                                <a id="edit-subfeature-button-@sub.Name" class="btn btn-outline-primary float-left" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{sub.Name}" }'>Edit</a>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">@sub.ElevatorPitch</p>
+                        <div>
+                            <h5>Sub-Features</h5>
+                            @foreach (var sub in feature.SubFeatures)
+                            {
+                                <div id="@sub.Name" class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="d-inline">@sub.Title</h5>
+                                        <a id="edit-subfeature-button-@sub.Name" class="btn btn-outline-primary float-left" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{sub.Name}" }'>Edit</a>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">@sub.ElevatorPitch</p>
+                                    </div>
+                                </div>
+                            }
+
+                            <div id="@feature.Name-new-subfeature" class="card">
+                                <div class="card-body">
+                                    <a id="add-subfeature-button-@feature.Name" class="btn btn-outline-success float-left" asp-controller="Admin" asp-action="NewSubFeature" asp-all-route-data='@new Dictionary<string, string> { ["parentName"] = $"{feature.Name}" }'>Add sub-feature</a>
+                                </div>
                             </div>
                         </div>
-                    }
 
-                    <div id="@feature.Name-new-subfeature" class="card">
-                        <div class="card-bodyy">
-                            <a id="add-subfeature-button-@feature.Name" class="btn btn-outline-success float-left" asp-controller="Admin" asp-action="NewSubFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{feature.Name}" }'>Add sub-feature</a>
-                        </div>
                     </div>
-
-
                 </div>
             </div>
         }

@@ -21,5 +21,14 @@ namespace Rubberduck.Client.Abstract
         /// Creates a new feature item, or updates an existing one.
         /// </summary>
         Task<FeatureItem> SaveFeatureItemAsync(FeatureItem dto);
+
+        /// <summary>
+        /// Deletes a non-protected feature and all data associated to it.
+        /// </summary>
+        Task<Feature> DeleteFeatureAsync(Feature dto);
+        /// <summary>
+        /// Deletes a feature item and all data associated to it.
+        /// </summary>
+        Task<FeatureItem> DeleteFeatureItemAsync(FeatureItem dto);
     }
 }

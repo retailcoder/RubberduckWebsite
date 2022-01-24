@@ -17,12 +17,14 @@ namespace RubberduckWebsite.Models
         {
             _feature = feature;
             _topLevelFeatures = features.Where(e => e.ParentId is null).ToDictionary(e => e.Name, e => e);
+
+            ParentFeatureName = feature.ParentFeature?.Name;
         }
 
         public bool IsPersisted => _feature.Id != default;
         public IEnumerable<string> TopLevelFeatures => _topLevelFeatures.Keys.ToArray();
 
-        public int Id 
+        public int Id
         {
             get => _feature.Id;
             set => _feature.Id = value;
@@ -35,7 +37,7 @@ namespace RubberduckWebsite.Models
         }
 
         private string _parentFeatureName;
-        public string ParentFeatureName 
+        public string ParentFeatureName
         {
             get => _parentFeatureName;
             set
@@ -46,7 +48,7 @@ namespace RubberduckWebsite.Models
                     _feature.ParentFeature = null;
                     _feature.ParentId = null;
                 }
-                else if(_topLevelFeatures.Any())
+                else if (_topLevelFeatures.Any())
                 {
                     var parent = _topLevelFeatures[value];
                     _feature.ParentFeature = parent;
@@ -64,7 +66,19 @@ namespace RubberduckWebsite.Models
         public bool IsHidden { get => _feature.IsHidden; set => _feature.IsHidden = value; }
         public int SortOrder { get => _feature.SortOrder; set => _feature.SortOrder = value; }
 
+        public bool IsProtected => Feature.ProtectedFeatures.Contains(Name);
 
-        public Feature GetModel() => _feature;
+        public IEnumerable<FeatureItem> FeatureItems => _feature.FeatureItems;
+
+        public Feature GetModel(IEnumerable<Feature> features)
+        {
+            if (_parentFeatureName != null && _parentFeatureName != "(none)")
+            {
+                var parent = features.SingleOrDefault(e => e.Name == _parentFeatureName);
+                _feature.ParentFeature = parent;
+                _feature.ParentId = parent?.Id;
+            }
+            return _feature;
+        }
     }
 }

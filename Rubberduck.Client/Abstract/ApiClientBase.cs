@@ -95,7 +95,8 @@ namespace Rubberduck.Client.Abstract
                         response.EnsureSuccessStatusCode();
                         using (var stream = await response.Content.ReadAsStreamAsync())
                         {
-                            return (TResult)await JsonSerializer.DeserializeAsync(stream, typeof(TResult));
+                            var result = (TResult)await JsonSerializer.DeserializeAsync(stream, typeof(TResult), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            return result;
                         }
                     }
                 }
