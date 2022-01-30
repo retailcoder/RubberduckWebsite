@@ -17,7 +17,7 @@
             <div class="card-body">
                 <p>@feature.ElevatorPitch</p>
                 <a class="btn btn-primary" asp-controller="Features" asp-action="Index" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>Details »</a>
-                <img class="card-img-bottom" src="~/images/features/@feature.Name\.png" />
+                <img class="card-img card-img-bottom img-thumbnail" src="~/images/features/@(feature.Name).png" />
             </div>
 
             <div class="card-columns">
@@ -30,7 +30,7 @@
                         <div class="card-body">
                             <p>@sub.ElevatorPitch</p>
                             <a class="btn btn-secondary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = sub.Name }'>Details »</a>
-                            <img class="card-img-bottom" src="~/images/features/@sub.Name\.png" />
+                            <img class="card-img card-img-bottom img-thumbnail" src="~/images/features/@(sub.Name).png" />
                         </div>
                     </div>
                 }

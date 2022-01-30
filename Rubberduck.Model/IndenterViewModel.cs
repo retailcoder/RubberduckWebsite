@@ -9,6 +9,11 @@ namespace Rubberduck.Model
     public class IndenterViewModel : IIndenterSettings
     {
         /// <summary>
+        /// The assembly version for Rubberduck.SmartIndenter.dll
+        /// </summary>
+        public string IndenterVersion { get; set; }
+
+        /// <summary>
         /// The code to indent. Expects <c>\r\n</c> line endings.
         /// </summary>
         public string Code { get; set; }

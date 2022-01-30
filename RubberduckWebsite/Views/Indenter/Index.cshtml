@@ -1,0 +1,89 @@
+﻿@model Rubberduck.Model.IndenterViewModel
+@{
+    ViewData["Title"] = "Indenter";
+}
+@section Scripts {
+    <script type="text/javascript">
+    function setIndenterBusy(setBusy) {
+        var button = $('#indent-button');
+        var indicator = $('#indent-busy-indicator');
+
+        if (setBusy) {
+            button.attr('disabled', true);
+            button.addClass('disabled');
+            $('#indent-button-text').text('Processing...');
+            indicator.removeAttr('hidden');
+        }
+        else {
+            button.removeClass('disabled');
+            button.removeAttr('disabled');
+            button.text('Indent');
+            indicator.attr('hidden', true);
+        }
+    }
+
+    $(document).ready(function () {
+        $('#indent-button').click(function () {
+            setIndenterBusy(true);
+
+            var jsonData = {};
+            jsonData.code = $('#indent-code').val();
+            jsonData.indentSpaces = $('#indent-spaces').val();
+
+            $.ajax({
+                url: 'Indent',
+                type: 'POST',
+                data: JSON.stringify(jsonData),
+                dataType: 'text',
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST'
+            })
+            .done(function (data, textStatus, xhr) {
+                $('#indent-code').val(JSON.parse(data).join("\n"));
+            })
+            .fail(function (data, textStatus, xhr) {
+                $('#indent-error-message').text(xhr);
+                $('#indent-error-alert').addClass('show');
+                console.log(xhr);
+            })
+            .always(function () {
+                setIndenterBusy(false);
+            });
+        });
+    });
+
+    </script>
+}
+
+<section class="row">
+    <div class="w-100">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Indenter Settings</h5>
+                <small class="card-text text-muted">Rubberduck.SmartIndenter.dll version: @Model.IndenterVersion</small>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="form-group">
+                        <label class="form-text" for="indent-spaces">Indent spaces</label>
+                        <small class="text-muted form-text">Indentation step size</small>
+                        <input id="indent-spaces" type="text" name="indentSpaces" value="@Model.IndentSpaces" />
+                    </div>
+                    <div>
+                        <label class="form-text" for="indent-code">Paste code to indent here:</label>
+                        <textarea id="indent-code" type="text" class="form-control text-monospace" rows="10" name="code">@Model.Code</textarea>
+                    </div>
+                    <button id="indent-button" class="btn btn-primary m-1" type="button">
+                        <span id="indent-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                        <span id="indent-button-text">Indent</span>
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer card-footer-quiet">
+                <div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
+using Rubberduck.Model;
 using Rubberduck.Model.Abstract;
 using Rubberduck.Model.Entities;
 
@@ -85,6 +86,20 @@ namespace Rubberduck.Client
             try
             {
                 return await GetResponse<FeatureItem>(endpoint);
+            }
+            catch (ApiException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<IndenterViewModel> GetDefaultIndenterSettings()
+        {
+            var endpoint = $"Public/DefaultIndenterSettings";
+
+            try
+            {
+                return await GetResponse<IndenterViewModel>(endpoint);
             }
             catch (ApiException)
             {

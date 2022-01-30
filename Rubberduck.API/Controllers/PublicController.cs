@@ -153,5 +153,37 @@ namespace Rubberduck.API.Controllers
                 return Problem("An error has been logged while indenting the provided code.", statusCode: 500);
             }
         }
+
+        [HttpGet]
+        [Route("DefaultIndenterSettings")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(string[]), 200)]
+        public async Task<ActionResult<IndenterViewModel>> GetDefaultIndenterSettingsViewModel()
+        {
+            try
+            {
+                var result = new IndenterViewModel
+                {
+                    IndenterVersion = _indenterService.IndenterVersion(),
+                    Code = "Option Explicit\n\nPublic Sub DoSomething()\nEnd Sub\nPublic Sub DoSomethingElse()\n\nEnd Sub\n",
+                    AlignCommentsWithCode = true,
+                    EmptyLineHandlingMethod = Model.Abstract.IndenterEmptyLineHandling.Indent,
+                    ForceCompilerDirectivesInColumn1 = true,
+                    GroupRelatedProperties = true,
+                    IndentSpaces = 4,
+                    IndentCase = true,
+                    IndentEntireProcedureBody = true,
+                    IndentEnumTypeAsProcedure = true,
+                    VerticallySpaceProcedures = true,
+                    LinesBetweenProcedures = 1,                    
+                };
+                return await Task.FromResult(Ok(result));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "A Problem (500) result will be returned.");
+                return Problem("An error has been logged while creating a viewmodel for indenter settings.", statusCode: 500);
+            }
+        }
     }
 }

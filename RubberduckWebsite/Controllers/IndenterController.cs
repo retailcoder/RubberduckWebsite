@@ -11,14 +11,10 @@ namespace RubberduckWebsite.Controllers
     [Route("{controller}")]
     public class IndenterController : PublicApiClientController<object>
     {
-        public IndenterController(ILogger<IndenterController> logger, IPublicApiClient apiClient)
+        public IndenterController(
+            ILogger<IndenterController> logger, 
+            IPublicApiClient apiClient)
             : base(logger, apiClient) { }
-
-        public override async Task<IActionResult> Index()
-        {
-            var vm = new IndenterViewModel();
-            return View(vm);
-        }
 
         [HttpPost]
         [Route("/Indent")]
@@ -28,7 +24,7 @@ namespace RubberduckWebsite.Controllers
             return Ok(result);
         }
 
-        protected override Task<object> GetViewModelAsync() =>
-            throw new NotSupportedException();
+        protected override async Task<object> GetViewModelAsync() =>
+            await ApiClient.GetDefaultIndenterSettings();
     }
 }

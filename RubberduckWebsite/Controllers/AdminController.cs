@@ -43,6 +43,7 @@ namespace RubberduckWebsite.Controllers
         {
             try
             {
+                _logger.LogInformation("Beginning tag metadata update task...");
                 var result = await _apiClient.UpdateTagMetadataAsync();
                 return Ok(result);
             }
@@ -57,7 +58,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
-        [Route("Edit/{name}")]
+        [Route("EditFeature/{name}")]
         public async Task<IActionResult> EditFeature([FromRoute]string name)
         {
             var topLevelFeatures = await _apiClient.GetFeaturesAsync();
@@ -74,7 +75,6 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
-        [Route("NewFeature")]
         public async Task<IActionResult> NewFeature()
         {
             var topLevelFeatures = await _apiClient.GetFeaturesAsync();
@@ -98,31 +98,64 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
-        [Route("{parentName}/Sub")]
-        public async Task<IActionResult> NewSubFeature([FromRoute] string parentName)
+        public async Task<IActionResult> NewSubFeature([FromQuery] string parent)
         {
-            var parent = await _apiClient.GetFeatureAsync(parentName);
-            if (parent is null)
+            if (string.IsNullOrWhiteSpace(parent))
+            {
+                return BadRequest();
+            }
+
+            var features = (await _apiClient.GetFeaturesAsync()).ToDictionary(e => e.Name, e => e);
+            if (!features.ContainsKey(parent))
             {
                 return NotFound();
             }
 
-            var features = await _apiClient.GetFeaturesAsync();
+            var feature = features[parent];
             var subFeature = new Feature
             {
                 IsNew = true,
                 IsHidden = true,
                 SortOrder = 1,
-                ParentFeature = parent,
-                ParentId = parent.Id,
+                ParentFeature = feature,
+                ParentId = feature.Id,
                 Name = "NewSubFeature",
-                Title = $"New Sub-Feature of {parent.Name}",
+                Title = $"New Sub-Feature of {feature.Name}",
                 ElevatorPitch = "Summarize the sub-feature in 2 or 3 sentences here.",
                 Description = "Use Markdown syntax to describe the sub-feature in under 30K characters.",
                 XmlDocSource = null,
             };
-            var viewModel = new EditFeatureViewModel(subFeature, features);
+            var viewModel = new EditFeatureViewModel(subFeature, features.Values);
             return View("Feature", viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NewFeatureItem([FromQuery] string parent)
+        {
+            if (string.IsNullOrWhiteSpace(parent))
+            {
+                return BadRequest();
+            }
+
+            var features = (await _apiClient.GetFeaturesAsync()).ToDictionary(e => e.Name, e => e);
+            if (!features.ContainsKey(parent))
+            {
+                return NotFound();
+            }
+
+            var feature = features[parent];
+            var item = new FeatureItem
+            {
+                IsNew = true,
+                IsHidden = true,
+                Feature = feature,
+                FeatureId = feature.Id,
+                Name = "NewFeatureItem",
+                Title = $"New Item under {feature.Name}",
+                Description = "Use Markdown syntax to describe the item in under 30K characters.",
+            };
+            var viewModel = new EditFeatureItemViewModel(item, features.Values);
+            return View("FeatureItem", viewModel);
         }
 
         [HttpPost]
@@ -143,6 +176,11 @@ namespace RubberduckWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteFeature(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var model = await _apiClient.GetFeatureAsync(name);
@@ -162,6 +200,11 @@ namespace RubberduckWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteFeatureItem(string name)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var model = await _apiClient.GetFeatureItemAsync(name);
@@ -184,7 +227,6 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
-        [Route("Edit/MarkdownPreview")]
         public async Task<IActionResult> MarkdownPreview([FromBody] MarkdownPreviewViewModel vm)
         {
             var html = new MarkdownSharp.Markdown().Transform(vm.MarkdownContent);
@@ -197,7 +239,7 @@ namespace RubberduckWebsite.Controllers
             var feature = await _apiClient.GetFeatureAsync(featureName);
             if (feature is null)
             {
-                return BadRequest($"Cannot upload screenshot for feature '{featureName}'.");
+                return BadRequest($"Cannot upload screenshot for feature '{featureName}' at this time.");
             }
 
             var path = Path.Combine(_webHost.WebRootPath, "images\\features");

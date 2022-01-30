@@ -6,6 +6,58 @@ using Rubberduck.Model.Entities;
 
 namespace RubberduckWebsite.Models
 {
+    public class EditFeatureItemViewModel
+    {
+        private readonly FeatureItem _item;
+        private readonly IDictionary<string, Feature> _features;
+
+        public EditFeatureItemViewModel() : this(new(), Enumerable.Empty<Feature>()) { }
+
+        public EditFeatureItemViewModel(FeatureItem item, IEnumerable<Feature> features)
+        {
+            _item = item;
+            _features = features.ToDictionary(e => e.Name, e => e);
+        }
+
+
+        public bool IsPersisted => _item.Id != default;
+        public IEnumerable<string> Features => _features.Keys.ToArray();
+
+        public int Id
+        {
+            get => _item.Id;
+            set => _item.Id = value;
+        }
+
+        public string Name
+        {
+            get => _item.Name;
+            set => _item.Name = value;
+        }
+
+        private string _parentFeatureName;
+        public string ParentFeatureName
+        {
+            get => _parentFeatureName;
+            set
+            {
+                if (value is null || value == "(none)")
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+                else if (_features.Any())
+                {
+                    var parent = _features[value];
+                    _item.Feature = parent;
+                    _item.FeatureId = parent.Id;
+                }
+                _parentFeatureName = value;
+            }
+        }
+
+        public string Title { get => _item.Title; set => _item.Title = value; }
+    }
+
     public class EditFeatureViewModel
     {
         private readonly Feature _feature;

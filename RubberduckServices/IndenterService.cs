@@ -16,6 +16,11 @@ namespace RubberduckServices
             _indenter = indenter;
         }
 
+        public string IndenterVersion()
+        {
+            return typeof(Rubberduck.SmartIndenter.IIndenterSettings).Assembly.GetName().Version.ToString(3);
+        }
+
         public async Task<string[]> IndentAsync(Rubberduck.Model.Abstract.IIndenterSettings settings)
         {
             var adapter = new IndenterSettingsAdapter(settings);

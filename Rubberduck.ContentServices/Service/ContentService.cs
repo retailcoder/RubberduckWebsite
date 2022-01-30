@@ -199,49 +199,49 @@ namespace Rubberduck.ContentServices.Service
 
         private async Task SaveExamplesAsync(Model.FeatureItem item)
         {
-            foreach (var model in item.Examples.OrderBy(e => e.SortOrder).Select((e, i) => (example: e, index: i + 1)))
+            foreach (var (example, index) in item.Examples.OrderBy(e => e.SortOrder).Select((e, i) => (example: e, index: i + 1)))
             {
                 var existing = await _context.Examples.AsTracking()
-                    .SingleOrDefaultAsync(entity => entity.Id == model.example.Id || entity.FeatureItemId == model.example.FeatureItemId && entity.SortOrder == model.index);
+                    .SingleOrDefaultAsync(entity => entity.Id == example.Id || entity.FeatureItemId == example.FeatureItemId && entity.SortOrder == index);
 
                 if (existing is null)
                 {
-                    model.example.DateInserted = DateTime.UtcNow;
-                    model.example.SortOrder = model.index;
+                    example.DateInserted = DateTime.UtcNow;
+                    example.SortOrder = index;
 
-                    await SaveExampleModulesAsync(model.example);
+                    await SaveExampleModulesAsync(example);
                     continue;
                 }
 
                 existing.DateUpdated = DateTime.UtcNow;
-                existing.Description = model.example.Description;
-                existing.SortOrder = model.index;
+                existing.Description = example.Description;
+                existing.SortOrder = index;
 
-                await SaveExampleModulesAsync(model.example);
+                await SaveExampleModulesAsync(example);
             }
         }
 
         private async Task SaveExampleModulesAsync(Model.Example item)
         {
-            foreach (var model in item.Modules.OrderBy(e => e.SortOrder).Select((e, i) => (module: e, index: i + 1)))
+            foreach (var (module, index) in item.Modules.OrderBy(e => e.SortOrder).Select((e, i) => (module: e, index: i + 1)))
             {
                 var existing = await _context.ExampleModules.AsTracking()
-                    .SingleOrDefaultAsync(entity => entity.Id == model.module.Id || entity.ExampleId == model.module.ExampleId && entity.SortOrder == model.index);
+                    .SingleOrDefaultAsync(entity => entity.Id == module.Id || entity.ExampleId == module.ExampleId && entity.SortOrder == index);
 
                 if (existing is null)
                 {
-                    model.module.DateInserted = DateTime.UtcNow;
-                    model.module.SortOrder = model.index;
-                    model.module.HtmlContent = model.module.HtmlContent ?? "(error parsing code example from source xmldoc)";
+                    module.DateInserted = DateTime.UtcNow;
+                    module.SortOrder = index;
+                    module.HtmlContent ??= "(error parsing code example from source xmldoc)";
                     continue;
                 }
 
                 existing.DateUpdated = DateTime.UtcNow;
-                existing.Description = model.module.Description;
-                existing.HtmlContent = model.module.HtmlContent ?? "(error parsing code example from source xmldoc)";
-                existing.ModuleName = model.module.ModuleName;
-                existing.ModuleTypeId = model.module.ModuleTypeId;
-                existing.SortOrder = model.index;
+                existing.Description = module.Description;
+                existing.HtmlContent = module.HtmlContent ?? "(error parsing code example from source xmldoc)";
+                existing.ModuleName = module.ModuleName;
+                existing.ModuleTypeId = module.ModuleTypeId;
+                existing.SortOrder = index;
             }
         }
 

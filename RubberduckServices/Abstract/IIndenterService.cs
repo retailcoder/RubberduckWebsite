@@ -5,6 +5,7 @@ namespace RubberduckServices.Abstract
 {
     public interface IIndenterService
     {
+        string IndenterVersion();
         Task<string[]> IndentAsync(IIndenterSettings settings);
     }
 }

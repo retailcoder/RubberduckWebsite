@@ -7,6 +7,8 @@ namespace RubberduckServices.Internal
     {
         public IndenterSettingsAdapter(IIndenterSettings settings)
         {
+            IndenterVersion = typeof(Rubberduck.SmartIndenter.IIndenterSettings).Assembly.GetName().Version.ToString(3);
+
             Code = settings.Code;
 
             ForceDebugPrintInColumn1 = settings.ForceDebugPrintInColumn1;
@@ -34,6 +36,8 @@ namespace RubberduckServices.Internal
             IndentEntireProcedureBody = settings.IndentEntireProcedureBody;
             LinesBetweenProcedures = settings.LinesBetweenProcedures;
         }
+
+        public string IndenterVersion { get; set; }
 
         public string Code { get; set; }
 

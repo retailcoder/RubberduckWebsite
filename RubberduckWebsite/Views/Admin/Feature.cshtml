@@ -1,6 +1,6 @@
 ﻿@model RubberduckWebsite.Models.EditFeatureViewModel
 @{
-    ViewData["Title"] = Model.IsPersisted ? "Edit Feature" : "New Feature";
+    ViewData["Title"] = Model.IsPersisted ? $"Edit Feature: {Model.Name}" : "New Feature";
 }
 @section Scripts {
     <script type='text/javascript'>
@@ -10,7 +10,7 @@
             var data = {};
             data.markdownContent = $('#feature-description').val();
             $.ajax({
-                url: 'MarkdownPreview',
+                url: '/Admin/MarkdownPreview',
                 data: JSON.stringify(data),
                 cache: false,
                 dataType: 'text',
@@ -26,15 +26,20 @@
 }
 <section>
     <h2>@ViewData["Title"]</h2>
+    <hr />
 </section>
 
 <section class="row">
     @if (Model.IsPersisted)
     {
-        <div class="card w-100 m-2">
-            <div class="card-header">
-                <h5 class="card-title">Screenshot</h5>
+    <div class="card w-100 m-2">
+        <div class="card-header">
+            <div>
+                <h5 class="card-title float-left">Screenshot</h5>
+                <button class="btn btn-outline-primary float-right" type="button" data-toggle="collapse" data-target="#collapse-screenshot" aria-expanded="true" aria-controls="collapse-screenshot">Toggle</button>
             </div>
+        </div>
+        <div class="collapse" id="collapse-screenshot">
             <div class="card-body">
                 <p class="card-text">Select a .png image file to upload for this feature.</p>
                 <small class="card-text text-muted">File will be renamed after the feature on the server.</small>
@@ -48,6 +53,7 @@
                 <img class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
             </div>
         </div>
+    </div>
     }
     <div class="card w-100 m-2">
         <div class="card-body">
@@ -142,29 +148,6 @@
         </div>
     </div>
 
-    <div class="row">
-        @if (Model.IsPersisted)
-        {
-        <div class="card w-100 text-center m-2">
-            <div class="card-header">
-                <a class="card-title text-danger" href="#collapse-feature-danger-zone" role="button" aria-expanded="false" aria-controls="collapse-feature-danger-zone" data-toggle="collapse"><strong>Danger Zone</strong></a>
-            </div>
-            <div class="collapse">
-                <div id="collapse-feature-danger-zone" class="card-body">
-                    @if (!Model.IsProtected)
-                    {
-                        <p class="card-text text-danger">This action cannot be undone!</p>
-                        <a class="btn btn-outline-danger" asp-controller="Admin" asp-action="DeleteFeature">Delete the @Model.Name feature and all associated data</a>
-                    }
-                    else
-                    {
-                        <p class="card-text text-small">This feature is protected and cannot be deleted.</p>
-                    }
-                </div>
-            </div>
-        </div>
-        }
-    </div>
 </section>
 
 @if (!Model.IsProtected)
@@ -189,6 +172,35 @@
                 </div>
             }
         </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" id="new-item-btn" asp-controller="Admin" asp-action="NewFeatureItem" asp-all-route-data='new Dictionary<string, string> { ["parent"] = Model.Name }'>New Item</a>
+        </div>
     </div>
 </section>
 }
+
+<section class="row">
+    <div class="row">
+        @if (Model.IsPersisted)
+        {
+            <div class="card w-100 text-center m-2">
+                <div class="card-header">
+                    <a class="card-title text-danger" href="#collapse-feature-danger-zone" role="button" aria-expanded="false" aria-controls="collapse-feature-danger-zone" data-toggle="collapse"><strong>Danger Zone</strong></a>
+                </div>
+                <div class="collapse">
+                    <div id="collapse-feature-danger-zone" class="card-body">
+                        @if (!Model.IsProtected)
+                        {
+                            <p class="card-text text-danger">This action cannot be undone!</p>
+                            <a class="btn btn-outline-danger" asp-controller="Admin" asp-action="DeleteFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{Model.Name}" }'>Delete the @Model.Name feature and all associated data</a>
+                        }
+                        else
+                        {
+                            <p class="card-text text-small">This feature is protected and cannot be deleted.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
