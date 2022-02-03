@@ -60,29 +60,199 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">Indenter Settings</h5>
-                <small class="card-text text-muted">Rubberduck.SmartIndenter.dll version: @Model.IndenterVersion</small>
             </div>
             <div class="card-body">
                 <form>
-                    <div class="form-group">
-                        <label class="form-text" for="indent-spaces">Indent spaces</label>
-                        <small class="text-muted form-text">Indentation step size</small>
-                        <input id="indent-spaces" type="text" name="indentSpaces" value="@Model.IndentSpaces" />
-                    </div>
-                    <div>
-                        <label class="form-text" for="indent-code">Paste code to indent here:</label>
-                        <textarea id="indent-code" type="text" class="form-control text-monospace" rows="10" name="code">@Model.Code</textarea>
-                    </div>
-                    <button id="indent-button" class="btn btn-primary m-1" type="button">
-                        <span id="indent-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
-                        <span id="indent-button-text">Indent</span>
-                    </button>
-                </form>
-            </div>
-            <div class="card-footer card-footer-quiet">
-                <div>
+                    <div class="form-row">
+                        <div class="col-6">
+                            <h3>Indentation options</h3>
 
-                </div>
+                            <div class="form-group">
+                                <label class="form-text d-inline-block" for="indent-spaces">Indent spaces</label>
+                                <span class="m-2">
+                                    <input id="indent-spaces" data-val="true" data-val-number="The field IndentSpaces must be a number." data-val-required="The IndentSpaces field is required." name="IndentSpaces" type="number" value="@Model.IndentSpaces" min="1" max="9">
+                                </span>
+                                <div>
+                                    <small class="text-muted form-text">Indentation gap size / the number of space characters in an indentation step (default: 4)</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="indent-procbody" type="checkbox" name="indentEntireProcedureBody" value="@Model.IndentEntireProcedureBody" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-procbody">Indent procedure body</label>
+                                <small class="text-muted form-text">If checked, procedure scopes add an indent level (recommended)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="indent-first-commentblock" type="checkbox" name="indentFirstCommentBlock" value="@Model.IndentFirstCommentBlock" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-first-commentblock">Indent first comment block</label>
+                                <small class="text-muted form-text">If checked, a block of comments at the top of a procedure gets an extra indentation level</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="indent-first-declarationblock" type="checkbox" name="indentFirstDeclarationBlock" value="@Model.IndentFirstDeclarationBlock" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-first-declarationblock">Indent first declaration block</label>
+                                <small class="text-muted form-text">If checked, a block of declarations at the top of a procedure gets an extra indentation level</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="indent-first-declarationblock" type="checkbox" name="ignoreEmptyLinesInFirstBlock" value="@Model.IgnoreEmptyLinesInFirstBlocks" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-ignore-firstblock-emptylines">Ignore empty lines in first block</label>
+                                <small class="text-muted form-text">If checked, a block of comments or declarations at the top of a procedure is not terminated by an empty line</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="indent-enum-members" type="checkbox" name="indentEnumTypeAsProcedure" value="@Model.IndentEnumTypeAsProcedure" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-enum-members">Ignore empty lines in first block</label>
+                                <small class="text-muted form-text">If checked, Enum members get an extra indentation level</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="indent-case" type="checkbox" name="ignoreEmptyLinesInFirstBlock" value="@Model.IndentCase" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-case">Indent Case</label>
+                                <small class="text-muted form-text">If checked, Case blocks get an extra indentation level</small>
+                            </div>
+
+
+                            <h3>Outdenting options</h3>
+
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="outdent-precompiler-directives" type="checkbox" name="forceCompilerDirectivesInColumn1" value="@Model.ForceCompilerDirectivesInColumn1" />
+                                <label class="form-check-label form-check-label-nooffset" for="outdent-precompiler-directives">Outdent precompiler directives</label>
+                                <small class="text-muted form-text">Forces precompiler directives into column 1 regardless of current indentation level</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="outdent-debugprint" type="checkbox" name="forceDebugPrintInColumn1" value="@Model.ForceDebugPrintInColumn1" />
+                                <label class="form-check-label form-check-label-nooffset" for="outdent-debugprint">Outdent Debug.Print statements</label>
+                                <small class="text-muted form-text">Forces Debug.Print statements into column 1 regardless of current indentation level</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="outdent-debugassert" type="checkbox" name="forceDebugAssertInColumn1" value="@Model.ForceDebugAssertInColumn1" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-force-debugprint">Outdent Debug.Assert statements</label>
+                                <small class="text-muted form-text">Forces Debug.Assert statements into column 1 regardless of current indentation level</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="outdent-stopstmt" type="checkbox" name="forceStopInColumn1" value="@Model.ForceStopInColumn1" />
+                                <label class="form-check-label form-check-label-nooffset" for="indent-force-debugprint">Outdent Stop statements</label>
+                                <small class="text-muted form-text">Forces Stop statements into column 1 regardless of current indentation level</small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-6">
+
+                            <h3>Alignment options</h3>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-linecontinuations" type="checkbox" name="alignContinuations" value="@Model.AlignContinuations" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-linecontinuations">Align line continuations</label>
+
+                                <input class="form-check-input form-check-input-nooffset" id="align-linecontinuations-ignoreops" type="checkbox" name="ignoreoperatorsInContinuations" value="@Model.IgnoreOperatorsInContinuations" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-linecontinuations-ignoreops">Ignore operators in continuations</label>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-dimstmt" type="checkbox" name="alignDim" value="@Model.AlignDims" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-dimstmt-column">Align Dim statements into column</label>
+                                <input id="align-dimstmt-column" type="number" name="alignDimCoumn" value="@Model.AlignDimColumn" min="1" max="100" />
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-comments" type="checkbox" name="alignCommentsWithCode" value="@Model.AlignCommentsWithCode" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-comments">Align comments with code</label>
+                            </div>
+
+
+                            <h4>Line-ending comments</h4>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-comments-absolute" type="radio" name="endOfLineCommentStyle" value="0" checked="checked" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-comments-absolute">Absolute</label>
+                                <small class="form-text text-muted">End-of-line comments remain where they are</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-comments-samegap" type="radio" name="endOfLineCommentStyle" value="1" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-comments-samegap">Same gap</label>
+                                <small class="form-text text-muted"><!--TODO--></small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-comments-standardgap" type="radio" name="endOfLineCommentStyle" value="2" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-comments-standardgap">Standard gap</label>
+                                <small class="form-text text-muted">End-of-line comments begin a standard indentation gap after the end of the last instruction</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="align-comments-samecolumn" type="radio" name="endOfLineCommentStyle" value="3" />
+                                <label class="form-check-label form-check-label-nooffset" for="align-comments-samecolumn">Align in column</label>
+                                <small class="form-text text-muted">End-of-line comments begin at a specified column</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-text" for="line-ending-comment-column">Column:</label>
+                                <input id="line-ending-comment-column" type="number" name="endOfLineCommentColumnSpaceAlignment" value="@Model.EndOfLineCommentColumnSpaceAlignment" min="1" max="100" />
+                                <small class="form-text text-muted" for="line-ending-comment-column">Specify a column to align end-of-line comments</small>
+                            </div>
+
+
+                            <h4>Vertical spacing</h4>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="vertical-spacing-proc" type="checkbox" name="verticallySpaceProcedures" value="@Model.VerticallySpaceProcedures" />
+                                <label class="form-check-label form-check-label-nooffset" for="vertical-spacing-proc">Maintain vertical space between procedures</label>
+                                <small class="form-text text-muted">Consistently keeps the specified number of empty lines between members of a module</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-text" for="vertical-spacing-lines">Lines between procedures:</label>
+                                <input id="vertical-spacing-lines" type="number" name="linesBetweenProcedures" value="@Model.LinesBetweenProcedures" min="1" max="2" />
+                            </div>
+
+                            <div class="form-group">
+                                <input class="form-check-input form-check-input-nooffset" id="group-related-properties" type="checkbox" name="groupRelatedProperties" value="@Model.GroupRelatedProperties" />
+                                <label class="form-check-label form-check-label-nooffset" for="group-related-properties">Regroup same-name property members</label>
+                                <small class="form-text text-muted">Removes all spaces between Get, Let, and Set accessors of Property members</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-text" for="empty-line-handling">Empty lines</label>
+                                <select id="empty-line-handling" name="emptyLineHandlingMethod">
+                                    <option id="empty-line-handling-ignore" value="0" selected="selected">Ignore</option>
+                                    <option id="empty-line-handling-remove" value="1">Remove</option>
+                                    <option id="empty-line-handling-indent" value="2">Indent</option>
+                                </select>
+                                <small class="form-text text-muted">Specifies how to handle empty lines: ignore them, remove them, or indent them</small>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="card col-12">
+                            <div class="card-header">
+                                <h5 class="card-title">Try it!</h5>
+                                <small class="card-text text-muted">Rubberduck.SmartIndenter.dll version: @Model.IndenterVersion</small>
+                            </div>
+                            <div class="card-body">
+                                <label class="form-text" for="indent-code">Paste code to indent here:</label>
+                                <textarea id="indent-code" type="text" class="form-control text-monospace" rows="10" name="code">@Model.Code</textarea>
+                            </div>
+                            <div class="card-footer">
+                                <button id="indent-button" class="btn btn-primary m-1" type="button">
+                                    <span id="indent-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                                    <span id="indent-button-text">Indent</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -135,7 +135,10 @@
                     <p class="card-text">@feature.ElevatorPitch</p>
                 </div>
                 <div class="card-img-bottom">
-                    <img alt="Screenshot showcasing the @feature.Title feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
+                    <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>More »</a>
                 </div>
             </div>
             }

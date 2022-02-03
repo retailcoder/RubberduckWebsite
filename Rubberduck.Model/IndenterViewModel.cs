@@ -42,11 +42,11 @@ namespace Rubberduck.Model
         /// <summary>
         /// Controls how end-of-line comments are indented; absolute, same-gap, standard gap, or aligned in a column.
         /// </summary>
-        public IndenterEndOfLineCommentStyle EndOfLineCommentStyle { get; set; } = IndenterEndOfLineCommentStyle.SameGap;
+        public IndenterEndOfLineCommentStyle EndOfLineCommentStyle { get; set; } = IndenterEndOfLineCommentStyle.Absolute;
         /// <summary>
         /// The column to align <c>Dim</c> statements at.
         /// </summary>
-        public int AlignDimColumn { get; set; }
+        public int AlignDimColumn { get; set; } = 1;
         /// <summary>
         /// Whether to align <c>Dim</c> statements at a particular column, controlled by <see cref="AlignDimColumn"/>.
         /// </summary>

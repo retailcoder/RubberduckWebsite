@@ -26,5 +26,6 @@ namespace RubberduckWebsite.Controllers
 
         protected override async Task<object> GetViewModelAsync() =>
             await ApiClient.GetDefaultIndenterSettings();
+
     }
 }
