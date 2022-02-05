@@ -169,13 +169,16 @@ namespace Rubberduck.API.Controllers
                     AlignCommentsWithCode = true,
                     EmptyLineHandlingMethod = Model.Abstract.IndenterEmptyLineHandling.Indent,
                     ForceCompilerDirectivesInColumn1 = true,
-                    GroupRelatedProperties = true,
+                    GroupRelatedProperties = false,
                     IndentSpaces = 4,
                     IndentCase = true,
                     IndentEntireProcedureBody = true,
                     IndentEnumTypeAsProcedure = true,
                     VerticallySpaceProcedures = true,
-                    LinesBetweenProcedures = 1,                    
+                    LinesBetweenProcedures = 1,
+                    IndentFirstCommentBlock = true,
+                    IndentFirstDeclarationBlock = true,
+                    EndOfLineCommentStyle = Model.Abstract.IndenterEndOfLineCommentStyle.SameGap,
                 };
                 return await Task.FromResult(Ok(result));
             }

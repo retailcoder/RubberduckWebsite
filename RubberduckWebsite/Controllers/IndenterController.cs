@@ -20,6 +20,11 @@ namespace RubberduckWebsite.Controllers
         [Route("/Indent")]
         public async Task<IActionResult> IndentAsync([FromBody]IndenterViewModel model)
         {
+            if (model is null)
+            {
+                return BadRequest();
+            }
+
             var result = await ApiClient.GetIndentedCodeAsync(model);
             return Ok(result);
         }
