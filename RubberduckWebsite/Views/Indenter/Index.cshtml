@@ -23,6 +23,26 @@
             }
         }
 
+        function showToast(message, success) {
+            $('#toast-message').text(message);
+            
+            if (success) {
+                $('#toast-icon').addClass('icon-tick');
+                $('#toast-icon').removeClass('icon-cross');
+                $('#toast-icon').show();
+            }
+            else {
+                $('#toast-icon').addClass('icon-cross');
+                $('#toast-icon').removeClass('icon-tick');
+                $('#toast-icon').show();
+            }
+
+            var timeString = new Date().toISOString().substr(11, 8);
+            $('#toast-timestamp').text(timeString);
+
+            $('#toast-popup').toast('show');
+        }
+
         function setLineEndingCommentSelectionHelpText() {
             var description = "";
             switch ($('#line-ending-comment-style').val()) {
@@ -120,6 +140,43 @@
             }
         }
 
+        function getIndenterSettings() {
+            var jsonData = {};
+
+            jsonData.code = $('#indent-code').val();
+
+            jsonData.indentSpaces = $('#indent-spaces').val();
+
+            jsonData.indentEntireProcedureBody = $('#indent-procbody').is(":checked");
+            jsonData.indentFirstCommentBlock = $('#indent-first-commentblock').is(":checked");
+            jsonData.indentFirstDeclarationBlock = $('#indent-first-declarationblock').is(":checked");
+            jsonData.ignoreEmptyLinesInFirstBlock = $('#indent-ignore-firstblock-emptylines').is(":checked");
+            jsonData.indentEnumTypeAsProcedure = $('#indent-enum-members').is(":checked");
+            jsonData.indentCase = $('#indent-case').is(":checked");
+
+            jsonData.forceCompilerDirectivesInColumn1 = $('#outdent-precompiler-directives').is(":checked");
+            jsonData.forceDebugPrintInColumn1 = $('#outdent-debugprint').is(":checked");
+            jsonData.forceDebugAssertInColumn1 = $('#outdent-debugassert').is(":checked");
+            jsonData.forceStopInColumn1 = $('#outdent-stopstmt').is(":checked");
+
+            jsonData.alignContinuations = $('#align-linecontinuations').is(":checked");
+            jsonData.ignoreOperatorsInContinuations = $('#align-linecontinuations-ignoreops').is(":checked");
+            jsonData.alignDims = $('#align-dimstmt').is(":checked");
+            jsonData.alignDimColumn = $('#align-dimstmt-column').val();
+
+            jsonData.alignCommentsWithCode = $('#align-comments').is(":checked");
+            jsonData.endOfLineCommentStyleValue = $('#line-ending-comment-style').val();
+            jsonData.endOfLineCommentColumnSpaceAlignment = $('#line-ending-comment-column').val();
+
+            jsonData.verticallySpaceProcedures = $('#vertical-spacing-proc').is(":checked");
+            jsonData.linesBetweenProcedures = $('#vertical-spacing-lines').val();
+            jsonData.groupRelatedProperties = $('#group-related-properties').is(":checked");
+            jsonData.emptyLineHandlingMethodValue = $('#empty-line-handling').val();
+
+            return jsonData;
+        }
+
+
         $(document).ready(function () {
 
             $('#indent-ignore-firstblock-emptylines').click(function () {
@@ -148,42 +205,10 @@
             });
 
             $('#indent-button').click(function () {
-                setIndenterBusy(true);
-
-                var jsonData = {};
-
-                jsonData.code = $('#indent-code').val();
-
-                jsonData.indentSpaces = $('#indent-spaces').val();
-
-                jsonData.indentEntireProcedureBody = $('#indent-procbody').is(":checked");
-                jsonData.indentFirstCommentBlock = $('#indent-first-commentblock').is(":checked");
-                jsonData.indentFirstDeclarationBlock = $('#indent-first-declarationblock').is(":checked");
-                jsonData.ignoreEmptyLinesInFirstBlock = $('#indent-ignore-firstblock-emptylines').is(":checked");
-                jsonData.indentEnumTypeAsProcedure = $('#indent-enum-members').is(":checked");
-                jsonData.indentCase = $('#indent-case').is(":checked");
-
-                jsonData.forceCompilerDirectivesInColumn1 = $('#outdent-precompiler-directives').is(":checked");
-                jsonData.forceDebugPrintInColumn1 = $('#outdent-debugprint').is(":checked");
-                jsonData.forceDebugAssertInColumn1 = $('#outdent-debugassert').is(":checked");
-                jsonData.forceStopInColumn1 = $('#outdent-stopstmt').is(":checked");
-
-                jsonData.alignContinuations = $('#align-linecontinuations').is(":checked");
-                jsonData.ignoreOperatorsInContinuations = $('#align-linecontinuations-ignoreops').is(":checked");
-                jsonData.alignDims = $('#align-dimstmt').is(":checked");
-                jsonData.alignDimColumn = $('#align-dimstmt-column').val();
-
-                jsonData.alignCommentsWithCode = $('#align-comments').is(":checked");
-                jsonData.endOfLineCommentStyleValue = $('#line-ending-comment-style').val();
-                jsonData.endOfLineCommentColumnSpaceAlignment = $('#line-ending-comment-column').val();
-
-                jsonData.verticallySpaceProcedures = $('#vertical-spacing-proc').is(":checked");
-                jsonData.linesBetweenProcedures = $('#vertical-spacing-lines').val();
-                jsonData.groupRelatedProperties = $('#group-related-properties').is(":checked");
-                jsonData.emptyLineHandlingMethodValue = $('#empty-line-handling').val();
-
+                var jsonData = getIndenterSettings();
                 var formData = JSON.stringify(jsonData);
 
+                setIndenterBusy(true);
                 $.ajax({
                     url: 'Indent',
                     type: 'POST',
@@ -192,16 +217,16 @@
                     contentType: 'application/json; charset=utf-8',
                     type: 'POST'
                 })
-                    .done(function (data, textStatus, xhr) {
-                        $('#indent-code').val(JSON.parse(data).join("\n"));
-                    })
-                    .fail(function (data, textStatus, xhr) {
-                        $('#indent-error-message').text(xhr);
-                        $('#indent-error-alert').addClass('show');
-                        console.log(xhr);
-                    })
-                    .always(function () {
+                    .done(function (r) {
                         setIndenterBusy(false);
+                        console.log('done');
+                        showToast('Indenter API request was successfully processed.', true);
+                        $('#indent-code').val(JSON.parse(r).join("\n"));
+                    })
+                    .fail(function (r) {
+                        setIndenterBusy(false);
+                        console.log('fail');
+                        showToast('Indenter API request failed to process.', false);
                     });
             });
 
@@ -460,6 +485,8 @@
             </div>
         </div>
 
+        <span class="m-1"></span>
+
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">Try it!</h5>
@@ -470,11 +497,27 @@
                 @Html.TextAreaFor(m => m.Code, new { id = "indent-code", @class = "form-control text-monospace", rows = 10 })
             </div>
             <div class="card-footer">
-                <button id="indent-button" class="btn btn-primary m-1" type="button">
+                <button id="indent-button" class="btn btn-primary m-1 float-left" type="button">
                     <span id="indent-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
                     <span id="indent-button-text">Indent</span>
                 </button>
             </div>
         </div>
+        <a id="report-issue" class="btn btn-link m-1 float-right" title="Report an issue on GitHub" href="#">
+            <img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" style="margin: 1px; width: 20px; height: 20px;" />
+            <span id="report-issue-text">Report an issue</span>
+        </a>
     </div>
 </section>
+
+<div id="toast-popup" class="toast" data-delay="3000" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; top: 5px; right: 5px;">
+    <div class="toast-header">
+        <span id="toast-icon" class="icon icon-tick"></span>
+        <strong class="mr-auto">@ViewData["Title"]</strong>
+        <small id="toast-timestamp"></small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div id="toast-message" class="toast-body"></div>
+</div>

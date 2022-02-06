@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rubberduck.Client;
 using Rubberduck.Client.Abstract;
 using Rubberduck.Model;
 using RubberduckWebsite.Controllers.Abstract;
@@ -26,6 +27,11 @@ namespace RubberduckWebsite.Controllers
             }
 
             var result = await ApiClient.GetIndentedCodeAsync(model);
+            if (result is null)
+            {
+                return Problem("Indenter API failed to process the provided code and/or settings.");
+            }
+
             return Ok(result);
         }
 
