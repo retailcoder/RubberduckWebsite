@@ -176,6 +176,53 @@
             return jsonData;
         }
 
+        function disableInvalidSubmit() {
+            // https://getbootstrap.com/docs/4.3/components/forms/#custom-styles
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        }
+
+        function submitIndenterForm() {
+
+            if ($('#indenter-settings-form')[0].checkValidity()) {
+                setIndenterBusy(true);
+
+                var jsonData = getIndenterSettings();
+                var formData = JSON.stringify(jsonData);
+
+                $.ajax({
+                    url: 'Indent',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8'
+                })
+                    .done(function (lines) {
+                        setIndenterBusy(false);
+                        showToast('Indenter API request was successfully processed.', true);
+                        $('#indent-code').val(lines.join("\n"));
+                    })
+                    .fail(function (xhr) {
+                        setIndenterBusy(false);
+                        showToast('Indenter API request failed to process.', false);
+                    });
+            }
+            else {
+                $('#indenter-settings-form')[0].reportValidity();
+            }
+        }
 
         $(document).ready(function () {
 
@@ -191,6 +238,8 @@
                 setEnabledAlignDimColumn();
             });
 
+
+
             $('#line-ending-comment-style').change(function () {
                 setLineEndingCommentStyleGroupVisible();
                 setLineEndingCommentSelectionHelpText();
@@ -205,30 +254,9 @@
             });
 
             $('#indent-button').click(function () {
-                var jsonData = getIndenterSettings();
-                var formData = JSON.stringify(jsonData);
-
-                setIndenterBusy(true);
-                $.ajax({
-                    url: 'Indent',
-                    type: 'POST',
-                    data: formData,
-                    dataType: 'text',
-                    contentType: 'application/json; charset=utf-8',
-                    type: 'POST'
-                })
-                    .done(function (r) {
-                        setIndenterBusy(false);
-                        console.log('done');
-                        showToast('Indenter API request was successfully processed.', true);
-                        $('#indent-code').val(JSON.parse(r).join("\n"));
-                    })
-                    .fail(function (r) {
-                        setIndenterBusy(false);
-                        console.log('fail');
-                        showToast('Indenter API request failed to process.', false);
-                    });
+                submitIndenterForm();
             });
+
 
             setLineEndingCommentStyleGroupVisible();
             setLineEndingCommentSelectionHelpText();
@@ -237,6 +265,8 @@
             setEnabledAlignLineContinuationsIgnoreOps();
             setEnabledAlignDimColumn();
             setEnabledVerticalSpacingLines();
+
+            disableInvalidSubmit();
         });
 
     </script>
@@ -244,269 +274,273 @@
 
 <section class="row">
     <div class="w-100 m-2">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title float-left">Indenter Settings</h5>
-                <a id="collapse-indenter-settings-btn" class="btn btn-primary float-right" href="#collapse-indenter-settings" role="button" aria-expanded="false" aria-controls="collapse-indenter-settings" data-toggle="collapse">Expand</a>
-            </div>
-            <div class="card-body collapse" id="collapse-indenter-settings">
-                <div class="form-row">
-                    <div class="col-6">
+        <form id="indenter-settings-form" class="needs-validation" novalidate>
 
-                        <h3>Indentation options</h3>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title float-left">Indenter Settings</h5>
+                    <a id="collapse-indenter-settings-btn" class="btn btn-primary float-right" href="#collapse-indenter-settings" role="button" aria-expanded="false" aria-controls="collapse-indenter-settings" data-toggle="collapse">Expand</a>
+                </div>
+                <div class="card-body collapse" id="collapse-indenter-settings">
+                    <div class="form-row">
+                        <div class="col-6">
 
-                        <hr />
+                            <h3>Indentation options</h3>
 
-                        <div class="form-group form-check">
-                            <label class="form-text d-inline-block" for="indent-spaces">Indent spaces</label>
-                            <span class="m-2">
-                                @Html.TextBoxFor(m => m.IndentSpaces, new { id = "indent-spaces", type = "number", value = $"{Model.IndentSpaces}", min = "1", max = "9" })
-                            </span>
-                            <div>
-                                <small class="text-muted form-text">The size (in spaces) of an indentation level</small>
-                            </div>
-                        </div>
+                            <hr />
 
-                        <div class="form-group form-check">
-                            <label class="form-text d-inline-block" for="empty-line-handling">Empty lines</label>
-                            <span class="m-2">
-                                @{
-                                    var items = Html.GetEnumSelectList(typeof(IndenterEmptyLineHandling));
-                                    var defaultSelection = items.SingleOrDefault(e => e.Value == Model.EmptyLineHandlingMethodValue.ToString());
-                                    defaultSelection.Selected = true;
-                                    @Html.DropDownList("IndenterEmptyLineHandlingValue", items, new { id = "empty-line-handling" })
-                                }
-                            </span>
-                            <small id="empty-line-handling-description" class="form-text text-muted">Specifies whether and how to handle empty lines</small>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IndentEntireProcedureBody, new { id = "indent-procbody" })
-                                <label class="form-check-label" for="indent-procbody">Indent procedure body</label>
-                                <small class="text-muted form-text">If checked, procedure scopes add an indentation level</small>
-                            </div>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IndentFirstDeclarationBlock, new { id = "indent-first-declarationblock" })
-                                <label class="form-check-label" for="indent-first-declarationblock">Indent first declaration block</label>
-                                <small class="text-muted form-text">If checked, a block of declarations at the top of a procedure adds an indentation level</small>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IndentFirstCommentBlock, new { id = "indent-first-commentblock" })
-                                <label class="form-check-label" for="indent-first-commentblock">Indent first comment block</label>
-                                <small class="text-muted form-text">If checked, a block of comments at the top of a procedure adds an indentation level</small>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IgnoreEmptyLinesInFirstBlocks, new { id = "indent-ignore-firstblock-emptylines" })
-                                <label id="indent-ignore-firstblock-emptylines-label" class="form-check-label" for="indent-ignore-firstblock-emptylines">Ignore empty lines in first block comments</label>
-                                <small id="indent-ignore-firstblock-emptylines-help" class="text-muted form-text">If checked, the first block of comments can include empty lines</small>
-                            </div>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IndentEnumTypeAsProcedure, new { id = "indent-enum-members" })
-                                <label class="form-check-label" for="indent-enum-members">Indent Enum members</label>
-                                <small class="text-muted form-text">If checked, <code>Enum</code> members add an indentation level</small>
-                            </div>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IndentCase, new { id = "indent-case" })
-                                <label class="form-check-label" for="indent-case">Indent Case</label>
-                                <small class="text-muted form-text">If checked, <code>Case</code> blocks add an indentation level</small>
-                            </div>
-                        </div>
-
-                        <hr />
-
-                        <h3>Outdenting options</h3>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.ForceCompilerDirectivesInColumn1, new { id = "outdent-precompiler-directives" })
-                                <label class="form-check-label" for="outdent-precompiler-directives">Outdent precompiler directives</label>
-                                <small class="text-muted form-text">Forces precompiler directives into column 1 regardless of current indentation level</small>
-                            </div>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.ForceDebugPrintInColumn1, new { id = "outdent-debugprint" })
-                                <label class="form-check-label" for="outdent-debugprint">Outdent Debug.Print statements</label>
-                                <small class="text-muted form-text">Forces <code>Debug.Print</code> statements into column 1 regardless of current indentation level</small>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.ForceDebugAssertInColumn1, new { id = "outdent-debugassert" })
-                                <label class="form-check-label" for="outdent-debugassert">Outdent Debug.Assert statements</label>
-                                <small class="text-muted form-text">Forces <code>Debug.Assert</code> statements into column 1 regardless of current indentation level</small>
-                            </div>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.ForceStopInColumn1, new { id = "outdent-stopstmt" })
-                                <label class="form-check-label" for="outdent-stopstmt">Outdent Stop statements</label>
-                                <small class="text-muted form-text">Forces <code>Stop</code> statements into column 1 regardless of current indentation level</small>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="col-6">
-
-                        <h3>Alignment options</h3>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.AlignContinuations, new { id = "align-linecontinuations" })
-                                <label class="form-check-label" for="align-linecontinuations">Align line continuations</label>
-                            </div>
-                        </div>
-
-                        <div id="align-linecontinuations-ignoreops-group" class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.IgnoreOperatorsInContinuations, new { id = "align-linecontinuations-ignoreops" })
-                                <label for="align-linecontinuations-ignoreops" id="align-linecontinuations-ignoreops-label" class="form-check-label">Ignore operators in continuations</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.AlignDims, new { id = "align-dimstmt" })
-                                <label class="form-check-label d-inline-block" for="align-dimstmt">Align <code>Dim</code> statements into column</label>
+                            <div class="form-group form-check">
+                                <label class="form-text d-inline-block" for="indent-spaces">Indent spaces</label>
                                 <span class="m-2">
-                                    @Html.TextBoxFor(m => m.AlignDimColumn, new { type = "number", id = "align-dimstmt-column", min = "1", max = "100" })
+                                    @Html.TextBoxFor(m => m.IndentSpaces, new { id = "indent-spaces", type = "number", value = $"{Model.IndentSpaces}", min = "1", max = "9", required = "true" })
                                 </span>
+                                <div>
+                                    <small class="text-muted form-text">The size (in spaces) of an indentation level</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group form-check">
+                                <label class="form-text d-inline-block" for="empty-line-handling">Empty lines</label>
+                                <span class="m-2">
+                                    @{
+                                        var items = Html.GetEnumSelectList(typeof(IndenterEmptyLineHandling));
+                                        var defaultSelection = items.SingleOrDefault(e => e.Value == Model.EmptyLineHandlingMethodValue.ToString());
+                                        defaultSelection.Selected = true;
+                                        @Html.DropDownList("IndenterEmptyLineHandlingValue", items, new { id = "empty-line-handling", required = "true" })
+                                    }
+                                </span>
+                                <small id="empty-line-handling-description" class="form-text text-muted">Specifies whether and how to handle empty lines</small>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IndentEntireProcedureBody, new { id = "indent-procbody" })
+                                    <label class="form-check-label" for="indent-procbody">Indent procedure body</label>
+                                    <small class="text-muted form-text">If checked, procedure scopes add an indentation level</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IndentFirstDeclarationBlock, new { id = "indent-first-declarationblock" })
+                                    <label class="form-check-label" for="indent-first-declarationblock">Indent first declaration block</label>
+                                    <small class="text-muted form-text">If checked, a block of declarations at the top of a procedure adds an indentation level</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IndentFirstCommentBlock, new { id = "indent-first-commentblock" })
+                                    <label class="form-check-label" for="indent-first-commentblock">Indent first comment block</label>
+                                    <small class="text-muted form-text">If checked, a block of comments at the top of a procedure adds an indentation level</small>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IgnoreEmptyLinesInFirstBlocks, new { id = "indent-ignore-firstblock-emptylines" })
+                                    <label id="indent-ignore-firstblock-emptylines-label" class="form-check-label" for="indent-ignore-firstblock-emptylines">Ignore empty lines in first block comments</label>
+                                    <small id="indent-ignore-firstblock-emptylines-help" class="text-muted form-text">If checked, the first block of comments can include empty lines</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IndentEnumTypeAsProcedure, new { id = "indent-enum-members" })
+                                    <label class="form-check-label" for="indent-enum-members">Indent Enum members</label>
+                                    <small class="text-muted form-text">If checked, <code>Enum</code> members add an indentation level</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IndentCase, new { id = "indent-case" })
+                                    <label class="form-check-label" for="indent-case">Indent Case</label>
+                                    <small class="text-muted form-text">If checked, <code>Case</code> blocks add an indentation level</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <h3>Outdenting options</h3>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.ForceCompilerDirectivesInColumn1, new { id = "outdent-precompiler-directives" })
+                                    <label class="form-check-label" for="outdent-precompiler-directives">Outdent precompiler directives</label>
+                                    <small class="text-muted form-text">Forces precompiler directives into column 1 regardless of current indentation level</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.ForceDebugPrintInColumn1, new { id = "outdent-debugprint" })
+                                    <label class="form-check-label" for="outdent-debugprint">Outdent Debug.Print statements</label>
+                                    <small class="text-muted form-text">Forces <code>Debug.Print</code> statements into column 1 regardless of current indentation level</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.ForceDebugAssertInColumn1, new { id = "outdent-debugassert" })
+                                    <label class="form-check-label" for="outdent-debugassert">Outdent Debug.Assert statements</label>
+                                    <small class="text-muted form-text">Forces <code>Debug.Assert</code> statements into column 1 regardless of current indentation level</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.ForceStopInColumn1, new { id = "outdent-stopstmt" })
+                                    <label class="form-check-label" for="outdent-stopstmt">Outdent Stop statements</label>
+                                    <small class="text-muted form-text">Forces <code>Stop</code> statements into column 1 regardless of current indentation level</small>
+                                </div>
                             </div>
                         </div>
 
-                        <hr />
 
+                        <div class="col-6">
 
-                        <h4>Comments</h4>
+                            <h3>Alignment options</h3>
 
-                        <hr />
+                            <hr />
 
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.AlignCommentsWithCode, new { id = "align-comments" })
-                                <label class="form-check-label" for="align-comments">Align comments with code</label>
-                                <small id="align-comments-help" class="form-text text-muted">If checked, comment lines will be made to follow indentation levels</small>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.AlignContinuations, new { id = "align-linecontinuations" })
+                                    <label class="form-check-label" for="align-linecontinuations">Align line continuations</label>
+                                </div>
                             </div>
-                        </div>
 
-                        <hr />
-
-                        <div class="form-group form-check">
-                            <label class="form-text d-inline-block" for="line-ending-comment-style">Line-ending comments</label>
-                            <span class="m-2">
-                                @{
-                                    var lineEndingItems = Html.GetEnumSelectList(typeof(IndenterEndOfLineCommentStyle));
-                                    var defaultLineEndingSelection = lineEndingItems.SingleOrDefault(e => e.Value == Model.EndOfLineCommentStyleValue.ToString());
-                                    defaultLineEndingSelection.Selected = true;
-                                    @Html.DropDownList("IndenterEndOfLineCommentStyleValue", lineEndingItems, new { id = "line-ending-comment-style" })
-                                }
-                            </span>
-                            <small id="line-ending-comment-style-description" class="form-text text-muted"></small>
-                        </div>
-
-                        <div id="line-ending-comment-column-group" class="form-group form-check">
-                            <label id="line-ending-comment-column-label" class="form-text d-inline-block" for="line-ending-comment-column">Column</label>
-                            <span class="m-2">
-                                @Html.TextBoxFor(m => m.EndOfLineCommentColumnSpaceAlignment, new { id = "line-ending-comment-column", type = "number", min = "1", max = "100" })
-                            </span>
-                            <small id="line-ending-comment-column-help" class="form-text text-muted">End-of-line comments will begin at that column whenever possible</small>
-                        </div>
-
-                        <hr />
-
-
-                        <h4>Vertical spacing</h4>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.VerticallySpaceProcedures, new { id = "vertical-spacing-proc" })
-                                <label class="form-check-label" for="vertical-spacing-proc">Maintain vertical space between procedures</label>
-                                <small class="form-text text-muted">Consistently keeps the specified number of empty lines between the members of a module</small>
+                            <div id="align-linecontinuations-ignoreops-group" class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.IgnoreOperatorsInContinuations, new { id = "align-linecontinuations-ignoreops" })
+                                    <label for="align-linecontinuations-ignoreops" id="align-linecontinuations-ignoreops-label" class="form-check-label">Ignore operators in continuations</label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div id="vertical-spacing-lines-group" class="form-group form-check">
-                            <label id="vertical-spacing-lines-label" class="form-text d-inline-block" for="vertical-spacing-lines">Lines between procedures:</label>
-                            <span class="m-2">
-                                <input id="vertical-spacing-lines" type="number" name="linesBetweenProcedures" value="@Model.LinesBetweenProcedures" min="1" max="2" />
-                            </span>
-                            <small id="vertical-spacing-lines-help" class="form-text text-muted">The number of empty lines to maintain between procedures</small>
-                        </div>
-
-                        <hr />
-
-                        <div class="form-group">
-                            <div class="form-check">
-                                @Html.CheckBoxFor(m => m.GroupRelatedProperties, new { id = "group-related-properties" })
-                                <label class="form-check-label" for="group-related-properties">Regroup same-name property members</label>
-                                <small class="form-text text-muted">Removes all spaces between Get, Let, and Set accessors of Property members</small>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.AlignDims, new { id = "align-dimstmt" })
+                                    <label class="form-check-label d-inline-block" for="align-dimstmt">Align <code>Dim</code> statements into column</label>
+                                    <span class="m-2">
+                                        @Html.TextBoxFor(m => m.AlignDimColumn, new { type = "number", id = "align-dimstmt-column", min = "1", max = "100", required = "true" })
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
+                            <hr />
+
+
+                            <h4>Comments</h4>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.AlignCommentsWithCode, new { id = "align-comments" })
+                                    <label class="form-check-label" for="align-comments">Align comments with code</label>
+                                    <small id="align-comments-help" class="form-text text-muted">If checked, comment lines will be made to follow indentation levels</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group form-check">
+                                <label class="form-text d-inline-block" for="line-ending-comment-style">Line-ending comments</label>
+                                <span class="m-2">
+                                    @{
+                                        var lineEndingItems = Html.GetEnumSelectList(typeof(IndenterEndOfLineCommentStyle));
+                                        var defaultLineEndingSelection = lineEndingItems.SingleOrDefault(e => e.Value == Model.EndOfLineCommentStyleValue.ToString());
+                                        defaultLineEndingSelection.Selected = true;
+                                        @Html.DropDownList("IndenterEndOfLineCommentStyleValue", lineEndingItems, new { id = "line-ending-comment-style", required = "true" })
+                                    }
+                                </span>
+                                <small id="line-ending-comment-style-description" class="form-text text-muted"></small>
+                            </div>
+
+                            <div id="line-ending-comment-column-group" class="form-group form-check">
+                                <label id="line-ending-comment-column-label" class="form-text d-inline-block" for="line-ending-comment-column">Column</label>
+                                <span class="m-2">
+                                    @Html.TextBoxFor(m => m.EndOfLineCommentColumnSpaceAlignment, new { id = "line-ending-comment-column", type = "number", min = "1", max = "100", required = "true" })
+                                </span>
+                                <small id="line-ending-comment-column-help" class="form-text text-muted">End-of-line comments will begin at that column whenever possible</small>
+                            </div>
+
+                            <hr />
+
+
+                            <h4>Vertical spacing</h4>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.VerticallySpaceProcedures, new { id = "vertical-spacing-proc" })
+                                    <label class="form-check-label" for="vertical-spacing-proc">Maintain vertical space between procedures</label>
+                                    <small class="form-text text-muted">Consistently keeps the specified number of empty lines between the members of a module</small>
+                                </div>
+                            </div>
+
+                            <div id="vertical-spacing-lines-group" class="form-group form-check">
+                                <label id="vertical-spacing-lines-label" class="form-text d-inline-block" for="vertical-spacing-lines">Lines between procedures:</label>
+                                <span class="m-2">
+                                    @Html.TextBoxFor(m => m.LinesBetweenProcedures, new { id = "vertical-spacing-lines", type = "number", min = "1", max = "2", required = "true" })
+                                </span>
+                                <small id="vertical-spacing-lines-help" class="form-text text-muted">The number of empty lines to maintain between procedures</small>
+                            </div>
+
+                            <hr />
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    @Html.CheckBoxFor(m => m.GroupRelatedProperties, new { id = "group-related-properties" })
+                                    <label class="form-check-label" for="group-related-properties">Regroup same-name property members</label>
+                                    <small class="form-text text-muted">Removes all spaces between Get, Let, and Set accessors of Property members</small>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <span class="m-1"></span>
+            <span class="m-1"></span>
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Try it!</h5>
-                <small class="card-text text-muted">Rubberduck.SmartIndenter.dll version: @Model.IndenterVersion</small>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Try it!</h5>
+                    <small class="card-text text-muted">Rubberduck.SmartIndenter.dll version: @Model.IndenterVersion</small>
+                </div>
+                <div class="card-body">
+                    <label class="form-text" for="indent-code">Paste code to indent here:</label>
+                    @Html.TextAreaFor(m => m.Code, new { id = "indent-code", @class = "form-control text-monospace", rows = 10 })
+                </div>
+                <div class="card-footer">
+                    <button id="indent-button" class="btn btn-primary m-1 float-left" type="button">
+                        <span id="indent-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                        <span id="indent-button-text">Indent</span>
+                    </button>
+                </div>
             </div>
-            <div class="card-body">
-                <label class="form-text" for="indent-code">Paste code to indent here:</label>
-                @Html.TextAreaFor(m => m.Code, new { id = "indent-code", @class = "form-control text-monospace", rows = 10 })
-            </div>
-            <div class="card-footer">
-                <button id="indent-button" class="btn btn-primary m-1 float-left" type="button">
-                    <span id="indent-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
-                    <span id="indent-button-text">Indent</span>
-                </button>
-            </div>
-        </div>
-        <a id="report-issue" class="btn btn-link m-1 float-right" title="Report an issue on GitHub" href="#">
-            <img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" style="margin: 1px; width: 20px; height: 20px;" />
-            <span id="report-issue-text">Report an issue</span>
-        </a>
+            <a id="report-issue" class="btn btn-link m-1 float-right" title="Report an issue on GitHub" href="#">
+                <img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" style="margin: 1px; width: 20px; height: 20px;" />
+                <span id="report-issue-text">Report an issue</span>
+            </a>
+
+        </form>
     </div>
 </section>
 
