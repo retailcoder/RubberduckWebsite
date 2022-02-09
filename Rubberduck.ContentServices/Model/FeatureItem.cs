@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rubberduck.Model;
 using Rubberduck.Model.Abstract;
 using PublicModel = Rubberduck.Model.Entities;
 
@@ -102,6 +103,40 @@ namespace Rubberduck.ContentServices.Model
         public override int GetHashCode()
         {
             return HashCode.Combine(Name);
+        }
+
+        public SearchResultViewModel AsSearchResult(string search)
+        {
+            var match = this.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.Title
+                : this.Description.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.Description
+                : this.XmlDocSummary.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.XmlDocSummary
+                : this.XmlDocRemarks.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.XmlDocRemarks
+                : this.XmlDocInfo.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.XmlDocInfo
+                : null;
+            if (match is null)
+            {
+                return null;
+            }
+
+            if (match.Length > 300)
+            {
+                var index = match.IndexOf(search, StringComparison.InvariantCultureIgnoreCase);
+                if (index <= 150)
+                {
+                    match = match.Substring(0, 300) + " [...]";
+                }
+                else
+                {
+                    match = "[...] " + match.Substring(index - 80, Math.Min(300, match.Length - index - 80)) + " [...]";
+                }
+            }
+
+            return new SearchResultViewModel
+            {
+                Title = this.Title,
+                Url = $"Features/Details/{this.Name}",
+                Excerpt = match
+            };
         }
     }
 }

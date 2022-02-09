@@ -188,5 +188,23 @@ namespace Rubberduck.API.Controllers
                 return Problem("An error has been logged while creating a viewmodel for indenter settings.", statusCode: 500);
             }
         }
+
+        [HttpPost]
+        [Route("Search")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(SearchResultsViewModel), 200)]
+        public async Task<ActionResult<SearchResultsViewModel>> SearchAsync(SearchViewModel search)
+        {
+            try
+            {
+                var result = await _content.SearchAsync(search.Query);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "A Problem (500) result will be returned.");
+                return Problem("An error has been logged while searching for content.", statusCode: 500);
+            }
+        }
     }
 }

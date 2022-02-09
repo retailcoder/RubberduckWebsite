@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
+using Rubberduck.Model;
 using RubberduckWebsite.Controllers.Abstract;
 using RubberduckWebsite.Models;
 using System;
@@ -22,6 +23,20 @@ namespace RubberduckWebsite.Controllers
             var features = await ApiClient.GetFeaturesAsync();
 
             return new HomeViewModel(latestTags, features);
+        }
+
+        [HttpPost]
+        [Route("Home/Search")]
+        public async Task<ActionResult<SearchResultsViewModel>> SearchContentAsync(string search)
+        {
+            if (search is null)
+            {
+                return BadRequest();
+            }
+
+            var vm = new SearchViewModel(search);
+            var results = await ApiClient.SearchContentAsync(vm);
+            return View("SearchResults", results);
         }
 
         public IActionResult Privacy()

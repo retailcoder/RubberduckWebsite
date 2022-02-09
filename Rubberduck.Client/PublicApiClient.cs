@@ -106,5 +106,19 @@ namespace Rubberduck.Client
                 return null;
             }
         }
+
+        public async Task<SearchResultsViewModel> SearchContentAsync(SearchViewModel search)
+        {
+            var endpoint = $"Public/Search";
+
+            try
+            {
+                return await Post<SearchViewModel, SearchResultsViewModel>(endpoint, search);
+            }
+            catch (ApiException)
+            {
+                return new SearchResultsViewModel(search.Query);
+            }
+        }
     }
 }

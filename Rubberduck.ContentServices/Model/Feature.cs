@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rubberduck.Model;
 using Rubberduck.Model.Abstract;
 using PublicModel = Rubberduck.Model.Entities;
 
@@ -112,6 +113,38 @@ namespace Rubberduck.ContentServices.Model
 
                 SubFeatures = this.SubFeatures.Select(e => e.ToPublicModel()).ToList(),
                 FeatureItems = this.FeatureItems.Select(e => e.ToPublicModel()).ToList()
+            };
+        }
+
+        public SearchResultViewModel AsSearchResult(string search)
+        {
+            var match = this.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.Title
+                : this.ElevatorPitch.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.ElevatorPitch
+                : this.Description.Contains(search, StringComparison.InvariantCultureIgnoreCase) ? this.Description
+                : null;
+            if (match is null)
+            {
+                return null;
+            }
+
+            if (match.Length > 300)
+            {
+                var index = match.IndexOf(search, StringComparison.InvariantCultureIgnoreCase);
+                if (index <= 150)
+                {
+                    match = match.Substring(0, 300);
+                }
+                else
+                {
+                    match = "[...] " + match.Substring(index - 80, Math.Min(300, match.Length - index - 80)) + " [...]";
+                }
+            }
+
+            return new SearchResultViewModel
+            {
+                Title = this.Title,
+                Url = $"Features/{this.Name}",
+                Excerpt = match
             };
         }
     }

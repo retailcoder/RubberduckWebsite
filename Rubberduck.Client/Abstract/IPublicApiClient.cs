@@ -40,5 +40,9 @@ namespace Rubberduck.Client.Abstract
         /// </summary>
         Task<string[]> GetIndentedCodeAsync(IIndenterSettings settings);
         Task<IndenterViewModel> GetDefaultIndenterSettings();
+        /// <summary>
+        /// Gets search results for the specified search text.
+        /// </summary>
+        Task<SearchResultsViewModel> SearchContentAsync(SearchViewModel search);
     }
 }

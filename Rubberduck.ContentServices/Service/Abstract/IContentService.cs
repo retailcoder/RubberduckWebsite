@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Rubberduck.ContentServices.Model;
+using Rubberduck.Model;
 using PublicModel = Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.Service.Abstract
@@ -41,5 +42,6 @@ namespace Rubberduck.ContentServices.Service.Abstract
 
         Task<PublicModel.Feature> DeleteFeatureAsync(PublicModel.Feature model);
         Task<PublicModel.FeatureItem> DeleteFeatureItemAsync(PublicModel.FeatureItem model);
+        Task<SearchResultsViewModel> SearchAsync(string search);
     }
 }

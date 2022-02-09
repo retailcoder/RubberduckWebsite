@@ -72,6 +72,7 @@ namespace Rubberduck.Client.Abstract
 
         protected virtual async Task<T> Post<T>(string route, T args) => await Post<T, T>(route, args);
 
+
         protected virtual async Task<TResult> Post<TArgs, TResult>(string route, TArgs args)
         {
             var uri = new Uri($"{_baseUrl}{route}");

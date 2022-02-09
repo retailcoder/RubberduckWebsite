@@ -6,10 +6,14 @@
 <section class="row">
     <div class="text-center w-100">
 
+        <div class="m-3"></div>
+
         <h1 class="display-4">Rubberduck</h1>
         <p>A free and open-source VBIDE add-in</p>
 
         <img alt="Rubberduck logo" src="~/images/ducky-color.png" />
+
+        <div class="m-3"></div>
 
         <div class="card">
             <div class="card-body">
@@ -48,6 +52,8 @@
                 </a>
             </div>
         </div>
+
+        <div class="m-1"></div>
 
         <div class="card">
             <div class="card-body">
@@ -90,6 +96,7 @@
             </div>
         </div>
 
+        <div class="m-1"></div>
 
         <div class="card">
             <div class="card-body">
@@ -121,26 +128,32 @@
 <section class="row">
     <div class="text-center w-100">
 
+        <div class="m-3"></div>
+
         <h3>How Rubberduck brings the VBIDE into this century</h3>
         <p>Features overview</p>
+
+        <div class="m-3"></div>
 
         <div class="card-columns">
             @foreach (var feature in Model.Features.OrderBy(f => f.SortOrder).ThenBy(f => f.Name))
             {
-            <div class="card">
-                <div class="card-header">
-                    <a asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'><h4>@feature.Title</h4></a>
+                <div class="card">
+                    <div class="card-header">
+                        <a asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'><h4>@feature.Title</h4></a>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@feature.ElevatorPitch</p>
+                    </div>
+                    <div class="card-img-bottom">
+                        <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>More »</a>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">@feature.ElevatorPitch</p>
-                </div>
-                <div class="card-img-bottom">
-                    <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>More »</a>
-                </div>
-            </div>
+
+                <div class="m-1"></div>
             }
         </div>
 
@@ -150,6 +163,9 @@
 <hr />
 
 <section class="row">
+
+    <div class="m-3"></div>
+
     <div class="text-center w-100">
 
         <h2>Support us!</h2>

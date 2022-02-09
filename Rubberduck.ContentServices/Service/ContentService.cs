@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
+using Rubberduck.Model;
 using Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.Service
@@ -84,7 +85,7 @@ namespace Rubberduck.ContentServices.Service
                     DateInserted = DateTime.UtcNow
                 };
 
-                await _context.Examples.AddAsync(entity);
+                _context.Examples.Add(entity);
                 return entity.ToPublicModel();
             }
 
@@ -108,7 +109,7 @@ namespace Rubberduck.ContentServices.Service
                     DateInserted = DateTime.UtcNow
                 };
 
-                await _context.ExampleModules.AddAsync(entity);
+                _context.ExampleModules.Add(entity);
                 return entity.ToPublicModel();
             }
 
@@ -132,10 +133,11 @@ namespace Rubberduck.ContentServices.Service
             {
                 var entity = new Model.Feature(model)
                 {
-                    DateInserted = DateTime.UtcNow
+                    DateInserted = DateTime.UtcNow,
+                    ParentFeature = null
                 };
 
-                await _context.Features.AddAsync(entity);
+                var tracking = _context.Features.Add(entity);
                 await _context.SaveChangesAsync();
                 return entity.ToPublicModel();
             }
@@ -169,7 +171,7 @@ namespace Rubberduck.ContentServices.Service
                 {
                     model.DateInserted = DateTime.UtcNow;
                     await SaveExamplesAsync(model);
-                    await _context.FeatureItems.AddAsync(model);
+                    _context.FeatureItems.Add(model);
                     saved.Add(model.ToPublicModel());
                 }
                 else
@@ -273,7 +275,7 @@ namespace Rubberduck.ContentServices.Service
                     asset.DateInserted = DateTime.UtcNow;
                 }
 
-                await _context.Tags.AddAsync(entity);
+                _context.Tags.Add(entity);
                 return entity.ToPublicModel();
             }
 
@@ -326,6 +328,34 @@ namespace Rubberduck.ContentServices.Service
             {
                 throw;
             }
+        }
+
+        public async Task<SearchResultsViewModel> SearchAsync(string search)
+        {
+            var pattern = $"%{search}%";
+
+            var matchingFeatures = (await _context.Features
+                .Where(e => EF.Functions.Like(e.Title, pattern)
+                         || EF.Functions.Like(e.ElevatorPitch, pattern)
+                         || EF.Functions.Like(e.Description, pattern))
+                .ToListAsync())
+                .Select(e => e.AsSearchResult(search));
+
+            var matchingItems = (await _context.FeatureItems
+                .Where(e => EF.Functions.Like(e.Title, pattern)
+                         || EF.Functions.Like(e.Description, pattern)
+                         || EF.Functions.Like(e.XmlDocSummary, pattern)
+                         || EF.Functions.Like(e.XmlDocRemarks, pattern)
+                         || EF.Functions.Like(e.XmlDocInfo, pattern))
+                .ToListAsync())
+                .Select(e => e.AsSearchResult(search));
+
+            var results = matchingFeatures.Concat(matchingItems).ToList();
+
+            return new SearchResultsViewModel(search) 
+            { 
+                Results = results 
+            };
         }
     }
 }
