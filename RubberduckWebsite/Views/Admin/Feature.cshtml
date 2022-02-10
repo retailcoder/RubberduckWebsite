@@ -61,47 +61,39 @@
                 <fieldset>
                     <div class="form-group">
                         <label for="feature-name">Name</label>
+                        @Html.TextBoxFor(m => m.Name, new { id = "feature-name", type = "text", maxlength = "255", @class = "form-control", required = true, @readonly = Model.IsPersisted })
                         @if (Model.IsPersisted)
                         {
                             <small id="feature-name-help" class="form-text text-muted">This field is read-only</small>
-                            <input id="feature-name-label" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required readonly />
                         }
                         else
                         {
                             <small id="feature-name-help" class="form-text text-muted">Choose well: appears in URLs, cannot be modified.</small>
-                            <input id="feature-name-create" type="text" maxlength="255" class="form-control" name="Name" value="@Model.Name" required />
                         }
                     </div>
                     <div class="form-group">
-                        <label for="feature-parent">Parent</label>
+                        @Html.DropDownListFor(m => m.ParentFeatureName, Model.TopLevelFeatures.Select(e => new SelectListItem(e, e)), "(none)", new { id = "feature-parent", @class = "form-control" })
                         <small id="feature-parent-help" class="form-text text-muted">If this is a sub-feature, select its parent. Leave empty for a top-level feature.</small>
-                        <select id="feature-parent" class="form-control" name="ParentFeatureName" value="@Model.ParentFeatureName">
-                            <option value="null">(none)</option>
-                            @foreach (var name in Model.TopLevelFeatures)
-                            {
-                                <option value="@name">@name</option>
-                            }
-                        </select>
                     </div>
                     <div class="form-group">
                         <label for="feature-title">Title</label>
                         <small id="feature-title-help" class="form-text text-muted">The display name of the feature.</small>
-                        <input id="feature-title" type="text" maxlength="255" class="form-control" name="Title" value="@Model.Title" required />
+                        @Html.TextBoxFor(m => m.Title, new { id = "feature-title", type="text", maxlength = "255", @class = "form-control", required = true })
                     </div>
                     <div class="form-group">
                         <label for="feature-elevator-pitch">Elevator Pitch</label>
                         <small id="feature-elevator-pitch-help" class="form-text text-muted">A short paragraph (2-3 sentences) that summarily describes the feature.</small>
-                        <textarea id="feature-elevator-pitch" maxlength="1023" class="form-control" rows="4" name="ElevatorPitch" required>@Model.ElevatorPitch</textarea>
+                        @Html.TextAreaFor(m => m.ElevatorPitch, new { id="feature-elevator-pitch", maxlength = "1023", @class="form-control", rows="4", required=true})
                     </div>
                     <div class="form-group">
-                        <input id="feature-isnew" type="checkbox" class="form-check-input-nooffset" name="IsNew" value="@Model.IsNew" />
+                        @Html.CheckBoxFor(m => m.IsNew, new { id = "feature-isnew", @class = "form-check-input" })
                         <label for="feature-isnew" class="form-check-label">Mark as <span class="badge badge-primary">new</span></label>
                         <small id="feature-isnew-help" class="form-text text-muted">Should be checked for a feature that only exists in pre-release builds.</small>
                     </div>
                     <div class="form-group">
-                        <input id="feature-ishidden" type="checkbox" class="form-check-input-nooffset" name="IsHidden" value="@Model.IsHidden" />
+                        @Html.CheckBoxFor(m => m.IsHidden, new { id = "feature-ishidden", @class = "form-check-input" })
                         <label for="feature-ishidden" class="form-check-label">Hidden</label>
-                        <small id="feature-ishidden-help" class="form-text text-muted">Check to hide this feature on the site.</small>
+                        <small id="feature-ishidden-help" class="form-text text-muted">Check to hide this feature on the home page.</small>
                     </div>
                     <div class="form-group">
                         <div class="card">
@@ -160,16 +152,18 @@
             <p class="card-text">For protected features, items are provided by XML documentation in the source code and cannot be edited here.</p>
         </div>
         <div class="card-body">
-            @foreach (var item in Model.FeatureItems)
-            {
-                <div class="card m-2">
-                    <div class="card-header">
-                        <h6 class="card-title">@item.Name</h6>
+            @{
+                foreach (var item in Model.FeatureItems)
+                {
+                    <div class="card m-2">
+                        <div class="card-header">
+                            <h6 class="card-title">@item.Name</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@item.Description</p>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text">@item.Description</p>
-                    </div>
-                </div>
+                }
             }
         </div>
         <div class="card-footer">

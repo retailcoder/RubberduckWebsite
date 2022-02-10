@@ -141,7 +141,7 @@
                         {
                             <div id="@sub.Name" class="card col-3">
                                 <div class="card-header bg-light">
-                                    <h5 class="d-inline text-left">@sub.Title</h5>
+                                    <h6 class="d-inline text-left">@sub.Title</h6>
                                     <a id="edit-subfeature-button-@sub.Name" class="btn btn-outline-primary float-right" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{sub.Name}" }'>Edit</a>
                                 </div>
                                 <div class="card-body">

@@ -34,9 +34,17 @@ namespace RubberduckWebsite.Controllers
                 return BadRequest();
             }
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/";
+
             var vm = new SearchViewModel(search);
-            var results = await ApiClient.SearchContentAsync(vm);
-            return View("SearchResults", results);
+            var result = await ApiClient.SearchContentAsync(vm);
+
+            foreach (var match in result.Results)
+            {
+                match.Url = $"{baseUrl}{match.Url}";
+            }
+
+            return View("SearchResults", result);
         }
 
         public IActionResult Privacy()

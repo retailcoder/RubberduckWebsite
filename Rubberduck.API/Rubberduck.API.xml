@@ -136,6 +136,17 @@
             <param name="viewModel">The indenter request details.</param>
             <returns>An array of string, each element being an indented physical line of code.</returns>
         </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.GetDefaultIndenterSettingsViewModelAsync">
+            <summary>
+            Gets a default indenter settings view model
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.SearchAsync(Rubberduck.Model.SearchViewModel)">
+            <summary>
+            Searches features and feature items for filtered content.
+            </summary>
+        </member>
         <member name="T:Rubberduck.API.Services.Abstract.IGitHubDataServices">
             <summary>
             A service that queries GitHub.

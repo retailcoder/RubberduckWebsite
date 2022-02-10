@@ -136,7 +136,7 @@
         <div class="m-3"></div>
 
         <div class="card-columns">
-            @foreach (var feature in Model.Features.OrderBy(f => f.SortOrder).ThenBy(f => f.Name))
+            @foreach (var feature in Model.Features.Where(f => !f.IsHidden).OrderBy(f => f.SortOrder).ThenBy(f => f.Name))
             {
                 <div class="card">
                     <div class="card-header">
@@ -146,14 +146,14 @@
                         <p class="card-text">@feature.ElevatorPitch</p>
                     </div>
                     <div class="card-img-bottom">
-                        <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" />
+                            <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" height="220" />
                     </div>
                     <div class="card-footer">
                         <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>More »</a>
                     </div>
                 </div>
 
-                <div class="m-1"></div>
+                <div class="m-2"></div>
             }
         </div>
 
