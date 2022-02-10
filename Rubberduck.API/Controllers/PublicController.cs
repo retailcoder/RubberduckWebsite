@@ -154,11 +154,15 @@ namespace Rubberduck.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets a default indenter settings view model
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("DefaultIndenterSettings")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(string[]), 200)]
-        public async Task<ActionResult<IndenterViewModel>> GetDefaultIndenterSettingsViewModel()
+        public async Task<ActionResult<IndenterViewModel>> GetDefaultIndenterSettingsViewModelAsync()
         {
             try
             {
@@ -189,6 +193,9 @@ namespace Rubberduck.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Searches features and feature items for filtered content.
+        /// </summary>
         [HttpPost]
         [Route("Search")]
         [Produces("application/json")]

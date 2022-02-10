@@ -14,20 +14,34 @@ This repository contains the source code for the [Rubberduck](https://github.com
 
 ## Projects
 
-### RubberduckWebsite  
-The website front-end, published to https://rubberduckvba.com.
+![Diagram showing all solution projects and their inter-dependencies](https://user-images.githubusercontent.com/5751684/153332910-fabc0250-42ae-4754-a76d-cd47babcd3d4.png)
 
-### Rubberduck.API  
-A .NET Web API that serves everything the website needs, published to https://api.rubberduckvba.com.
+#### Rubberduck.Database
 
-### Rubberduck.Model  
-A library that defines the data model entities, DTOs, ViewModels, etc. shared between projects.
+Data Tools project building the back-end SQL Server database.
 
-### Rubberduck.ContentServices  
-Contains the logic for parsing xmldocs into website content, and for accessing the backend database.
+#### Rubberduck.Model
 
-### RubberduckServices  
-A library that references Rubberduck libraries and exposes indenter and syntax highlighter services.
+A class library that defines a public model shared between projects.
 
-### Rubberduck.Database  
-A SQL Server database project that defines the schema for the backing database.
+#### RubberduckServices
+
+A back-end library that references Rubberduck assemblies and exposes various services to leverage them.
+
+#### Rubberduck.ContentServices
+
+A back-end library that connects to the back-end database and defines the EF entity data model.
+Also connects to the GitHub API to retrieve tags; downloads xmldoc assets and processes them into FeatureItem entities.
+
+#### Rubberduck.API
+
+Organizes the various back-end services into a REST API that abstracts them all behind public and admin/authenticated endpoints.
+
+#### Rubberduck.Client
+
+For the website, a service layer library that facilitates interacting with the REST API.
+For the REST API, just another HTTP client.
+
+#### Rubberduck.Website
+
+The ASP.NET Core MVC website client only needs to know about *Rubberduck.Client* and *Rubberduck.Model*.
