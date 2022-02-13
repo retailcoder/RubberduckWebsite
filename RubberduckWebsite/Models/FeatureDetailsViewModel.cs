@@ -9,12 +9,12 @@ namespace RubberduckWebsite.Models
     {
         public FeatureDetailsViewModel(Feature feature)
         {
-            Feature = feature;
-            Description = new Markdown().Transform(feature.Description);
+            Feature = new FeatureViewModel(feature);
+            HtmlDescription = new Markdown().Transform(feature.Description);
         }
 
-        public Feature Feature { get; }
+        public FeatureViewModel Feature { get; }
 
-        public string Description { get; }
+        public string HtmlDescription { get; }
     }
 }

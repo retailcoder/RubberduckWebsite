@@ -75,7 +75,7 @@
                 $('#tag-metadata-success-alert').addClass('show');
             })
             .fail(function (data, textStatus, xhr) {
-                $('#tag-metadata-error-message').text(xhr);
+                $('#tag-metadata-error-message').text(textStatus + ' : ' + xhr);
                 $('#tag-metadata-error-alert').addClass('show');
                 console.log(xhr);
             })
@@ -126,8 +126,7 @@
         </div>
         @foreach (var feature in Model.Features)
         {
-    <div class="p-1">
-        <div id="@feature.Name" class="card">
+        <div id="@feature.Name" class="card card-highlight">
             <div class="card-header">
                 <h4 class="d-inline text-left">@feature.Title</h4>
                 <a id="expand-feature-button-@feature.Name" class="btn btn-primary float-right" href="#collapse-@feature.Name" role="button" aria-expanded="false" aria-controls="collapse-@feature.Name" data-toggle="collapse">Expand</a>
@@ -159,7 +158,6 @@
                 </div>
             </div>
         </div>
-    </div>
         }
     </div>
 </section>

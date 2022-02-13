@@ -11,7 +11,10 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Rubberduck</a>
+                <a class="navbar-brand float-left" href="/">
+                    <img alt="Rubberduck logo" src="~/images/ducky-color.png" height="64" />
+                    Rubberduck
+                </a>
                 <button class="navbar-toggler" 
                         type="button" 
                         data-toggle="collapse" 
@@ -22,11 +25,8 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Download
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -41,7 +41,7 @@
                             <a class="nav-link text-dark" href="https://rubberduckvba.blog">Blog</a>
                         </li>
                         <li class="nva-item">
-                            <a class="nav-link text-dark" asp-controller="Indenter" asp-action="Index">Indenter</a>
+                            <a class="nav-link text-dark" asp-controller="Indenter" asp-action="Index">Online Indenter</a>
                         </li>
                     </ul>
                     <form method="post" enctype="application/x-www-form-urlencoded" class="form-inline my-2 my-lg-0" asp-controller="Home" asp-action="Search">
@@ -68,9 +68,74 @@
             </div>
         </div>
     </footer>
+
+    <div id="toast-popup" class="toast" data-delay="3000" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; top: 5px; right: 5px;">
+        <div class="toast-header">
+            <span id="toast-icon" class="icon icon-tick"></span>
+            <strong class="mr-auto">@ViewData["Title"]</strong>
+            <small id="toast-timestamp"></small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div id="toast-message" class="toast-body"></div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        function setSubmitButtonBusy(button, buttonTextSpan, indicatorSpan, setBusy, caption) {
+            if (setBusy) {
+                button.attr('disabled', true);
+                button.addClass('disabled');
+                buttonTextSpan.text('Processing...');
+                indicatorSpan.removeAttr('hidden');
+            }
+            else {
+                button.removeClass('disabled');
+                button.removeAttr('disabled');
+                buttonTextSpan.text(caption);
+                indicatorSpan.attr('hidden', true);
+            }
+        }
+        function disableInvalidSubmit() {
+            // https://getbootstrap.com/docs/4.3/components/forms/#custom-styles
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        }
+        function showToast(message, success) {
+            $('#toast-message').text(message);
+
+            if (success) {
+                $('#toast-icon').addClass('icon-tick');
+                $('#toast-icon').removeClass('icon-cross');
+                $('#toast-icon').show();
+            }
+            else {
+                $('#toast-icon').addClass('icon-cross');
+                $('#toast-icon').removeClass('icon-tick');
+                $('#toast-icon').show();
+            }
+
+            var timeString = new Date().toISOString().substr(11, 8);
+            $('#toast-timestamp').text(timeString);
+
+            $('#toast-popup').toast('show');
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

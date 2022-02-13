@@ -4,13 +4,132 @@
 }
 @section Scripts {
     <script type='text/javascript'>
+
+        function setSubmitFeatureBusy(setBusy) {
+            setSubmitButtonBusy($('#save-button'), $('#save-button-text'), $('#save-busy-indicator'), setBusy, 'Save');
+        };
+
+        function setSubmitScreenshotBusy(setBusy) {
+            setSubmitButtonBusy($('#upload-button'), $('#upload-button-text'), $('#upload-busy-indicator'), setBusy, 'Upload');
+        };
+
+        function getScreenshotFormData() {
+            return new FormData($('#screenshot-form')[0]);
+        };
+
+        function submitScreenshotForm() {
+            if ($('#screenshot-form')[0].checkValidity()) {
+                setSubmitScreenshotBusy(true);
+
+                var formData = getScreenshotFormData();
+                $.ajax({
+                    url: '/Admin/EditFeature/UploadScreenshot',
+                    type: 'POST',
+                    data: formData,
+                    dataType: false,
+                    contentType: false,
+                    processData: false
+                })
+                    .done(function (data) {
+                        setSubmitScreenshotBusy(false);
+                        showToast('Screenshot was successfully uploaded.', true);
+                    })
+                    .fail(function (xhr) {
+                        setSubmitScreenshotBusy(false);
+                        showToast('Something went wrong.', false);
+                    });
+            }
+            else {
+                $('#screenshot-form')[0].reportValidity();
+            }
+        };
+
+        function getFeatureFormData() {
+            var data = {};
+            data.id = @Model.Id;
+            data.name = $('#feature-name').val();
+            data.parentFeatureName = $('#feature-parent').val();
+            data.title = $('#feature-title').val();
+            data.elevatorPitch = $('#feature-elevator-pitch').val();
+            data.isNew = $('#feature-isnew').is(':checked');
+            data.isHidden = $('#feature-ishidden').is(':checked');
+            data.description = $('#feature-description').val();
+            data.sortOrder = $('#feature-sortOrder').val();
+            return data;
+        };
+
+        function submitFeatureForm() {
+            if ($('#feature-form')[0].checkValidity()) {
+                setSubmitFeatureBusy(true);
+
+                var jsonData = getFeatureFormData();
+                var formData = JSON.stringify(jsonData);
+
+                $.ajax({
+                    url: '/Admin/EditFeature/Save',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8'
+                })
+                    .done(function (lines) {
+                        setSubmitFeatureBusy(false);
+                        showToast('API request was successfully processed.', true);
+                    })
+                    .fail(function (xhr) {
+                        setSubmitFeatureBusy(false);
+                        showToast('Something went wrong.', false);
+                    });
+            }
+            else {
+                $('#feature-form')[0].reportValidity();
+            }
+        };
+
+        function submitDelete() {
+            var data = {};
+            data.name = '@Model.Name';
+
+            $.ajax({
+                url: '/Admin/EditFeature/Delete',
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8'
+            })
+                .done(function (lines) {
+                    setSubmitFeatureBusy(false);
+                    showToast('API request was successfully processed.', true);
+                })
+                .fail(function (xhr) {
+                    setSubmitFeatureBusy(false);
+                    showToast('Something went wrong.', false);
+                });
+        }
+
     $(document).ready(function () {
+
+        disableInvalidSubmit();
+
+        $('#upload-button').click(function () {
+            submitScreenshotForm();
+        });
+
+        $('#save-button').click(function () {
+            submitFeatureForm();
+        });
+
+        $('#delete-button').click(function () {
+            submitDelete();
+        });
+
         $('#feature-parent').val('@Model.ParentFeatureName');
+
         $('#formtab-preview').click(function () {
             var data = {};
             data.markdownContent = $('#feature-description').val();
             $.ajax({
-                url: '/Admin/MarkdownPreview',
+                url: '/Admin/EditFeature/MarkdownPreview',
                 data: JSON.stringify(data),
                 cache: false,
                 dataType: 'text',
@@ -43,21 +162,24 @@
             <div class="card-body">
                 <p class="card-text">Select a .png image file to upload for this feature.</p>
                 <small class="card-text text-muted">File will be renamed after the feature on the server.</small>
-                <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
+                <form id="screenshot-form" class="needs-validation" novalidate method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
                     <input type="hidden" id="feature-name-edit" name="featureName" value="@Model.Name" hidden />
-                    <input type="file" class="form-control" id="screenshot" name="screenshotFile" required />
-                    <button class="btn btn-primary" type="submit">Upload</button>
+                    <input type="file" accept="image/png" class="form-control" id="screenshot" name="screenshotFile" required />
+                    <button id="upload-button" class="btn btn-primary m-2" type="button">
+                        <span id="upload-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                        <span id="upload-button-text">Upload</span>
+                    </button>
                 </form>
             </div>
             <div class="card-img-bottom">
-                <img class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
+                <img id="screenshot-image" class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
             </div>
         </div>
     </div>
     }
     <div class="card w-100 m-2">
         <div class="card-body">
-            <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="SaveFeature">
+            <form id="feature-form" class="needs-validation" novalidate method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="SaveFeature">
                 <fieldset>
                     <div class="form-group">
                         <label for="feature-name">Name</label>
@@ -78,12 +200,12 @@
                     <div class="form-group">
                         <label for="feature-title">Title</label>
                         <small id="feature-title-help" class="form-text text-muted">The display name of the feature.</small>
-                        @Html.TextBoxFor(m => m.Title, new { id = "feature-title", type="text", maxlength = "255", @class = "form-control", required = true })
+                        @Html.TextBoxFor(m => m.Title, new { id = "feature-title", type = "text", maxlength = "255", @class = "form-control", required = true })
                     </div>
                     <div class="form-group">
                         <label for="feature-elevator-pitch">Elevator Pitch</label>
                         <small id="feature-elevator-pitch-help" class="form-text text-muted">A short paragraph (2-3 sentences) that summarily describes the feature.</small>
-                        @Html.TextAreaFor(m => m.ElevatorPitch, new { id="feature-elevator-pitch", maxlength = "1023", @class="form-control", rows="4", required=true})
+                        @Html.TextAreaFor(m => m.ElevatorPitch, new { id = "feature-elevator-pitch", maxlength = "1023", @class = "form-control", rows = "4", required = "true" })
                     </div>
                     <div class="form-group">
                         @Html.CheckBoxFor(m => m.IsNew, new { id = "feature-isnew", @class = "form-check-input" })
@@ -112,7 +234,7 @@
                                 <small id="feature-description-help" class="form-text text-muted">This field contains a Markdown document; go wild!</small>
                                 <div id="nav-tabcontent" class="tab-content">
                                     <div id="edit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="formtab-edit">
-                                        <textarea id="feature-description" maxlength="32767" class="form-control" rows="20" name="Description" required>@Model.Description</textarea>
+                                        @Html.TextAreaFor(m => m.Description, new { id="feature-description", @class="form-control", rows="20", required="true", maxlength="32767" })
                                     </div>
                                     <div id="preview" class="tab-pane fade" role="tabpanel" aria-labelledby="formtab-preview">
                                         <div class="card">
@@ -129,13 +251,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        @Html.TextBoxFor(m => m.SortOrder, new { id="feature-sort-order", type="number", min="0", max="999", @class="form-control" })
                         <label for="feature-sort-order">Sort Order</label>
                         <small id="feature-sort-order-help" class="form-text text-muted">Same-value features are sorted alphabetically by their <code>Name</code>.</small>
-                        <input id="feature-sort-order" type="number" min="0" max="999" class="form-control" name="SortOrder" value="@Model.SortOrder" />
                     </div>
                 </fieldset>
-                <button class="btn btn-primary" type="submit">Submit</button>
-                <a id="cancel-button" class="btn btn-secondary" asp-controller="Admin" asp-action="Index">Cancel</a>
+
+                <button id="save-button" class="btn btn-primary m-1 float-left" type="button">
+                    <span id="save-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                    <span id="save-button-text">Save</span>
+                </button>
+                <button id="cancel-button" class="btn btn-secondary" asp-controller="Admin" asp-action="Index">Cancel</button>
             </form>
         </div>
     </div>
@@ -173,20 +299,20 @@
 </section>
 }
 
-<section class="row">
-    <div class="row">
+<section>
+    <div>
         @if (Model.IsPersisted)
         {
             <div class="card w-100 text-center m-2">
                 <div class="card-header">
                     <a class="card-title text-danger" href="#collapse-feature-danger-zone" role="button" aria-expanded="false" aria-controls="collapse-feature-danger-zone" data-toggle="collapse"><strong>Danger Zone</strong></a>
                 </div>
-                <div class="collapse">
-                    <div id="collapse-feature-danger-zone" class="card-body">
+                <div id="collapse-feature-danger-zone" class="collapse">
+                    <div class="card-body">
                         @if (!Model.IsProtected)
                         {
                             <p class="card-text text-danger">This action cannot be undone!</p>
-                            <a class="btn btn-outline-danger" asp-controller="Admin" asp-action="DeleteFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{Model.Name}" }'>Delete the @Model.Name feature and all associated data</a>
+                            <button id="delete-button" class="btn btn-outline-danger">Delete the @Model.Name feature and all associated data</button>
                         }
                         else
                         {

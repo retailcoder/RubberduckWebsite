@@ -6,41 +6,7 @@
 @section Scripts {
     <script type="text/javascript">
         function setIndenterBusy(setBusy) {
-            var button = $('#indent-button');
-            var indicator = $('#indent-busy-indicator');
-
-            if (setBusy) {
-                button.attr('disabled', true);
-                button.addClass('disabled');
-                $('#indent-button-text').text('Processing...');
-                indicator.removeAttr('hidden');
-            }
-            else {
-                button.removeClass('disabled');
-                button.removeAttr('disabled');
-                button.text('Indent');
-                indicator.attr('hidden', true);
-            }
-        }
-
-        function showToast(message, success) {
-            $('#toast-message').text(message);
-            
-            if (success) {
-                $('#toast-icon').addClass('icon-tick');
-                $('#toast-icon').removeClass('icon-cross');
-                $('#toast-icon').show();
-            }
-            else {
-                $('#toast-icon').addClass('icon-cross');
-                $('#toast-icon').removeClass('icon-tick');
-                $('#toast-icon').show();
-            }
-
-            var timeString = new Date().toISOString().substr(11, 8);
-            $('#toast-timestamp').text(timeString);
-
-            $('#toast-popup').toast('show');
+            setSubmitButtonBusy($('#indent-button'), $('#indent-button-text'), $('#indent-busy-indicator'), setBusy, 'Indent');
         }
 
         function setLineEndingCommentSelectionHelpText() {
@@ -174,24 +140,6 @@
             jsonData.emptyLineHandlingMethodValue = $('#empty-line-handling').val();
 
             return jsonData;
-        }
-
-        function disableInvalidSubmit() {
-            // https://getbootstrap.com/docs/4.3/components/forms/#custom-styles
-            window.addEventListener('load', function () {
-                // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                var forms = document.getElementsByClassName('needs-validation');
-                // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
         }
 
         function submitIndenterForm() {
@@ -543,15 +491,3 @@
         </form>
     </div>
 </section>
-
-<div id="toast-popup" class="toast" data-delay="3000" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; top: 5px; right: 5px;">
-    <div class="toast-header">
-        <span id="toast-icon" class="icon icon-tick"></span>
-        <strong class="mr-auto">@ViewData["Title"]</strong>
-        <small id="toast-timestamp"></small>
-        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div id="toast-message" class="toast-body"></div>
-</div>

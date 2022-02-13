@@ -39,6 +39,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
+        [Route("{controller}/UpdateTagMetadata")]
         public async Task<IActionResult> UpdateTagMetadata()
         {
             try
@@ -58,7 +59,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
-        [Route("EditFeature/{name}")]
+        [Route("{controller}/EditFeature/{name}")]
         public async Task<IActionResult> EditFeature([FromRoute]string name)
         {
             var topLevelFeatures = await _apiClient.GetFeaturesAsync();
@@ -75,6 +76,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
+        [Route("{controller}/NewFeature")]
         public async Task<IActionResult> NewFeature()
         {
             var topLevelFeatures = await _apiClient.GetFeaturesAsync();
@@ -98,6 +100,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
+        [Route("{controller}/NewSubFeature")]
         public async Task<IActionResult> NewSubFeature([FromQuery] string parent)
         {
             if (string.IsNullOrWhiteSpace(parent))
@@ -130,6 +133,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpGet]
+        [Route("{controller}/NewFeatureItem")]
         public async Task<IActionResult> NewFeatureItem([FromQuery] string parent)
         {
             if (string.IsNullOrWhiteSpace(parent))
@@ -159,13 +163,14 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveFeature(EditFeatureViewModel vm)
+        [Route("{controller}/EditFeature/Save")]
+        public async Task<IActionResult> SaveFeature([FromBody] EditFeatureViewModel vm)
         {
             try
             {
                 var features = await _apiClient.GetFeaturesAsync();
                 var model = await _apiClient.SaveFeatureAsync(vm.GetModel(features));
-                return View("Feature", new EditFeatureViewModel(model, features));
+                return Ok(new EditFeatureViewModel(model, features));
             }
             catch(Exception exception)
             {
@@ -174,8 +179,10 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteFeature(string name)
+        [Route("{controller}/EditFeature/Delete")]
+        public async Task<IActionResult> DeleteFeature([FromBody] EditFeatureViewModel vm)
         {
+            var name = vm?.Name;
             if (string.IsNullOrWhiteSpace(name))
             {
                 return BadRequest();
@@ -189,7 +196,7 @@ namespace RubberduckWebsite.Controllers
                     return NotFound();
                 }
                 var result = await _apiClient.DeleteFeatureAsync(model);
-                return Ok();
+                return Ok(result);
             }
             catch (Exception exception)
             {
@@ -198,8 +205,10 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteFeatureItem(string name)
+        [Route("{controller}/EditFeature/DeleteFeatureItem")]
+        public async Task<IActionResult> DeleteFeatureItem([FromBody] EditFeatureViewModel vm)
         {
+            var name = vm?.Name;
             if (string.IsNullOrWhiteSpace(name))
             {
                 return BadRequest();
@@ -218,7 +227,7 @@ namespace RubberduckWebsite.Controllers
                 }
 
                 var result = await _apiClient.DeleteFeatureItemAsync(model);
-                return Ok();
+                return Ok(result);
             }
             catch (Exception exception)
             {
@@ -227,6 +236,7 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
+        [Route("{controller}/EditFeature/MarkdownPreview")]
         public async Task<IActionResult> MarkdownPreview([FromBody] MarkdownPreviewViewModel vm)
         {
             var html = new MarkdownSharp.Markdown().Transform(vm.MarkdownContent);
@@ -234,8 +244,12 @@ namespace RubberduckWebsite.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadScreenshot(string featureName, IFormFile screenshotFile)
+        [Route("{controller}/EditFeature/UploadScreenshot")]
+        public async Task<IActionResult> UploadScreenshot()
         {
+            var featureName = Request.Form["featureName"];
+            var screenshotFile = Request.Form.Files[0];
+
             var feature = await _apiClient.GetFeatureAsync(featureName);
             if (feature is null)
             {
@@ -263,11 +277,11 @@ namespace RubberduckWebsite.Controllers
                     screenshotFile.CopyTo(stream);
                 }
 
-                return await EditFeature(feature.Name);
+                return Ok();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                return Problem(e.ToString());
+                return Problem(exception.ToString());
             }
         }
     }

@@ -6,108 +6,109 @@
 <section class="row">
     <div class="text-center w-100">
 
-        <div class="m-3"></div>
-
-        <h1 class="display-4">Rubberduck</h1>
-        <p>A free and open-source VBIDE add-in</p>
-
-        <img alt="Rubberduck logo" src="~/images/ducky-color.png" />
-
-        <div class="m-3"></div>
-
-        <div class="card">
-            <div class="card-body">
-                @if (Model.MainTag != null)
-                {
-                    <h5 class="card-title">@Model.MainTag.Name (main)</h5>
-                    <p class="card-text"><small>released @Model.MainTag.DateCreated.ToString("yyyy-MM-dd")</small></p>
-                    <p class="card-text">Get the latest official release here:</p>
-                    <a class="btn btn-success btn-lg text-nowrap" id="downloadLatestRelease"
-                       download title="Latest Rubberduck official release build"
-                       href="@Model.MainTag.InstallerDownloadUrl">
-                        <div class="d-inline-block">
-                            <span class="icon icon-download-windows"></span>
-                            <span class="text-nowrap">Download</span>
-                        </div>
-                    </a>
-                    <p class="card-text"><small><strong>@Model.MainTag.InstallerDownloads.ToString("N0")</strong> downloads</small></p>
-                }
-                else
-                {
-                    <p class="card-text">Get the latest official release here:</p>
-                    <a class="btn btn-success btn-lg"
-                       href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
-                        <div class="d-inline-block">
-                            <span class="text-nowrap">Download</span>
-                        </div>
-                    </a>
-                }
-            </div>
-
-            <div class="card-footer card-footer-quiet text-muted">
-                <a class="btn-link small"
-                   title="See the release notes on GitHub"
-                   href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
-                    <span class="text-nowrap">Release notes</span>
-                </a>
-            </div>
+        <div class="m-3">
+            <h1 class="display-4">Rubberduck</h1>
+            <p>A free and open-source VBIDE add-in</p>
         </div>
 
-        <div class="m-1"></div>
-
-        <div class="card">
-            <div class="card-body">
-                @if (Model.MainTag != null)
-                {
-                    <h5 class="card-title">@Model.NextTag.Name (next)</h5>
-                    <p class="card-text"><small>released @Model.NextTag.DateCreated.ToString("yyyy-MM-dd")</small></p>
-                    <p class="card-text">Try all the new/upcoming features with latest <em>pre-release</em> version:</p>
-                    <a class="btn btn-success btn-lg text-nowrap" id="downloadLatestRelease"
-                       download title="Latest Rubberduck pre-release build"
-                       href="@Model.NextTag.InstallerDownloadUrl">
-                        <div class="d-inline-block">
-                            <span class="icon icon-download-windows"></span>
-                            <span class="text-nowrap">Download</span>
-                        </div>
-                    </a>
-                    <p class="card-text"><small><strong>@Model.NextTag.InstallerDownloads.ToString("N0")</strong> downloads</small></p>
-                }
-                else
-                {
-                    <p class="card-text">Have you tried the latest <em>pre-release</em> version?</p>
-                    <a class="btn btn-success btn-lg"
-                       href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
-                        <div class="d-inline-block">
-                            <span class="text-nowrap">Download</span>
-                        </div>
-                    </a>
-                }
-            </div>
-
-            <div class="card-footer card-footer-quiet text-muted">
-                @if (Model.MainTag != null)
-                {
-                }
-                <a class="btn-link small"
-                   title="See the release notes on GitHub"
-                   href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
-                    <span class="text-nowrap">Release notes</span>
-                </a>
-            </div>
+        <div class="m-3">
+            <img alt="Rubberduck logo" src="~/images/ducky-color.png" />
         </div>
 
-        <div class="m-1"></div>
+        <div class="card-deck">
+            <div class="card card-highlight card-highlight-quiet m-2">
+                <div class="card-body">
+                    @if (Model.MainTag != null)
+                    {
+                        <h5 class="card-title">@Model.MainTag.Name (main)</h5>
+                        <p class="card-text"><small>released @Model.MainTag.DateCreated.ToString("yyyy-MM-dd")</small></p>
+                        <p class="card-text">Get the latest official release here:</p>
+                        <a class="btn btn-success btn-lg text-nowrap" id="downloadLatestRelease"
+                           download title="Latest Rubberduck official release build"
+                           href="@Model.MainTag.InstallerDownloadUrl">
+                            <div class="d-inline-block">
+                                <span class="icon icon-download-windows"></span>
+                                <span class="text-nowrap">Download</span>
+                            </div>
+                        </a>
+                        <p class="card-text"><small><strong>@Model.MainTag.InstallerDownloads.ToString("N0")</strong> downloads</small></p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Get the latest official release here:</p>
+                        <a class="btn btn-success btn-lg"
+                           href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
+                            <div class="d-inline-block">
+                                <span class="text-nowrap">Download</span>
+                            </div>
+                        </a>
+                    }
+                </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Repository</h5>
-                <p><span class="text-nowrap">Star <span class="icon icon-star" style="margin-right: 2px;"></span> us on GitHub!</span></p>
-                <div class="d-inline-block cursor-pointer">
-                    <a href="https://github.com/rubberduck-vba/Rubberduck/"><img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" style="margin: 8px;" title="Browse source code and issues on GitHub" /></a>
-                    <a href="https://github.com/rubberduck-vba/Rubberduck/" class="btn btn-outline-secondary btn-lg" title="Browse source code and conversations on GitHub">Repository</a>
+                <div class="card-footer card-footer-quiet text-muted">
+                    <a class="btn-link small"
+                       title="See the release notes on GitHub"
+                       href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
+                        <span class="text-nowrap">Release notes</span>
+                    </a>
                 </div>
             </div>
-            <div class="card-footer">
+
+            <div class="card card-highlight card-highlight-quiet m-2">
+                <div class="card-body">
+                    @if (Model.MainTag != null)
+                    {
+                        <h5 class="card-title">@Model.NextTag.Name (next)</h5>
+                        <p class="card-text"><small>released @Model.NextTag.DateCreated.ToString("yyyy-MM-dd")</small></p>
+                        <p class="card-text">Try all the new/upcoming features with latest <em>pre-release</em> version:</p>
+                        <a class="btn btn-success btn-lg text-nowrap" id="downloadLatestRelease"
+                           download title="Latest Rubberduck pre-release build"
+                           href="@Model.NextTag.InstallerDownloadUrl">
+                            <div class="d-inline-block">
+                                <span class="icon icon-download-windows"></span>
+                                <span class="text-nowrap">Download</span>
+                            </div>
+                        </a>
+                        <p class="card-text"><small><strong>@Model.NextTag.InstallerDownloads.ToString("N0")</strong> downloads</small></p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Have you tried the latest <em>pre-release</em> version?</p>
+                        <a class="btn btn-success btn-lg"
+                           href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
+                            <div class="d-inline-block">
+                                <span class="text-nowrap">Download</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+
+                <div class="card-footer card-footer-quiet text-muted">
+                    @if (Model.MainTag != null)
+                    {
+                    }
+                    <a class="btn-link small"
+                       title="See the release notes on GitHub"
+                       href="https://github.com/rubberduck-vba/Rubberduck/releases/latest">
+                        <span class="text-nowrap">Release notes</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-light m-1">
+            <!--
+
+    <div class="card-body">
+        <h5 class="card-title">Repository</h5>
+        <p><span class="text-nowrap">Star <span class="icon icon-star" style="margin-right: 2px;"></span> us on GitHub!</span></p>
+        <div class="d-inline-block cursor-pointer">
+            <a href="https://github.com/rubberduck-vba/Rubberduck/"><img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" class="github-button" style="margin: 8px;" title="Browse source code and issues on GitHub" /></a>
+            <a href="https://github.com/rubberduck-vba/Rubberduck/" class="btn btn-outline-secondary btn-lg" title="Browse source code and conversations on GitHub">Repository</a>
+        </div>
+    </div>
+    -->
+            <div class="card-footer card-footer-borderless">
                 @if (Model.MetadataTimestamp.HasValue)
                 {
                     <small><em>Tag/release metadata updated @Model.MetadataTimestamp.Value.ToString("yyyy-MM-dd hh:MM:ssZ")</em></small>
@@ -128,32 +129,40 @@
 <section class="row">
     <div class="text-center w-100">
 
-        <div class="m-3"></div>
+        <div class="m-3">
+            <h3>How Rubberduck brings the VBIDE into this century</h3>
+            <p>Features overview</p>
+        </div>
 
-        <h3>How Rubberduck brings the VBIDE into this century</h3>
-        <p>Features overview</p>
+        <div class="card-deck">
+            @{
+                var features = Model.Features.Where(f => !f.IsHidden).OrderBy(f => f.SortOrder).ThenBy(f => f.Name).Select((f, i) => (Feature: f, Index: i)).GroupBy(e => e.Index / 3);
+                @foreach (var row in features)
+                {
+                    <div class="row">
 
-        <div class="m-3"></div>
-
-        <div class="card-columns">
-            @foreach (var feature in Model.Features.Where(f => !f.IsHidden).OrderBy(f => f.SortOrder).ThenBy(f => f.Name))
-            {
-                <div class="card">
-                    <div class="card-header">
-                        <a asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'><h4>@feature.Title</h4></a>
+                        @foreach (var feature in row.Select(e => e.Feature))
+                        {
+                        <a class="card card-highlight m-2" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>
+                            <div class="card-header">
+                                <h4 class="d-inline">
+                                    @feature.Title
+                                    @if (feature.IsNew){<span class="badge badge-primary">&nbsp;NEW!</span>}
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">@feature.ElevatorPitch</p>
+                            </div>
+                            <div class="card-img-bottom">
+                                <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" height="220" />
+                            </div>
+                            <div class="card-footer">
+                                <p class="card-text">Details »</p>
+                            </div>
+                        </a>
+                        }
                     </div>
-                    <div class="card-body">
-                        <p class="card-text">@feature.ElevatorPitch</p>
-                    </div>
-                    <div class="card-img-bottom">
-                            <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" height="220" />
-                    </div>
-                    <div class="card-footer">
-                        <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>More »</a>
-                    </div>
-                </div>
-
-                <div class="m-2"></div>
+                }
             }
         </div>
 
@@ -164,12 +173,10 @@
 
 <section class="row">
 
-    <div class="m-3"></div>
-
     <div class="text-center w-100">
 
         <h2>Support us!</h2>
-        <p>Rubberduck is free, but keeping it visible online is not.</p>
+        <p>Rubberduck is free, but keeping it visible online is not so we accept donations via PayPal.</p>
 
         <a href="https://www.paypal.me/rubberduckvba" title="Donate via PayPal">
             <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate via PayPal" />
