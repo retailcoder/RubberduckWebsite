@@ -90,6 +90,8 @@
     <Folder Include="Tables\dbo\Configuration" />
     <Folder Include="Tables\dbo\Configuration\Constraints" />
     <Folder Include="Tables\dbo\Configuration\Indexes" />
+    <Folder Include="Tables\dbo\Synchronisations" />
+    <Folder Include="Tables\dbo\Synchronisations\Constraints" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\dbo\Features\Features.sql" />
@@ -122,6 +124,8 @@
     <Build Include="Tables\dbo\Examples\Constraints\FK_Examples_Features.sql" />
     <Build Include="Tables\dbo\FeatureItems\Constraints\FK_FeatureItems_TagAssets.sql" />
     <Build Include="Tables\dbo\Tags\Constraints\NK_Tags.sql" />
+    <Build Include="Tables\dbo\Synchronisations\Synchronisations.sql" />
+    <Build Include="Tables\dbo\Synchronisations\Constraints\PK_Synchronisations.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

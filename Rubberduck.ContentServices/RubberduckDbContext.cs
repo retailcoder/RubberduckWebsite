@@ -14,6 +14,8 @@ namespace Rubberduck.ContentServices
         public virtual DbSet<FeatureItem> FeatureItems { get; set; }
         public virtual DbSet<Example> Examples { get; set; }
         public virtual DbSet<ExampleModule> ExampleModules { get; set; }
+
+        public virtual DbSet<Synchronisation> Synchronisations { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<TagAsset> TagAssets { get; set; }
 
@@ -58,6 +60,10 @@ namespace Rubberduck.ContentServices
                     entity.Property(e => e.Id).UseIdentityColumn(1, 1);
 
                     entity.HasIndex(e => new { e.TagId, e.Name }).IsUnique();
+                })
+                .Entity<Synchronisation>(entity =>
+                {
+                    entity.HasIndex(e => e.Id);
                 });
         }
     }

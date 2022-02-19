@@ -110,5 +110,33 @@ namespace Rubberduck.Client
                 return false;
             }
         }
+
+        public async Task<bool> IsUpdatingAsync()
+        {
+            var endpoint = "Admin/IsUpdating";
+
+            var uri = new Uri($"{BaseUrl}{endpoint}");
+            try
+            {
+                using (var client = GetClient())
+                {
+                    client.Timeout = base.GetRequestTimeout;
+                    using (var response = await client.GetAsync(uri))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        var value = await response.Content.ReadAsStringAsync();
+                        return bool.Parse(value);
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                throw;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

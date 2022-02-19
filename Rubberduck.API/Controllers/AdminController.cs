@@ -173,8 +173,29 @@ namespace Rubberduck.API.Controllers.Authenticated
         {
             try
             {
-                await _xmlDocService.SynchronizeAsync();
+                var clientIP = HttpContext.Connection.RemoteIpAddress;
+                var version = GetType().Assembly.GetName().Version.ToString();
+                if (!Request.Headers.TryGetValue("user-agent", out var userAgent))
+                {
+                    return BadRequest();
+                }
+                await _xmlDocService.SynchronizeAsync(version, clientIP.ToString(), userAgent[0]);
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "A Problem (500) result will be returned.");
+                return Problem("An error has been logged while updating xmldoc content.", statusCode: 500);
+            }
+        }
+
+        [HttpGet]
+        [Route("IsUpdating")]
+        public async Task<ActionResult<bool>> GetIsSynchronisationInProgress()
+        {
+            try
+            {
+                return await _contentService.GetIsSynchronisationInProgressAsync();
             }
             catch (Exception e)
             {

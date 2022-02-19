@@ -9,39 +9,54 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar fixed-top navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand float-left" href="/">
-                    <img alt="Rubberduck logo" src="~/images/ducky-color.png" height="64" />
-                    Rubberduck
+                    <img alt="Rubberduck logo" src="~/images/ducky-color.png" height="48" /><div class="text-nowrap">Rubberduck</div>
                 </a>
-                <button class="navbar-toggler" 
-                        type="button" 
-                        data-toggle="collapse" 
-                        data-target=".navbar-collapse" 
+                <button class="navbar-toggler"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <a id="login-button" class="nav-link" asp-controller="Login" asp-action="Authenticate">
+                                    <img src="~/images/GitHub-Mark-64px.png" height="16" width="16" alt="GitHub logo" class="github-button" style="margin-right: 2px;" title="Login with GitHub" />
+                                    Login
+                                </a>
+                            }
+                            else
+                            {
+                                <a id="login-button" class="nav-link" asp-controller="Login" asp-action="Authenticate">
+                                    <img src="~/images/GitHub-Mark-64px.png" height="16" width="16" alt="GitHub logo" class="github-button" style="margin-right: 2px;" title="Login with GitHub" />
+                                    @User.Identity.Name
+                                </a>
+                            }
+                        </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Download
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="icon icon-download-windows"></span>Download
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="#">Main (release)</a>
-                                <a class="dropdown-item" href="#">Next (pre-release)</a>
+                                <a id="download-link1" class="dropdown-item" href="#">Link1</a>
+                                <a id="download-link2" class="dropdown-item" href="#">Link2</a>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Features" asp-action="Index">Features</a>
+                            <a class="nav-link" asp-area="" asp-controller="Features" asp-action="Index">Features</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="https://rubberduckvba.blog">Blog</a>
+                            <a class="nav-link" href="https://rubberduckvba.blog">Blog</a>
                         </li>
-                        <li class="nva-item">
-                            <a class="nav-link text-dark" asp-controller="Indenter" asp-action="Index">Online Indenter</a>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Indenter" asp-action="Index">Online Indenter</a>
                         </li>
                     </ul>
                     <form method="post" enctype="application/x-www-form-urlencoded" class="form-inline my-2 my-lg-0" asp-controller="Home" asp-action="Search">
@@ -51,6 +66,7 @@
                 </div>
             </div>
         </nav>
+        <div style="margin-bottom: 160px;"></div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -116,6 +132,24 @@
                 });
             }, false);
         }
+        function getDownloadLinks() {
+            $.ajax({
+                url: '/Home/Downloads',
+                type: 'GET',
+                //dataType: 'json',
+                //contentType: 'application/json; charset=utf-8'
+            })
+                .done(function (links) {
+                    var link1 = links[0];
+                    $('#download-link1').text(link1.tag + (link1.isPreRelease ? ' (next)' : ' (main)'));
+                    $('#download-link1').attr('href', link1.url);
+
+                    var link2 = links[1];
+                    $('#download-link2').text(link2.tag + (link2.isPreRelease ? ' (next)' : ' (main)'));
+                    $('#download-link2').attr('href', link2.url);
+                });
+        }
+
         function showToast(message, success) {
             $('#toast-message').text(message);
 
@@ -135,6 +169,10 @@
 
             $('#toast-popup').toast('show');
         }
+
+        $(document).ready(function () {
+            getDownloadLinks();
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

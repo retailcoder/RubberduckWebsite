@@ -1,0 +1,1 @@
+﻿ALTER TABLE [dbo].[Synchronisations] ADD CONSTRAINT [PK_Synchronisations] PRIMARY KEY ([Id]);

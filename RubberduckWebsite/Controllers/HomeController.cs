@@ -47,6 +47,22 @@ namespace RubberduckWebsite.Controllers
             return View("SearchResults", result);
         }
 
+        [HttpGet]
+        [Route("Home/Downloads")]
+        public async Task<JsonResult> GetDownloadLinks()
+        {
+            var latestTags = await ApiClient.GetLatestTagsAsync();
+            var result = latestTags
+                .Select(e => new { 
+                    tag = e.Name, 
+                    url = e.InstallerDownloadUrl, 
+                    downloads = e.InstallerDownloads, 
+                    isPreRelease = e.IsPreRelease 
+                }).OrderBy(e => e.isPreRelease);
+
+            return new JsonResult(result);
+        }
+
         public IActionResult Privacy()
         {
             return View();

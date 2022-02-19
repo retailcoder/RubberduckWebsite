@@ -175,7 +175,7 @@
             A service that orchestrates the synchronization of xmldoc content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IXmlDocServices.SynchronizeAsync">
+        <member name="M:Rubberduck.API.Services.Abstract.IXmlDocServices.SynchronizeAsync(System.String,System.String,System.String)">
             <summary>
             Gets the xmldoc assets from the latest release and prerelease tags, and processes/merges them into the database.
             </summary>

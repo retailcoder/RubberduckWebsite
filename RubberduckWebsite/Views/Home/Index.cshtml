@@ -7,12 +7,12 @@
     <div class="text-center w-100">
 
         <div class="m-3">
-            <h1 class="display-4">Rubberduck</h1>
-            <p>A free and open-source VBIDE add-in</p>
+            <img alt="Rubberduck logo" src="~/images/ducky-color.png" />
         </div>
 
+        <h1 class="display-2">Rubberduck</h1>
         <div class="m-3">
-            <img alt="Rubberduck logo" src="~/images/ducky-color.png" />
+            <p>A free and open-source VBIDE add-in</p>
         </div>
 
         <div class="card-deck">
@@ -99,16 +99,16 @@
         <div class="card border-light m-1">
             <!--
 
-    <div class="card-body">
-        <h5 class="card-title">Repository</h5>
-        <p><span class="text-nowrap">Star <span class="icon icon-star" style="margin-right: 2px;"></span> us on GitHub!</span></p>
-        <div class="d-inline-block cursor-pointer">
-            <a href="https://github.com/rubberduck-vba/Rubberduck/"><img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" class="github-button" style="margin: 8px;" title="Browse source code and issues on GitHub" /></a>
-            <a href="https://github.com/rubberduck-vba/Rubberduck/" class="btn btn-outline-secondary btn-lg" title="Browse source code and conversations on GitHub">Repository</a>
+        <div class="card-body">
+            <h5 class="card-title">Repository</h5>
+            <p><span class="text-nowrap">Star <span class="icon icon-star" style="margin-right: 2px;"></span> us on GitHub!</span></p>
+            <div class="d-inline-block cursor-pointer">
+                <a href="https://github.com/rubberduck-vba/Rubberduck/"><img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" class="github-button" style="margin: 8px;" title="Browse source code and issues on GitHub" /></a>
+                <a href="https://github.com/rubberduck-vba/Rubberduck/" class="btn btn-outline-secondary btn-lg" title="Browse source code and conversations on GitHub">Repository</a>
+            </div>
         </div>
-    </div>
-    -->
-            <div class="card-footer card-footer-borderless">
+        -->
+            <div class="card-footer card-footer-quiet card-footer-borderless">
                 @if (Model.MetadataTimestamp.HasValue)
                 {
                     <small><em>Tag/release metadata updated @Model.MetadataTimestamp.Value.ToString("yyyy-MM-dd hh:MM:ssZ")</em></small>
@@ -145,7 +145,7 @@
                         {
                         <a class="card card-highlight m-2" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>
                             <div class="card-header">
-                                <h4 class="d-inline">
+                                <h4 class="card-title d-inline">
                                     @feature.Title
                                     @if (feature.IsNew){<span class="badge badge-primary">&nbsp;NEW!</span>}
                                 </h4>
@@ -167,6 +167,9 @@
         </div>
 
     </div>
+    <div class="text-center w-100 m-2">
+        <a asp-action="Index" asp-controller="Features" class="btn btn-primary">More »</a>
+    </div>
 </section>
 
 <hr />
@@ -176,7 +179,7 @@
     <div class="text-center w-100">
 
         <h2>Support us!</h2>
-        <p>Rubberduck is free, but keeping it visible online is not so we accept donations via PayPal.</p>
+        <p>Rubberduck is free, but keeping it visible online is not so we accept donations via PayPal :)</p>
 
         <a href="https://www.paypal.me/rubberduckvba" title="Donate via PayPal">
             <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate via PayPal" />

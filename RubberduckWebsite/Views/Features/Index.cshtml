@@ -9,59 +9,42 @@
 </section>
 
 <section>
-    @foreach (var feature in Model.Features.Keys)
-    {
-    <div class="card card-borderless m-1 w-100">
-        <div class="card-header card-header-borderless">
-            <h3 class="card-title d-inline">
-            @feature.Title
-            @if (feature.IsNew)
+    <div class="card-deck">
+    @{
+        var features = Model.Features.Keys.OrderBy(f => f.SortOrder).ThenBy(f => f.Name).Select((f, i) => (Feature: f, Index: i)).GroupBy(e => e.Index / 2);
+        @foreach (var row in features)
+        {
+        <div class="row">
+
+            @foreach (var feature in row.Select(e => e.Feature))
             {
-                <span class="badge badge-primary">NEW!</span>
-            }
-            </h3>
-            <a id="expand-feature-button-@feature.Name" class="btn btn-primary float-right" href="#collapse-@feature.Name" role="button" aria-expanded="false" aria-controls="collapse-@feature.Name" data-toggle="collapse">Expand</a>
-        </div>
-        <div class="collapse" id="collapse-@feature.Name">
-            <div class="card-body">
-                <p>@feature.ElevatorPitch</p>
-                <a class="btn btn-primary" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>Details »</a>
-                <img class="card-img card-img-bottom img-thumbnail m-1" src="~/images/features/@(feature.Name).png" />
-            </div>
-
-            <div class="card-deck">
-                @{
-                    var items = feature.SubFeatures.Where(f => !f.IsHidden).OrderBy(f => f.SortOrder).ThenBy(f => f.Name).Select((f, i) => (Feature: f, Index: i)).GroupBy(e => e.Index / 3);
-                    @foreach (var row in items)
-                    {
+                <a class="card card-highlight m-2" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>
+                    <div class="card-header">
+                        <h4 class="card-title d-inline">
+                            @feature.Title
+                            @if (feature.IsNew)
+                            {<span class="badge badge-primary">&nbsp;NEW!</span>}
+                        </h4>
+                    </div>
+                    <div class="card-body">
                         <div class="row">
-
-                            @foreach (var sub in row.Select(e => e.Feature))
-                            {
-                            <a class="card card-highlight m-2">
-                                <div class="card-header">
-                                    <h4 class="card-title">
-                                        @sub.Title
-                                        @if (sub.IsNew)
-                                        {
-                                            <span class="badge badge-primary">NEW!</span>
-                                        }
-                                    </h4>
+                            <div class="m-2">
+                                <div class="col-xs-6">
+                                    <p>@feature.ElevatorPitch</p>
                                 </div>
-                                <div class="card-body">
-                                    <p>@sub.ElevatorPitch</p>
-                                    <img class="card-img card-img-bottom img-thumbnail m-1" src="~/images/features/@(sub.Name).png" height="220" />
+                                <div class="col-xs-6">
+                                    <img class="card-img card-img-bottom img-thumbnail m-1" src="~/images/features/@(feature.Name).png" />
                                 </div>
-                                <div class="card-footer">
-                                    <p class="card-text">Details »</p>
-                                </div>
-                            </a>
-                            }
+                            </div>
                         </div>
-                    }
-                }
-            </div>
+                    </div>
+                    <div class="card-footer">
+                        <p class="card-text">Details »</p>
+                    </div>
+                </a>
+            }
         </div>
-    </div>
+        }
     }
+    </div>
 </section>

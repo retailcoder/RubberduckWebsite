@@ -51,6 +51,34 @@ namespace Rubberduck.ContentServices.Service
             return result?.ToPublicModel();
         }
 
+        public async Task BeginSynchronisationAsync(Model.Synchronisation model)
+        {
+            var timestamp = DateTime.UtcNow;
+
+            model.DateInserted = timestamp;
+            model.Message = "Synchronisation is in progress.";
+            model.StatusCode = (int)Model.SynchronisationStatusCode.Processing;
+
+            _context.Synchronisations.Add(model);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task EndSynchronisationAsync(Model.Synchronisation model)
+        {
+            var timestamp = DateTime.UtcNow;
+            var existing = await _context.Synchronisations.AsTracking().SingleOrDefaultAsync(e => e.StatusCode == (int)Model.SynchronisationStatusCode.Processing);
+            if (existing is null)
+            {
+                throw new InvalidOperationException($"No synchronisation is in progress.");
+            }
+            existing.DateUpdated = timestamp;
+            existing.TimestampEnd = model.TimestampEnd;
+            existing.StatusCode = model.StatusCode;
+            existing.Message = model.Message;
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Tag> GetMainTagAsync()
         {
             var entity = await _context.Tags
@@ -356,6 +384,12 @@ namespace Rubberduck.ContentServices.Service
             { 
                 Results = results 
             };
+        }
+
+        public async Task<bool> GetIsSynchronisationInProgressAsync()
+        {
+            var synchronisation = await _context.Synchronisations.SingleOrDefaultAsync(e => e.StatusCode == 0);
+            return !(synchronisation is null);
         }
     }
 }

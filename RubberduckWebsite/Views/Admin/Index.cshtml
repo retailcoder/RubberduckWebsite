@@ -60,6 +60,17 @@
         }
     }
 
+    function getIsUpdatingTagMetadata() {
+        $.ajax({
+            url: '/Admin/GetIsUpdating',
+            type: 'GET'
+        })
+            .done(function (data) {
+                var isUpdating = data == true;
+                setTagMetadataBusy(isUpdating);
+            });
+    }
+
     $(document).ready(function () {
         var offset = getRelativeTimeOffset(@Model.MillisecondsSinceLastUpdate);
         var timestamp = '@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ") (' + offset + ')';
@@ -83,6 +94,9 @@
                 setTagMetadataBusy(false);
             });
         });
+
+        getIsUpdatingTagMetadata();
+        setInterval(getIsUpdatingTagMetadata, 10000);
     });
     </script>
 }

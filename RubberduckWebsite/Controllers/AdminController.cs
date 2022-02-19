@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
 using Rubberduck.Model.Entities;
+using RubberduckWebsite.Auth;
 using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
@@ -20,7 +22,7 @@ namespace RubberduckWebsite.Controllers
         private readonly IAdminApiClient _apiClient;
         private readonly IWebHostEnvironment _webHost;
 
-        public AdminController(ILogger<AdminController> logger, IAdminApiClient apiClient, IWebHostEnvironment webHost)
+        public AdminController(IConfiguration configuration, ILogger<AdminController> logger, IAdminApiClient apiClient, IWebHostEnvironment webHost)
         {
             _logger = logger;
             _apiClient = apiClient;
@@ -53,6 +55,20 @@ namespace RubberduckWebsite.Controllers
                 return Problem("Timeout expired.", statusCode:408);
             }
             catch(Exception exception)
+            {
+                return Problem(exception.ToString());
+            }
+        }
+
+        [HttpGet]
+        [Route("{controller}/GetIsUpdating")]
+        public async Task<ActionResult<bool>> IsSynchronisationInProgress()
+        {
+            try
+            {
+                return await _apiClient.IsUpdatingAsync();
+            }
+            catch (Exception exception)
             {
                 return Problem(exception.ToString());
             }

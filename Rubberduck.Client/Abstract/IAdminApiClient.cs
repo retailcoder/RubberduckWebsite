@@ -30,5 +30,9 @@ namespace Rubberduck.Client.Abstract
         /// Deletes a feature item and all data associated to it.
         /// </summary>
         Task<FeatureItem> DeleteFeatureItemAsync(FeatureItem dto);
+        /// <summary>
+        /// Gets an indicator that is <c>true</c> if a synchronisation is in progress at the time of the request.
+        /// </summary>
+        Task<bool> IsUpdatingAsync();
     }
 }

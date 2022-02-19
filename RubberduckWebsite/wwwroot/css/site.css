@@ -7,9 +7,18 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+li.nav-item {
+  border: 1px solid transparent;
+  background: transparent;
+}
+li.nav-item:hover {
+  border: 1px solid highlight;
+  background: lightsteelblue;
+}
+
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+  color: steelblue;
 }
 
 .btn-primary {

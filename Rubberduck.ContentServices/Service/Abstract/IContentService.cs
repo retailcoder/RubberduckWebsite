@@ -43,5 +43,9 @@ namespace Rubberduck.ContentServices.Service.Abstract
         Task<PublicModel.Feature> DeleteFeatureAsync(PublicModel.Feature model);
         Task<PublicModel.FeatureItem> DeleteFeatureItemAsync(PublicModel.FeatureItem model);
         Task<SearchResultsViewModel> SearchAsync(string search);
+
+        Task BeginSynchronisationAsync(Synchronisation model);
+        Task EndSynchronisationAsync(Model.Synchronisation model);
+        Task<bool> GetIsSynchronisationInProgressAsync();
     }
 }
