@@ -38,7 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>E:\Dev\GitHub\RubberduckWebsite\Rubberduck.Database\bin\Debug\</OutputPath>
+    <OutputPath>.\bin\Debug\</OutputPath>
     <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +50,7 @@
     <WarningLevel>4</WarningLevel>
     <SqlTargetName>rubberduckdb</SqlTargetName>
     <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
