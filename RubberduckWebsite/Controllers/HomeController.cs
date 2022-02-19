@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
 using Rubberduck.Model;
@@ -23,6 +24,16 @@ namespace RubberduckWebsite.Controllers
             var features = await ApiClient.GetFeaturesAsync();
 
             return new HomeViewModel(latestTags, features);
+        }
+
+        [HttpGet]
+        [Route("/signin")]
+        public ActionResult Signin()
+        {
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = "/"
+            }, "GitHub");
         }
 
         [HttpPost]

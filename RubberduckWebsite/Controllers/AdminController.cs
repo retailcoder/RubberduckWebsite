@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
+    [Authorize(Roles="rubberduck-org")]
     public class AdminController : Controller
     {
         private readonly ILogger _logger;
