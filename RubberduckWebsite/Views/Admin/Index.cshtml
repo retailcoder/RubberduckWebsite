@@ -128,66 +128,77 @@
 <hr />
 
 <section class="row">
-    <div class="w-100 text-center">
+    <div class="w-100">
         <div>
             <h3>Features</h3>
             <p>
                 Use this page to organize and maintain features and their respective sub-features.
             </p>
-            <div class="row m-5 p-2">
+            <div class="m-3">
                 <a id="create-feature-button" class="btn btn-success" asp-controller="Admin" asp-action="NewFeature">Add top-level feature</a>
             </div>
         </div>
-        @foreach (var feature in Model.Features)
-        {
-        <div id="@feature.Name" class="card card-highlight">
-            <div class="card-header">
-                <h4 class="d-inline text-left">@feature.Title</h4>
-                <a id="expand-feature-button-@feature.Name" class="btn btn-primary float-right" href="#collapse-@feature.Name" role="button" aria-expanded="false" aria-controls="collapse-@feature.Name" data-toggle="collapse">Expand</a>
-                <a id="edit-feature-button-@feature.Name" class="btn btn-outline-primary float-right" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{feature.Name}" }'>Edit</a>
-            </div>
-            <div class="collapse" id="collapse-@feature.Name">
-                <div class="card-body">
-                    <p class="card-text">@feature.ElevatorPitch</p>
-                    <div class="row m-1">
-                        @foreach (var sub in feature.SubFeatures)
-                        {
-                            <div id="@sub.Name" class="card col-3">
-                                <div class="card-header bg-light">
-                                    <h6 class="d-inline text-left">@sub.Title</h6>
-                                    <a id="edit-subfeature-button-@sub.Name" class="btn btn-outline-primary float-right" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='@new Dictionary<string, string> { ["name"] = $"{sub.Name}" }'>Edit</a>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">@sub.ElevatorPitch</p>
-                                </div>
-                            </div>
-                        }
 
-                        <div id="@feature.Name-new-subfeature" class="card col-3">
-                            <div class="card-body">
-                                <a id="add-subfeature-button-@feature.Name" class="btn btn-outline-success" asp-controller="Admin" asp-action="NewSubFeature" asp-all-route-data='@new Dictionary<string, string> { ["parent"] = $"{feature.Name}" }'>Add sub-feature</a>
-                            </div>
+        @foreach (var feature in Model.Features.OrderBy(e => e.SortOrder).ThenBy(e => e.Name))
+        {
+            <div id="@feature.Name" class="card card-highlight">
+                <a class="card-header m-2 collapsed" href="#collapse-@feature.Name" title="Click to expand/collapse" role="button" aria-expanded="false" aria-controls="collapse-@feature.Name" data-toggle="collapse">
+                    <h4 class="card-title d-inline">@feature.Title</h4>
+                    @if (feature.IsNew)
+                    {<span class="badge badge-primary">&nbsp;NEW!</span>}
+                    @if (feature.IsProtected)
+                    {<i class="fa fa-lock" title="This feature cannot be deleted"></i>}
+                    <i class="fas float-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="collapse-@feature.Name">
+                    <div class="card-body m-2">
+
+                        <p class="card-text">@feature.ElevatorPitch</p>
+
+                        <div class="m-2">
+                            <a id="edit-feature-button-@feature.Name" class="btn btn-primary" title="Edit this feature" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>Edit »</a>
+                            <a id="add-subfeature-button-@feature.Name" class="btn btn-outline-success" title="Add a new sub-feature" asp-controller="Admin" asp-action="NewSubFeature" asp-all-route-data='new Dictionary<string, string> { ["parent"] = feature.Name }'>New »</a>
                         </div>
+
+                        <div class="card-deck">
+                            @{
+                                var subFeatures = feature.SubFeatures.OrderBy(e => e.SortOrder).ThenBy(e => e.Name).Select((e, i) => (Feature: e, Index: i)).GroupBy(e => e.Index / 3);
+                                @foreach (var row in subFeatures)
+                                {
+                                    <div class="row">
+                                        @foreach (var subFeature in row.Select(e => e.Feature))
+                                        {
+                                            <a class="card card-highlight m-2" title="Edit this feature" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='new Dictionary<string, string> { ["name"] = subFeature.Name }'>
+                                                <div class="card-header">
+                                                    <h4 class="card-title d-inline">
+                                                        @subFeature.Title
+                                                    </h4>
+                                                    @if (subFeature.IsNew){<span class="badge badge-primary">&nbsp;NEW!</span>}
+                                                    @if (subFeature.IsProtected){<i title="This feature cannot be deleted" class="fa fa-lock"></i>}
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="card-text">@subFeature.ElevatorPitch</p>
+                                                </div>
+                                                <div class="card-img-bottom">
+                                                    <img alt="Screenshot showcasing the '@subFeature.Title' feature" class="img-thumbnail" src="~/images/features/@(subFeature.Name).png" height="220" />
+                                                </div>
+                                                <div class="card-footer">
+                                                    <p class="card-text">Edit »</p>
+                                                </div>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+
                     </div>
                 </div>
             </div>
-        </div>
         }
     </div>
 </section>
 
-<div id="tag-metadata-error-alert" class="alert alert-danger fade" role="alert">
-    <span id="tag-metadata-error-message">Error message goes here</span>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-<div id="tag-metadata-success-alert" class="alert alert-success fade" role="alert">
-    <span>Tag metadata and xmldoc content update completed successfully.</span>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
 <div id="upload-screenshot-modal" class="modal fade" role="dialog">
     <div class="modal-dialog" role="dialog">
         <div class="modal-content">

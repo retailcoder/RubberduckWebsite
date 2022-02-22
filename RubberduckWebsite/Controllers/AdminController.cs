@@ -1,34 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
 using Rubberduck.Model.Entities;
-using RubberduckWebsite.Auth;
 using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
-    [Authorize(Roles="rubberduck-org")]
+    //[Authorize(Roles="rubberduck-org")]
     public class AdminController : Controller
     {
         private readonly ILogger _logger;
         private readonly IAdminApiClient _apiClient;
         private readonly IWebHostEnvironment _webHost;
 
-        public AdminController(IConfiguration configuration, ILogger<AdminController> logger, IAdminApiClient apiClient, IWebHostEnvironment webHost)
+        public AdminController(ILogger<AdminController> logger, IAdminApiClient apiClient, IWebHostEnvironment webHost)
         {
             _logger = logger;
-            _apiClient = apiClient;
             _webHost = webHost;
+
+            _apiClient = apiClient;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            //_apiClient.SignIn(HttpContext.User.Identity);
         }
 
         public async Task<IActionResult> Index()

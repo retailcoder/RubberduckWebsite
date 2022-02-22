@@ -37,7 +37,7 @@ namespace Rubberduck.Client.Abstract
 
         protected string BaseUrl => _baseUrl;
 
-        protected virtual HttpClient GetClient()
+        protected virtual HttpClient GetClient(string contentType = ContentTypeApplicationJson)
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.UserAgent.Add(UserAgent);

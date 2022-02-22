@@ -1,9 +1,16 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Rubberduck.Client.Abstract;
 using Rubberduck.Model.Entities;
 
@@ -18,13 +25,44 @@ namespace Rubberduck.Client
 
         }
 
+        //private static string GenerateJwtToken(ClaimsIdentity user, int expireMinutes = 20)
+        //{
+        //    var claimToken = user.Claims.SingleOrDefault(e => e.Type == "access_token")?.Value;
+        //    var claimTokenBytes = Encoding.UTF8.GetBytes(claimToken);
 
-        protected override HttpClient GetClient()
+        //    var now = DateTime.UtcNow;
+        //    var tokenDescriptor = new SecurityTokenDescriptor
+        //    {
+        //        Subject = user,
+
+        //        Expires = now.AddMinutes(Convert.ToInt32(expireMinutes)),
+                
+        //        SigningCredentials = new SigningCredentials(
+        //            new SymmetricSecurityKey(claimTokenBytes),
+        //            SecurityAlgorithms.HmacSha256Signature)
+        //    };
+
+        //    var tokenHandler = new JwtSecurityTokenHandler();
+        //    var stoken = tokenHandler.CreateToken(tokenDescriptor);
+        //    var result = tokenHandler.WriteToken(stoken);
+
+        //    return result;
+        //}
+
+        protected override HttpClient GetClient(string contentType = ContentTypeApplicationJson)
         {
-            // TODO add authentication headers
+            //if (_token is null)
+            //{
+            //    throw new UnauthorizedAccessException();
+            //}
+
             var client = base.GetClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentTypeApplicationJson));
-            client.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));
+            //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("JTW", _token);
+            if (contentType != null)
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType));
+                client.DefaultRequestHeaders.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));
+            }
             return client;
         }
 

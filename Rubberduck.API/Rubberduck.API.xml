@@ -73,14 +73,9 @@
             Gets the latest release and pre-release tags, downloads xmldoc assets, and processes them.
             </summary>
         </member>
-        <member name="T:Rubberduck.API.Controllers.AuthController">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.GetIsSynchronisationInProgress">
             <summary>
-            
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.AuthController.Login(System.String)">
-            <summary>
-            Login with GitHub.
+            Gets an indicator that is <c>true</c> when a synchronisation is in progress.
             </summary>
         </member>
         <member name="T:Rubberduck.API.Controllers.HealthController">
@@ -106,6 +101,11 @@
         <member name="M:Rubberduck.API.Controllers.PublicController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.PublicController},Rubberduck.ContentServices.Service.Abstract.IContentService,RubberduckServices.Abstract.IIndenterService)">
             <summary>
             Creates a controller that exposes endpoints providing the website's dynamic content.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.Authenticate">
+            <summary>
+            Not sure yet :D
             </summary>
         </member>
         <member name="M:Rubberduck.API.Controllers.PublicController.GetFeaturesAsync">

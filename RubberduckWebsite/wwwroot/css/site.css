@@ -11,10 +11,6 @@ li.nav-item {
   border: 1px solid transparent;
   background: transparent;
 }
-li.nav-item:hover {
-  border: 1px solid highlight;
-  background: lightsteelblue;
-}
 
 /* Provide sufficient contrast against white background */
 a {
@@ -110,8 +106,19 @@ body {
   color: midnightblue;
 }
 
-.github-button:hover img {
-  -webkit-filter: invert(100%) !important;
+.protected:before {
+    font-family: "FontAwesome";
+    content: "\f023";
+}
+
+[data-toggle="collapse"] .fas:before {
+    color: lightslategray;
+    content: "\f106"; /*fas fa-angle-up*/
+}
+
+[data-toggle="collapse"].collapsed .fas:before {
+    color: lightslategray;
+    content: "\f107"; /*fas fa-angle-down*/
 }
 
 span.icon {

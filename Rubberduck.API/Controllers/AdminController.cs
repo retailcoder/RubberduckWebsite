@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,8 @@ namespace Rubberduck.API.Controllers.Authenticated
     /// <summary>
     /// Exposes endpoints providing an interface to manipulate the website's dynamic content.
     /// </summary>
+    //[Authorize(Roles = "rubberduck-org")]
     [ApiController]
-    //[Authorize]
-    //[TypeFilter(typeof(GitHubAuthorizeAttribute))]
     [Route("api/[controller]")]
     public class AdminController : ControllerBase
     {
@@ -189,6 +189,9 @@ namespace Rubberduck.API.Controllers.Authenticated
             }
         }
 
+        /// <summary>
+        /// Gets an indicator that is <c>true</c> when a synchronisation is in progress.
+        /// </summary>
         [HttpGet]
         [Route("IsUpdating")]
         public async Task<ActionResult<bool>> GetIsSynchronisationInProgress()

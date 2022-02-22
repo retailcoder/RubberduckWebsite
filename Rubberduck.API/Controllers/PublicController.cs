@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.ContentServices.Service.Abstract;
@@ -30,6 +31,16 @@ namespace Rubberduck.API.Controllers
             _logger = logger;
             _content = content;
             _indenterService = indenterService;
+        }
+
+        /// <summary>
+        /// Not sure yet :D
+        /// </summary>
+        [HttpGet]
+        [Route("/signin")]
+        public ActionResult Authenticate()
+        {
+            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "GitHub");
         }
 
         /// <summary>

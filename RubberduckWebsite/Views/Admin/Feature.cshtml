@@ -152,12 +152,12 @@
     @if (Model.IsPersisted)
     {
     <div class="card w-100 m-2">
-        <div class="card-header">
+        <a class="card-header m-2 collapsed" href="#collapse-screenshot" title="Click to expand/collapse" role="button" data-toggle="collapse" data-target="#collapse-screenshot" aria-expanded="true" aria-controls="collapse-screenshot">
             <div>
                 <h5 class="card-title float-left">Screenshot</h5>
-                <button class="btn btn-outline-primary float-right" type="button" data-toggle="collapse" data-target="#collapse-screenshot" aria-expanded="true" aria-controls="collapse-screenshot">Toggle</button>
+                <i class="fas float-right" aria-hidden="true"></i>
             </div>
-        </div>
+        </a>
         <div class="collapse" id="collapse-screenshot">
             <div class="card-body">
                 <p class="card-text">Select a .png image file to upload for this feature.</p>

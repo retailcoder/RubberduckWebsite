@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rubberduck.Client;
 using Rubberduck.Client.Abstract;
+using Rubberduck.Model.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,15 +47,14 @@ namespace RubberduckWebsite
                     // derived from https://khalidabuhakmeh.com/github-openid-auth-aspnet-core-apps
                     o.ClientId = Configuration["ClientId"];
                     o.ClientSecret = Configuration["ClientSecret"];
-                    o.CallbackPath = "/signin-github";
+                    o.CallbackPath = "/signin-github/";
 
                     // Grants access to read a user's profile data.
                     // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
                     o.Scope.Add("read:user");
                     o.Scope.Add("read:org");
 
-                    // Optional
-                    // if you need an access token to call GitHub Apis
+                    // need an access token to call GitHub Apis
                     o.Events.OnCreatingTicket += async context =>
                         {
                             if (context.AccessToken is not null)
@@ -62,11 +62,11 @@ namespace RubberduckWebsite
                                 context.Identity?.AddClaim(new Claim("access_token", context.AccessToken));
 
                                 var github = new Octokit.GitHubClient(
-                                    new Octokit.ProductHeaderValue("AspNetCoreGitHubAuth"),
+                                    new Octokit.ProductHeaderValue("Rubberduck.Website"),
                                     new Octokit.Internal.InMemoryCredentialStore(new Octokit.Credentials(context.AccessToken)));
 
                                 var orgs = await github.Organization.GetAllForUser(context.Identity.Name);
-                                if (orgs.Any(org => org.Id == 12832254))
+                                if (orgs.Any(org => org.Id == Organization.RubberduckOrgId))
                                 {
                                     // todo: read user orgs from github
                                     // if user has rubberduck-org role, add role claim

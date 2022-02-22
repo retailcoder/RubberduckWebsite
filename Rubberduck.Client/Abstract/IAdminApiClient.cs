@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using Rubberduck.Model.Entities;
 
 namespace Rubberduck.Client.Abstract

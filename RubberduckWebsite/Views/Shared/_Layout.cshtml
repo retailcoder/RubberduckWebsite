@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] | rubberduckvba.com</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="//use.fontawesome.com/releases/v5.7.2/css/all.css">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -24,25 +25,9 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            @if (!User.Identity.IsAuthenticated)
-                            {
-                                <a id="login-button" class="nav-link" asp-controller="Login" asp-action="Authenticate">
-                                    <img src="~/images/GitHub-Mark-64px.png" height="16" width="16" alt="GitHub logo" class="github-button" style="margin-right: 2px;" title="Login with GitHub" />
-                                    Login
-                                </a>
-                            }
-                            else
-                            {
-                                <a id="login-button" class="nav-link" asp-controller="Login" asp-action="Authenticate">
-                                    <img src="~/images/GitHub-Mark-64px.png" height="16" width="16" alt="GitHub logo" class="github-button" style="margin-right: 2px;" title="Login with GitHub" />
-                                    @User.Identity.Name
-                                </a>
-                            }
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="icon icon-download-windows"></span>Download
+                                Downloads
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a id="download-link1" class="dropdown-item" href="#">Link1</a>
@@ -50,7 +35,7 @@
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Features" asp-action="Index">Features</a>
+                            <a class="nav-link" asp-controller="Features" asp-action="Index">Features</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="https://rubberduckvba.blog">Blog</a>
@@ -59,10 +44,41 @@
                             <a class="nav-link" asp-controller="Indenter" asp-action="Index">Online Indenter</a>
                         </li>
                     </ul>
-                    <form method="post" enctype="application/x-www-form-urlencoded" class="form-inline my-2 my-lg-0" asp-controller="Home" asp-action="Search">
-                        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
-                    </form>
+                    <div class="float-right">
+                        <form method="post" enctype="application/x-www-form-urlencoded" class="form-inline my-2 my-lg-0" asp-controller="Home" asp-action="Search">
+                            <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+                        </form>
+                        <div>
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                            <a id="login-button" href="/signin" title="Sign in with GitHub to access site admin (org members only)">
+                                <i class="fab fa-github"></i>
+                                <small>Sign in with GitHub</small>
+                            </a>
+                            }
+                            else
+                            {
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarAuthenticatedMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fab fa-github"></i>
+                                        <small>Signed in as <strong>@User.Identity.Name</strong></small>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarAuthenticatedMenuLink">
+                                        <a id="signin-button" class="dropdown-item dropdown-item-text" href="/Admin" title="Manage site content'">
+                                            Admin
+                                        </a>
+                                        <a id="report-issue" class="dropdown-item dropdown-item-text" title="Report an issue on the website's GitHub repository'" href="#">
+                                            Report an issue
+                                        </a>
+                                        <a id="signout-button" class="dropdown-item dropdown-item-text" href="/signout" title="Sign out of GitHub session">
+                                            Sign out
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -77,10 +93,7 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             <div class="float-left text-left">
-                &copy; 2021 - RubberduckWebsite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </div>
-            <div class="float-right text-right">
-                <a class="text-dark" asp-controller="admin" asp-action="index">Admin</a>
+                &copy; 2022 - Rubberduck Contributors - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             </div>
         </div>
     </footer>

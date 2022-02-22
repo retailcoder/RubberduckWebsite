@@ -221,14 +221,14 @@
 }
 
 <section class="row">
-    <div class="w-100 m-2">
+    <div class="w-100">
         <form id="indenter-settings-form" class="needs-validation" novalidate>
 
             <div class="card">
-                <div class="card-header">
+                <a class="card-header collapsed" href="#collapse-indenter-settings" role="button" aria-expanded="false" aria-controls="collapse-indenter-settings" data-toggle="collapse">
                     <h5 class="card-title float-left">Indenter Settings</h5>
-                    <a id="collapse-indenter-settings-btn" class="btn btn-primary float-right" href="#collapse-indenter-settings" role="button" aria-expanded="false" aria-controls="collapse-indenter-settings" data-toggle="collapse">Expand</a>
-                </div>
+                    <i class="fas float-right" aria-hidden="true"></i>
+                </a>
                 <div class="card-body collapse" id="collapse-indenter-settings">
                     <div class="form-row">
                         <div class="col-6">
@@ -467,7 +467,7 @@
 
             <span class="m-1"></span>
 
-            <div class="card">
+            <div class="card" style="border: 1px solid lightgrey">
                 <div class="card-header">
                     <h5 class="card-title">Try it!</h5>
                     <small class="card-text text-muted">Rubberduck.SmartIndenter.dll version: @Model.IndenterVersion</small>
@@ -483,10 +483,6 @@
                     </button>
                 </div>
             </div>
-            <a id="report-issue" class="btn btn-link m-1 float-right" title="Report an issue on GitHub" href="#">
-                <img src="~/images/GitHub-Mark-64px.png" alt="GitHub logo" style="margin: 1px; width: 20px; height: 20px;" />
-                <span id="report-issue-text">Report an issue</span>
-            </a>
 
         </form>
     </div>
