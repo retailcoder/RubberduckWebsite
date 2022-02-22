@@ -17,6 +17,7 @@
 
     public interface IIndenterSettings
     {
+        string IndenterVersion { get; set; }
         string Code { get; set; }
 
         bool ForceDebugPrintInColumn1 { get; set; }

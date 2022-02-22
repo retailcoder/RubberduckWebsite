@@ -9,6 +9,11 @@ namespace Rubberduck.Model
     public class IndenterViewModel : IIndenterSettings
     {
         /// <summary>
+        /// The assembly version for Rubberduck.SmartIndenter.dll
+        /// </summary>
+        public string IndenterVersion { get; set; }
+
+        /// <summary>
         /// The code to indent. Expects <c>\r\n</c> line endings.
         /// </summary>
         public string Code { get; set; }
@@ -29,19 +34,21 @@ namespace Rubberduck.Model
         /// <summary>
         /// The column to align end-of-line comments at.
         /// </summary>
-        public int EndOfLineCommentColumnSpaceAlignment { get; set; }
+        public int EndOfLineCommentColumnSpaceAlignment { get; set; } = 1;
         /// <summary>
         /// Controls whether empty lines are ignored (left as-is), removed, or indented (default).
         /// </summary>
         public IndenterEmptyLineHandling EmptyLineHandlingMethod { get; set; } = IndenterEmptyLineHandling.Indent;
+        public int EmptyLineHandlingMethodValue { get => (int)EmptyLineHandlingMethod; set => EmptyLineHandlingMethod = (IndenterEmptyLineHandling)value; }
         /// <summary>
         /// Controls how end-of-line comments are indented; absolute, same-gap, standard gap, or aligned in a column.
         /// </summary>
-        public IndenterEndOfLineCommentStyle EndOfLineCommentStyle { get; set; } = IndenterEndOfLineCommentStyle.SameGap;
+        public IndenterEndOfLineCommentStyle EndOfLineCommentStyle { get; set; } = IndenterEndOfLineCommentStyle.Absolute;
+        public int EndOfLineCommentStyleValue { get => (int)EndOfLineCommentStyle; set => EndOfLineCommentStyle = (IndenterEndOfLineCommentStyle)value; }
         /// <summary>
         /// The column to align <c>Dim</c> statements at.
         /// </summary>
-        public int AlignDimColumn { get; set; }
+        public int AlignDimColumn { get; set; } = 1;
         /// <summary>
         /// Whether to align <c>Dim</c> statements at a particular column, controlled by <see cref="AlignDimColumn"/>.
         /// </summary>
@@ -65,7 +72,7 @@ namespace Rubberduck.Model
         /// <summary>
         /// If true, same-name property members will be consistently regrouped.
         /// </summary>
-        public bool GroupRelatedProperties { get; set; } = true;
+        public bool GroupRelatedProperties { get; set; }
         /// <summary>
         /// If true, <c>Debug</c> statements will be forced to column 1.
         /// </summary>

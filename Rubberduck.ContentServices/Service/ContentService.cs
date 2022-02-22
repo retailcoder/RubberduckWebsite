@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Rubberduck.ContentServices.Service.Abstract;
+using Rubberduck.Model;
 using Rubberduck.Model.Entities;
 
 namespace Rubberduck.ContentServices.Service
@@ -50,6 +51,34 @@ namespace Rubberduck.ContentServices.Service
             return result?.ToPublicModel();
         }
 
+        public async Task BeginSynchronisationAsync(Model.Synchronisation model)
+        {
+            var timestamp = DateTime.UtcNow;
+
+            model.DateInserted = timestamp;
+            model.Message = "Synchronisation is in progress.";
+            model.StatusCode = (int)Model.SynchronisationStatusCode.Processing;
+
+            _context.Synchronisations.Add(model);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task EndSynchronisationAsync(Model.Synchronisation model)
+        {
+            var timestamp = DateTime.UtcNow;
+            var existing = await _context.Synchronisations.AsTracking().SingleOrDefaultAsync(e => e.StatusCode == (int)Model.SynchronisationStatusCode.Processing);
+            if (existing is null)
+            {
+                throw new InvalidOperationException($"No synchronisation is in progress.");
+            }
+            existing.DateUpdated = timestamp;
+            existing.TimestampEnd = model.TimestampEnd;
+            existing.StatusCode = model.StatusCode;
+            existing.Message = model.Message;
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Tag> GetMainTagAsync()
         {
             var entity = await _context.Tags
@@ -84,7 +113,7 @@ namespace Rubberduck.ContentServices.Service
                     DateInserted = DateTime.UtcNow
                 };
 
-                await _context.Examples.AddAsync(entity);
+                _context.Examples.Add(entity);
                 return entity.ToPublicModel();
             }
 
@@ -108,7 +137,7 @@ namespace Rubberduck.ContentServices.Service
                     DateInserted = DateTime.UtcNow
                 };
 
-                await _context.ExampleModules.AddAsync(entity);
+                _context.ExampleModules.Add(entity);
                 return entity.ToPublicModel();
             }
 
@@ -132,14 +161,17 @@ namespace Rubberduck.ContentServices.Service
             {
                 var entity = new Model.Feature(model)
                 {
-                    DateInserted = DateTime.UtcNow
+                    DateInserted = DateTime.UtcNow,
+                    ParentFeature = null
                 };
 
-                await _context.Features.AddAsync(entity);
+                var tracking = _context.Features.Add(entity);
+                await _context.SaveChangesAsync();
                 return entity.ToPublicModel();
             }
 
             existing.DateUpdated = DateTime.UtcNow;
+            existing.ParentId = model.ParentId;
             existing.Description = model.Description;
             existing.ElevatorPitch = model.ElevatorPitch;
             existing.IsHidden = model.IsHidden;
@@ -167,7 +199,7 @@ namespace Rubberduck.ContentServices.Service
                 {
                     model.DateInserted = DateTime.UtcNow;
                     await SaveExamplesAsync(model);
-                    await _context.FeatureItems.AddAsync(model);
+                    _context.FeatureItems.Add(model);
                     saved.Add(model.ToPublicModel());
                 }
                 else
@@ -197,49 +229,49 @@ namespace Rubberduck.ContentServices.Service
 
         private async Task SaveExamplesAsync(Model.FeatureItem item)
         {
-            foreach (var model in item.Examples.OrderBy(e => e.SortOrder).Select((e, i) => (example: e, index: i + 1)))
+            foreach (var (example, index) in item.Examples.OrderBy(e => e.SortOrder).Select((e, i) => (example: e, index: i + 1)))
             {
                 var existing = await _context.Examples.AsTracking()
-                    .SingleOrDefaultAsync(entity => entity.Id == model.example.Id || entity.FeatureItemId == model.example.FeatureItemId && entity.SortOrder == model.index);
+                    .SingleOrDefaultAsync(entity => entity.Id == example.Id || entity.FeatureItemId == example.FeatureItemId && entity.SortOrder == index);
 
                 if (existing is null)
                 {
-                    model.example.DateInserted = DateTime.UtcNow;
-                    model.example.SortOrder = model.index;
+                    example.DateInserted = DateTime.UtcNow;
+                    example.SortOrder = index;
 
-                    await SaveExampleModulesAsync(model.example);
+                    await SaveExampleModulesAsync(example);
                     continue;
                 }
 
                 existing.DateUpdated = DateTime.UtcNow;
-                existing.Description = model.example.Description;
-                existing.SortOrder = model.index;
+                existing.Description = example.Description;
+                existing.SortOrder = index;
 
-                await SaveExampleModulesAsync(model.example);
+                await SaveExampleModulesAsync(example);
             }
         }
 
         private async Task SaveExampleModulesAsync(Model.Example item)
         {
-            foreach (var model in item.Modules.OrderBy(e => e.SortOrder).Select((e, i) => (module: e, index: i + 1)))
+            foreach (var (module, index) in item.Modules.OrderBy(e => e.SortOrder).Select((e, i) => (module: e, index: i + 1)))
             {
                 var existing = await _context.ExampleModules.AsTracking()
-                    .SingleOrDefaultAsync(entity => entity.Id == model.module.Id || entity.ExampleId == model.module.ExampleId && entity.SortOrder == model.index);
+                    .SingleOrDefaultAsync(entity => entity.Id == module.Id || entity.ExampleId == module.ExampleId && entity.SortOrder == index);
 
                 if (existing is null)
                 {
-                    model.module.DateInserted = DateTime.UtcNow;
-                    model.module.SortOrder = model.index;
-                    model.module.HtmlContent = model.module.HtmlContent ?? "(error parsing code example from source xmldoc)";
+                    module.DateInserted = DateTime.UtcNow;
+                    module.SortOrder = index;
+                    module.HtmlContent ??= "(error parsing code example from source xmldoc)";
                     continue;
                 }
 
                 existing.DateUpdated = DateTime.UtcNow;
-                existing.Description = model.module.Description;
-                existing.HtmlContent = model.module.HtmlContent ?? "(error parsing code example from source xmldoc)";
-                existing.ModuleName = model.module.ModuleName;
-                existing.ModuleTypeId = model.module.ModuleTypeId;
-                existing.SortOrder = model.index;
+                existing.Description = module.Description;
+                existing.HtmlContent = module.HtmlContent ?? "(error parsing code example from source xmldoc)";
+                existing.ModuleName = module.ModuleName;
+                existing.ModuleTypeId = module.ModuleTypeId;
+                existing.SortOrder = index;
             }
         }
 
@@ -271,7 +303,7 @@ namespace Rubberduck.ContentServices.Service
                     asset.DateInserted = DateTime.UtcNow;
                 }
 
-                await _context.Tags.AddAsync(entity);
+                _context.Tags.Add(entity);
                 return entity.ToPublicModel();
             }
 
@@ -282,6 +314,82 @@ namespace Rubberduck.ContentServices.Service
             // no need to update assets, asset download url should be immutable.
 
             return existing.ToPublicModel();
+        }
+
+        public async Task<Feature> DeleteFeatureAsync(Feature model)
+        {
+            var existing = await _context.Features.AsTracking().SingleOrDefaultAsync(e => e.Id == model.Id);
+            if (existing is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                _context.Features.Remove(existing);
+                await _context.SaveChangesAsync();
+
+                return model;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<FeatureItem> DeleteFeatureItemAsync(FeatureItem model)
+        {
+            var existing = await _context.FeatureItems.AsTracking().SingleOrDefaultAsync(e => e.Id == model.Id);
+            if (existing is null)
+            {
+                return null;
+            }
+
+            try
+            {
+                _context.FeatureItems.Remove(existing);
+                await _context.SaveChangesAsync();
+
+                return model;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<SearchResultsViewModel> SearchAsync(string search)
+        {
+            var pattern = $"%{search}%";
+
+            var matchingFeatures = (await _context.Features
+                .Where(e => EF.Functions.Like(e.Title, pattern)
+                         || EF.Functions.Like(e.ElevatorPitch, pattern)
+                         || EF.Functions.Like(e.Description, pattern))
+                .ToListAsync())
+                .Select(e => e.AsSearchResult(search));
+
+            var matchingItems = (await _context.FeatureItems
+                .Where(e => EF.Functions.Like(e.Title, pattern)
+                         || EF.Functions.Like(e.Description, pattern)
+                         || EF.Functions.Like(e.XmlDocSummary, pattern)
+                         || EF.Functions.Like(e.XmlDocRemarks, pattern)
+                         || EF.Functions.Like(e.XmlDocInfo, pattern))
+                .ToListAsync())
+                .Select(e => e.AsSearchResult(search));
+
+            var results = matchingFeatures.Concat(matchingItems).ToList();
+
+            return new SearchResultsViewModel(search) 
+            { 
+                Results = results 
+            };
+        }
+
+        public async Task<bool> GetIsSynchronisationInProgressAsync()
+        {
+            var synchronisation = await _context.Synchronisations.SingleOrDefaultAsync(e => e.StatusCode == 0);
+            return !(synchronisation is null);
         }
     }
 }

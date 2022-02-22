@@ -1,0 +1,326 @@
+﻿@model RubberduckWebsite.Models.EditFeatureViewModel
+@{
+    ViewData["Title"] = Model.IsPersisted ? $"Edit Feature: {Model.Name}" : "New Feature";
+}
+@section Scripts {
+    <script type='text/javascript'>
+
+        function setSubmitFeatureBusy(setBusy) {
+            setSubmitButtonBusy($('#save-button'), $('#save-button-text'), $('#save-busy-indicator'), setBusy, 'Save');
+        };
+
+        function setSubmitScreenshotBusy(setBusy) {
+            setSubmitButtonBusy($('#upload-button'), $('#upload-button-text'), $('#upload-busy-indicator'), setBusy, 'Upload');
+        };
+
+        function getScreenshotFormData() {
+            return new FormData($('#screenshot-form')[0]);
+        };
+
+        function submitScreenshotForm() {
+            if ($('#screenshot-form')[0].checkValidity()) {
+                setSubmitScreenshotBusy(true);
+
+                var formData = getScreenshotFormData();
+                $.ajax({
+                    url: '/Admin/EditFeature/UploadScreenshot',
+                    type: 'POST',
+                    data: formData,
+                    dataType: false,
+                    contentType: false,
+                    processData: false
+                })
+                    .done(function (data) {
+                        setSubmitScreenshotBusy(false);
+                        showToast('Screenshot was successfully uploaded.', true);
+                    })
+                    .fail(function (xhr) {
+                        setSubmitScreenshotBusy(false);
+                        showToast('Something went wrong.', false);
+                    });
+            }
+            else {
+                $('#screenshot-form')[0].reportValidity();
+            }
+        };
+
+        function getFeatureFormData() {
+            var data = {};
+            data.id = @Model.Id;
+            data.name = $('#feature-name').val();
+            data.parentFeatureName = $('#feature-parent').val();
+            data.title = $('#feature-title').val();
+            data.elevatorPitch = $('#feature-elevator-pitch').val();
+            data.isNew = $('#feature-isnew').is(':checked');
+            data.isHidden = $('#feature-ishidden').is(':checked');
+            data.description = $('#feature-description').val();
+            data.sortOrder = $('#feature-sortOrder').val();
+            return data;
+        };
+
+        function submitFeatureForm() {
+            if ($('#feature-form')[0].checkValidity()) {
+                setSubmitFeatureBusy(true);
+
+                var jsonData = getFeatureFormData();
+                var formData = JSON.stringify(jsonData);
+
+                $.ajax({
+                    url: '/Admin/EditFeature/Save',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8'
+                })
+                    .done(function (lines) {
+                        setSubmitFeatureBusy(false);
+                        showToast('API request was successfully processed.', true);
+                    })
+                    .fail(function (xhr) {
+                        setSubmitFeatureBusy(false);
+                        showToast('Something went wrong.', false);
+                    });
+            }
+            else {
+                $('#feature-form')[0].reportValidity();
+            }
+        };
+
+        function submitDelete() {
+            var data = {};
+            data.name = '@Model.Name';
+
+            $.ajax({
+                url: '/Admin/EditFeature/Delete',
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8'
+            })
+                .done(function (lines) {
+                    setSubmitFeatureBusy(false);
+                    showToast('API request was successfully processed.', true);
+                })
+                .fail(function (xhr) {
+                    setSubmitFeatureBusy(false);
+                    showToast('Something went wrong.', false);
+                });
+        }
+
+    $(document).ready(function () {
+
+        disableInvalidSubmit();
+
+        $('#upload-button').click(function () {
+            submitScreenshotForm();
+        });
+
+        $('#save-button').click(function () {
+            submitFeatureForm();
+        });
+
+        $('#delete-button').click(function () {
+            submitDelete();
+        });
+
+        $('#feature-parent').val('@Model.ParentFeatureName');
+
+        $('#formtab-preview').click(function () {
+            var data = {};
+            data.markdownContent = $('#feature-description').val();
+            $.ajax({
+                url: '/Admin/EditFeature/MarkdownPreview',
+                data: JSON.stringify(data),
+                cache: false,
+                dataType: 'text',
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST'
+            })
+                .then(function (response) {
+                    $('#preview-description').html(response);
+                });
+        });
+    });
+    </script>
+}
+<section>
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+</section>
+
+<section class="row">
+    @if (Model.IsPersisted)
+    {
+    <div class="card w-100 m-2">
+        <a class="card-header m-2 collapsed" href="#collapse-screenshot" title="Click to expand/collapse" role="button" data-toggle="collapse" data-target="#collapse-screenshot" aria-expanded="true" aria-controls="collapse-screenshot">
+            <div>
+                <h5 class="card-title float-left">Screenshot</h5>
+                <i class="fas float-right" aria-hidden="true"></i>
+            </div>
+        </a>
+        <div class="collapse" id="collapse-screenshot">
+            <div class="card-body">
+                <p class="card-text">Select a .png image file to upload for this feature.</p>
+                <small class="card-text text-muted">File will be renamed after the feature on the server.</small>
+                <form id="screenshot-form" class="needs-validation" novalidate method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
+                    <input type="hidden" id="feature-name-edit" name="featureName" value="@Model.Name" hidden />
+                    <input type="file" accept="image/png" class="form-control" id="screenshot" name="screenshotFile" required />
+                    <button id="upload-button" class="btn btn-primary m-2" type="button">
+                        <span id="upload-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                        <span id="upload-button-text">Upload</span>
+                    </button>
+                </form>
+            </div>
+            <div class="card-img-bottom">
+                <img id="screenshot-image" class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
+            </div>
+        </div>
+    </div>
+    }
+    <div class="card w-100 m-2">
+        <div class="card-body">
+            <form id="feature-form" class="needs-validation" novalidate method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="SaveFeature">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="feature-name">Name</label>
+                        @Html.TextBoxFor(m => m.Name, new { id = "feature-name", type = "text", maxlength = "255", @class = "form-control", required = true, @readonly = Model.IsPersisted })
+                        @if (Model.IsPersisted)
+                        {
+                            <small id="feature-name-help" class="form-text text-muted">This field is read-only</small>
+                        }
+                        else
+                        {
+                            <small id="feature-name-help" class="form-text text-muted">Choose well: appears in URLs, cannot be modified.</small>
+                        }
+                    </div>
+                    <div class="form-group">
+                        @Html.DropDownListFor(m => m.ParentFeatureName, Model.TopLevelFeatures.Select(e => new SelectListItem(e, e)), "(none)", new { id = "feature-parent", @class = "form-control" })
+                        <small id="feature-parent-help" class="form-text text-muted">If this is a sub-feature, select its parent. Leave empty for a top-level feature.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="feature-title">Title</label>
+                        <small id="feature-title-help" class="form-text text-muted">The display name of the feature.</small>
+                        @Html.TextBoxFor(m => m.Title, new { id = "feature-title", type = "text", maxlength = "255", @class = "form-control", required = true })
+                    </div>
+                    <div class="form-group">
+                        <label for="feature-elevator-pitch">Elevator Pitch</label>
+                        <small id="feature-elevator-pitch-help" class="form-text text-muted">A short paragraph (2-3 sentences) that summarily describes the feature.</small>
+                        @Html.TextAreaFor(m => m.ElevatorPitch, new { id = "feature-elevator-pitch", maxlength = "1023", @class = "form-control", rows = "4", required = "true" })
+                    </div>
+                    <div class="form-group">
+                        @Html.CheckBoxFor(m => m.IsNew, new { id = "feature-isnew", @class = "form-check-input" })
+                        <label for="feature-isnew" class="form-check-label">Mark as <span class="badge badge-primary">new</span></label>
+                        <small id="feature-isnew-help" class="form-text text-muted">Should be checked for a feature that only exists in pre-release builds.</small>
+                    </div>
+                    <div class="form-group">
+                        @Html.CheckBoxFor(m => m.IsHidden, new { id = "feature-ishidden", @class = "form-check-input" })
+                        <label for="feature-ishidden" class="form-check-label">Hidden</label>
+                        <small id="feature-ishidden-help" class="form-text text-muted">Check to hide this feature on the home page.</small>
+                    </div>
+                    <div class="form-group">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a id="formtab-edit" class="nav-link active" style="padding: .5rem 1rem;" href="#edit" role="tab" data-toggle="tab" aria-controls="edit" aria-selected="true">Edit</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a id="formtab-preview" class="nav-link" style="padding: .5rem 1rem;" href="#preview" role="tab" data-toggle="tab" aria-controls="preview" aria-selected="false">Preview</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <label for="feature-description">Description</label>
+                                <small id="feature-description-help" class="form-text text-muted">This field contains a Markdown document; go wild!</small>
+                                <div id="nav-tabcontent" class="tab-content">
+                                    <div id="edit" class="tab-pane fade show active" role="tabpanel" aria-labelledby="formtab-edit">
+                                        @Html.TextAreaFor(m => m.Description, new { id="feature-description", @class="form-control", rows="20", required="true", maxlength="32767" })
+                                    </div>
+                                    <div id="preview" class="tab-pane fade" role="tabpanel" aria-labelledby="formtab-preview">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h2 id="preview-title">@Model.Title</h2>
+                                                <div id="preview-description">
+                                                    <p>@Html.Raw(Model.DescriptionAsHtml)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.SortOrder, new { id="feature-sort-order", type="number", min="0", max="999", @class="form-control" })
+                        <label for="feature-sort-order">Sort Order</label>
+                        <small id="feature-sort-order-help" class="form-text text-muted">Same-value features are sorted alphabetically by their <code>Name</code>.</small>
+                    </div>
+                </fieldset>
+
+                <button id="save-button" class="btn btn-primary m-1 float-left" type="button">
+                    <span id="save-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                    <span id="save-button-text">Save</span>
+                </button>
+                <button id="cancel-button" class="btn btn-secondary" asp-controller="Admin" asp-action="Index">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+</section>
+
+@if (!Model.IsProtected)
+{
+<section class="row">
+    <div class="card w-100 m-2">
+        <div class="card-header">
+            <h5 class="card-title">Feature Items</h5>
+            <p class="card-text">Feature items are child elements that render differently than sub-features. Features and sub-features alike may have such items.</p>
+            <p class="card-text">For protected features, items are provided by XML documentation in the source code and cannot be edited here.</p>
+        </div>
+        <div class="card-body">
+            @{
+                foreach (var item in Model.FeatureItems)
+                {
+                    <div class="card m-2">
+                        <div class="card-header">
+                            <h6 class="card-title">@item.Name</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@item.Description</p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-primary" id="new-item-btn" asp-controller="Admin" asp-action="NewFeatureItem" asp-all-route-data='new Dictionary<string, string> { ["parent"] = Model.Name }'>New Item</a>
+        </div>
+    </div>
+</section>
+}
+
+<section>
+    <div>
+        @if (Model.IsPersisted)
+        {
+            <div class="card w-100 text-center m-2">
+                <div class="card-header">
+                    <a class="card-title text-danger" href="#collapse-feature-danger-zone" role="button" aria-expanded="false" aria-controls="collapse-feature-danger-zone" data-toggle="collapse"><strong>Danger Zone</strong></a>
+                </div>
+                <div id="collapse-feature-danger-zone" class="collapse">
+                    <div class="card-body">
+                        @if (!Model.IsProtected)
+                        {
+                            <p class="card-text text-danger">This action cannot be undone!</p>
+                            <button id="delete-button" class="btn btn-outline-danger">Delete the @Model.Name feature and all associated data</button>
+                        }
+                        else
+                        {
+                            <p class="card-text text-small">This feature is protected and cannot be deleted.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

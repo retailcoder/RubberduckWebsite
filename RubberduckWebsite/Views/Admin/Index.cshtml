@@ -3,7 +3,7 @@
     ViewData["Title"] = "Admin";
 }
 @section Scripts {
-    <script type="text/javascript">
+    <script type='text/javascript'>
     function getRelativeTimeOffset(elapsed) {
 
         var msPerMinute = 60 * 1000;
@@ -47,80 +47,179 @@
         var indicator = $('#tag-metadata-busy-indicator');
 
         if (setBusy) {
-            button.attr("disabled", true);
-            button.addClass("disabled");
-            $('#update-tags-button-text').text("Processing...");
-            indicator.removeAttr("hidden");
+            button.attr('disabled', true);
+            button.addClass('disabled');
+            $('#update-tags-button-text').text('Processing...');
+            indicator.removeAttr('hidden');
         }
         else {
-            button.removeClass("disabled");
-            button.removeAttr("disabled");
-            button.text("Update");
-            indicator.attr("hidden", true);
+            button.removeClass('disabled');
+            button.removeAttr('disabled');
+            button.text('Update');
+            indicator.attr('hidden', true);
         }
+    }
+
+    function getIsUpdatingTagMetadata() {
+        $.ajax({
+            url: '/Admin/GetIsUpdating',
+            type: 'GET'
+        })
+            .done(function (data) {
+                var isUpdating = data == true;
+                setTagMetadataBusy(isUpdating);
+            });
     }
 
     $(document).ready(function () {
         var offset = getRelativeTimeOffset(@Model.MillisecondsSinceLastUpdate);
-        var timestamp = "@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ") (" + offset + ")";
+        var timestamp = '@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ") (' + offset + ')';
         $('#tag-metadata-timestamp').text(timestamp);
         $('#update-tags-button').click(function () {
             setTagMetadataBusy(true);
             $.ajax({
-                url: 'Admin/UpdateTagMetadata', 
+                url: 'Admin/UpdateTagMetadata',
                 type: 'POST'
             })
             .done(function (data, textStatus, xhr) {
-                console.log("tag metadata was updated successfully.");
-                $('#tag-metadata-success-alert').addClass("show");
+                console.log('tag metadata was updated successfully.');
+                $('#tag-metadata-success-alert').addClass('show');
             })
             .fail(function (data, textStatus, xhr) {
-                $('#tag-metadata-error-message').text(xhr);
-                $('#tag-metadata-error-alert').addClass("show");
+                $('#tag-metadata-error-message').text(textStatus + ' : ' + xhr);
+                $('#tag-metadata-error-alert').addClass('show');
                 console.log(xhr);
             })
             .always(function () {
                 setTagMetadataBusy(false);
             });
         });
+
+        getIsUpdatingTagMetadata();
+        setInterval(getIsUpdatingTagMetadata, 10000);
     });
     </script>
 }
 
 <section class="row">
-    <div class="col-12">
-        <h3>Tag Metadata</h3>
-        @if (Model.TagMetadataTimestamp.HasValue)
-        {
-            <p>Last updated: <span id="tag-metadata-timestamp" class="text-primary">@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ")</span></p>
-        }
-        <p>This data should be downloaded regularly to keep per-tag installer downloads up-to-date.</p>
-        <p>API downloads all tags, then identifies the latest tags in the [next] and [main] branches and proceeds to download and merge xmldoc content into the backend database.</p>
-
-        <button id="update-tags-button" class="btn btn-primary" type="button">
-            <span id="tag-metadata-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
-            <span id="update-tags-button-text">Update</span>
-        </button>
-
-        <div id="tag-metadata-error-alert" class="alert alert-danger fade" role="alert">
-            <span id="tag-metadata-error-message">Error message goes here</span>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div id="tag-metadata-success-alert" class="alert alert-success fade" role="alert">
-            <span>Tag metadata and xmldoc content update completed successfully.</span>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+    <div class="w-100">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Tag Metadata</h3>
+                @if (Model.TagMetadataTimestamp.HasValue)
+                {
+                    <p class="card-subtitle">Last updated: <span id="tag-metadata-timestamp" class="text-primary">@Model.TagMetadataTimestamp?.ToString("yyyy-MM-dd hh:MM:ssZ")</span></p>
+                }
+            </div>
+            <div class="card-body">
+                <p>This data should be downloaded regularly to keep per-tag installer downloads up-to-date.</p>
+                <p>API downloads all tags, then identifies the latest tags in the [next] and [main] branches and proceeds to download and merge xmldoc content into the backend database.</p>
+            </div>
+            <div class="card-footer card-footer-quiet">
+                <button id="update-tags-button" class="btn btn-primary" type="button">
+                    <span id="tag-metadata-busy-indicator" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" hidden="hidden"></span>
+                    <span id="update-tags-button-text">Update</span>
+                </button>
+            </div>
         </div>
     </div>
 </section>
 
+<hr />
+
 <section class="row">
-    <h3>Features</h3>
-    @foreach (var feature in Model.Features)
-    {
-        // grid?
-    }
+    <div class="w-100">
+        <div>
+            <h3>Features</h3>
+            <p>
+                Use this page to organize and maintain features and their respective sub-features.
+            </p>
+            <div class="m-3">
+                <a id="create-feature-button" class="btn btn-success" asp-controller="Admin" asp-action="NewFeature">Add top-level feature</a>
+            </div>
+        </div>
+
+        @foreach (var feature in Model.Features.OrderBy(e => e.SortOrder).ThenBy(e => e.Name))
+        {
+            <div id="@feature.Name" class="card card-highlight">
+                <a class="card-header m-2 collapsed" href="#collapse-@feature.Name" title="Click to expand/collapse" role="button" aria-expanded="false" aria-controls="collapse-@feature.Name" data-toggle="collapse">
+                    <h4 class="card-title d-inline">@feature.Title</h4>
+                    @if (feature.IsNew)
+                    {<span class="badge badge-primary">&nbsp;NEW!</span>}
+                    @if (feature.IsProtected)
+                    {<i class="fa fa-lock" title="This feature cannot be deleted"></i>}
+                    <i class="fas float-right" aria-hidden="true"></i>
+                </a>
+                <div class="collapse" id="collapse-@feature.Name">
+                    <div class="card-body m-2">
+
+                        <p class="card-text">@feature.ElevatorPitch</p>
+
+                        <div class="m-2">
+                            <a id="edit-feature-button-@feature.Name" class="btn btn-primary" title="Edit this feature" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='new Dictionary<string, string> { ["name"] = feature.Name }'>Edit »</a>
+                            <a id="add-subfeature-button-@feature.Name" class="btn btn-outline-success" title="Add a new sub-feature" asp-controller="Admin" asp-action="NewSubFeature" asp-all-route-data='new Dictionary<string, string> { ["parent"] = feature.Name }'>New »</a>
+                        </div>
+
+                        <div class="card-deck">
+                            @{
+                                var subFeatures = feature.SubFeatures.OrderBy(e => e.SortOrder).ThenBy(e => e.Name).Select((e, i) => (Feature: e, Index: i)).GroupBy(e => e.Index / 3);
+                                @foreach (var row in subFeatures)
+                                {
+                                    <div class="row">
+                                        @foreach (var subFeature in row.Select(e => e.Feature))
+                                        {
+                                            <a class="card card-highlight m-2" title="Edit this feature" asp-controller="Admin" asp-action="EditFeature" asp-all-route-data='new Dictionary<string, string> { ["name"] = subFeature.Name }'>
+                                                <div class="card-header">
+                                                    <h4 class="card-title d-inline">
+                                                        @subFeature.Title
+                                                    </h4>
+                                                    @if (subFeature.IsNew){<span class="badge badge-primary">&nbsp;NEW!</span>}
+                                                    @if (subFeature.IsProtected){<i title="This feature cannot be deleted" class="fa fa-lock"></i>}
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="card-text">@subFeature.ElevatorPitch</p>
+                                                </div>
+                                                <div class="card-img-bottom">
+                                                    <img alt="Screenshot showcasing the '@subFeature.Title' feature" class="img-thumbnail" src="~/images/features/@(subFeature.Name).png" height="220" />
+                                                </div>
+                                                <div class="card-footer">
+                                                    <p class="card-text">Edit »</p>
+                                                </div>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </section>
+
+<div id="upload-screenshot-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Screenshot</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" asp-controller="Admin" asp-action="UploadScreenshot">
+                    <label class="form-label" for="screenshot">Select an image file to upload</label>
+                    <input type="hidden" id="feature-name" name="featureName" value="CodeInspections" hidden />
+                    <input type="file" class="form-control" id="screenshot" name="screenshotFile" required />
+                    <label class="form-check-label" for="screenshot">Select an image file to upload</label>
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

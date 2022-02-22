@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MarkdownSharp;
 using Rubberduck.Model.Entities;
 
 namespace RubberduckWebsite.Models
@@ -8,9 +9,12 @@ namespace RubberduckWebsite.Models
     {
         public FeatureDetailsViewModel(Feature feature)
         {
-            Feature = feature;
+            Feature = new FeatureViewModel(feature);
+            HtmlDescription = new Markdown().Transform(feature.Description);
         }
 
-        public Feature Feature { get; }
+        public FeatureViewModel Feature { get; }
+
+        public string HtmlDescription { get; }
     }
 }

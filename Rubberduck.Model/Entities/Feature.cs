@@ -1,11 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Rubberduck.Model.Abstract;
 
 namespace Rubberduck.Model.Entities
 {
     public class Feature : Entity
     {
+        public static readonly string[] ProtectedFeatures = new[]
+        {
+            "CodeInspections", // top-level
+            "Inspections", // sub-feature with xmldoc items
+            "QuickFixes", // sub-feature with xmldoc items
+            "Annotations" // top-level with xmldoc items
+        };
+
+        public bool IsProtected => ProtectedFeatures.Contains(Name);
+
         /// <summary>
         /// Refers to the <c>Id</c> of the parent feature if applicable; <c>null</c> otherwise.
         /// </summary>

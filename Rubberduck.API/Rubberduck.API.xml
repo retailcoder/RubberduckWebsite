@@ -50,25 +50,32 @@
             </summary>
             <param name="dto">The feature (or sub-feature) to save.</param>
         </member>
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.DeleteAsync(Rubberduck.Model.Entities.Feature)">
+            <summary>
+            Deletes the specified feature (or sub-feature).
+            </summary>
+            <param name="dto">The feature (or sub-feature) to delete.</param>
+        </member>
         <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.SaveAsync(Rubberduck.Model.Entities.FeatureItem)">
             <summary>
             Creates a new feature item, or updates an existing one.
             </summary>
             <param name="dto">The feature item to save.</param>
         </member>
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.DeleteAsync(Rubberduck.Model.Entities.FeatureItem)">
+            <summary>
+            Deletes the specified feature item.
+            </summary>
+            <param name="dto">The feature item to delete.</param>
+        </member>
         <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.UpdateXmlDocContentAsync">
             <summary>
             Gets the latest release and pre-release tags, downloads xmldoc assets, and processes them.
             </summary>
         </member>
-        <member name="T:Rubberduck.API.Controllers.AuthController">
+        <member name="M:Rubberduck.API.Controllers.Authenticated.AdminController.GetIsSynchronisationInProgress">
             <summary>
-            
-            </summary>
-        </member>
-        <member name="M:Rubberduck.API.Controllers.AuthController.Login(System.String)">
-            <summary>
-            Login with GitHub.
+            Gets an indicator that is <c>true</c> when a synchronisation is in progress.
             </summary>
         </member>
         <member name="T:Rubberduck.API.Controllers.HealthController">
@@ -94,6 +101,11 @@
         <member name="M:Rubberduck.API.Controllers.PublicController.#ctor(Microsoft.Extensions.Logging.ILogger{Rubberduck.API.Controllers.PublicController},Rubberduck.ContentServices.Service.Abstract.IContentService,RubberduckServices.Abstract.IIndenterService)">
             <summary>
             Creates a controller that exposes endpoints providing the website's dynamic content.
+            </summary>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.Authenticate">
+            <summary>
+            Not sure yet :D
             </summary>
         </member>
         <member name="M:Rubberduck.API.Controllers.PublicController.GetFeaturesAsync">
@@ -124,6 +136,17 @@
             <param name="viewModel">The indenter request details.</param>
             <returns>An array of string, each element being an indented physical line of code.</returns>
         </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.GetDefaultIndenterSettingsViewModelAsync">
+            <summary>
+            Gets a default indenter settings view model
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rubberduck.API.Controllers.PublicController.SearchAsync(Rubberduck.Model.SearchViewModel)">
+            <summary>
+            Searches features and feature items for filtered content.
+            </summary>
+        </member>
         <member name="T:Rubberduck.API.Services.Abstract.IGitHubDataServices">
             <summary>
             A service that queries GitHub.
@@ -152,7 +175,7 @@
             A service that orchestrates the synchronization of xmldoc content.
             </summary>
         </member>
-        <member name="M:Rubberduck.API.Services.Abstract.IXmlDocServices.SynchronizeAsync">
+        <member name="M:Rubberduck.API.Services.Abstract.IXmlDocServices.SynchronizeAsync(System.String,System.String,System.String)">
             <summary>
             Gets the xmldoc assets from the latest release and prerelease tags, and processes/merges them into the database.
             </summary>

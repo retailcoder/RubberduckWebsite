@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
@@ -50,9 +51,8 @@ namespace RubberduckWebsite.Controllers
                 return NotFound();
             }
 
-            // TODO
-
-            return null;
+            var vm = new FeatureItemViewModel(item);
+            return View(vm);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Rubberduck.Model.Abstract;
 
 namespace Rubberduck.Model.Entities
@@ -6,7 +7,9 @@ namespace Rubberduck.Model.Entities
     public class FeatureItem : Entity
     {
         public int FeatureId { get; set; }
+
         public string Name { get; set; }
+
         public string Title { get; set; }
         public string Description { get; set; }
         public bool IsNew { get; set; }

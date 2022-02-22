@@ -10,6 +10,6 @@ namespace Rubberduck.API.Services.Abstract
         /// <summary>
         /// Gets the xmldoc assets from the latest release and prerelease tags, and processes/merges them into the database.
         /// </summary>
-        Task SynchronizeAsync();
+        Task SynchronizeAsync(string apiVersion, string clientIP, string agent);
     }
 }

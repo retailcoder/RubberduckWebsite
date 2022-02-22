@@ -1,25 +1,76 @@
 ﻿@model RubberduckWebsite.Models.FeatureDetailsViewModel
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Feature.Title;
 }
 
-<h2>@Model.Feature.Title</h2>
-<p>@Model.Feature.Description</p>
+<section>
+    <h2>@Model.Feature.Title</h2>
+    <p>@Html.Raw(Model.HtmlDescription)</p>
+</section>
 
-@foreach (var subFeature in Model.Feature.SubFeatures)
-{
-    <div class="row">
-        <div class="col-4">
-            <h3>@subFeature.Name</h3>
-            <p>@subFeature.ElevatorPitch</p>
-            <a class="btn btn-primary" href="~/Features/@subFeature.Name">Details »</a>
-        </div>
-        <div class="col-8">
-            <!--img alt="@subFeature.Title" /-->
-        </div>
+<section>
+    <div class="card-deck">
+    @{ 
+        var features = Model.Feature.SubFeatures.Where(f => !f.IsHidden).OrderBy(f => f.SortOrder).ThenBy(f => f.Name).Select((f, i) => (Feature: f, Index: i)).GroupBy(e => e.Index / 3);
+        @foreach (var row in features)
+        {
+            <div class="row w-100">
+
+                @foreach (var subFeature in row.Select(e => e.Feature))
+                {
+                    <a class="card card-highlight m-2" asp-controller="Features" asp-action="Details" asp-all-route-data='new Dictionary<string, string> { ["name"] = subFeature.Name }'>
+                        <div class="card-header">
+                            <h4 class="card-title d-inline">
+                                @subFeature.Title
+                                @if (subFeature.IsNew)
+                                {<span class="badge badge-primary">&nbsp;NEW!</span>}
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <p>@subFeature.ElevatorPitch</p>
+                        </div>
+                        <div class="card-img-bottom">
+                            <img alt="Screenshot showcasing the @subFeature.Title feature" class="img-thumbnail" src="~/images/features/@(subFeature.Name).png" />
+                        </div>
+                        <div class="card-footer">
+                            <p class="card-text">Details »</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    }
     </div>
-}
-@foreach (var item in Model.Feature.FeatureItems)
-{
-    <div><h4>@item.Name</h4></div>
-}
+</section>
+
+<section>
+    <div class="card-deck">
+        @{
+            var items = Model.Feature.FeatureItems.Where(f => !f.IsHidden).OrderBy(f => f.Name).Select((f, i) => (Feature: f, Index: i)).GroupBy(e => e.Index / 3);
+            @foreach (var row in items)
+            {
+                <div class="row w-100">
+
+                    @foreach (var item in row.Select(e => e.Feature))
+                    {
+                    <a class="card card-highlight m-2" asp-controller="Features" asp-action="Item" asp-all-route-data='new Dictionary<string, string> { ["name"] = item.Name }'>
+                        <div class="card-body">
+                            <h4 class="card-title d-inline">
+                                @item.Title
+                                @if (item.IsNew)
+                                {
+                                    <span class="badge badge-primary">&nbsp;NEW!</span>
+                                }
+                            </h4>
+                            <p>@item.XmlDocSummary</p>
+                        </div>
+                        <div class="card-footer">
+                            <p class="card-text">Details »</p>
+                        </div>
+                    </a>
+                    }
+                </div>
+            }
+        }
+    </div>
+</section>

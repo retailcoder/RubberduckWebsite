@@ -1,0 +1,26 @@
+﻿@model Rubberduck.Model.SearchResultsViewModel
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<section>
+    <h2>@ViewData["Title"]</h2>
+    @Model.Results.Count().ToString("N0") results for "@Model.Query"
+    <hr />
+</section>
+<section>
+    <div>
+        @foreach (var result in Model.Results)
+        {
+        <div class="m-2">
+            <h5>@result.Title</h5>
+            <small class="text-muted">@result.Url</small>
+        </div>
+        <div>
+            <p>
+                @result.Excerpt
+            </p>
+        </div>
+        }
+    </div>
+</section>

@@ -40,7 +40,7 @@ namespace Rubberduck.API.Authorization
             await AuthenticateAsync(context);
         }
 
-        private async Task AuthenticateAsync(AuthorizationFilterContext context)
+        private static async Task AuthenticateAsync(AuthorizationFilterContext context)
         {
             if (context.HttpContext.User.Identity.IsAuthenticated)
             {

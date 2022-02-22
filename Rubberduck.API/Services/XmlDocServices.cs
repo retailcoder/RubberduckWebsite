@@ -40,41 +40,78 @@ namespace Rubberduck.API.Services
             _syntaxHighlighterService = syntaxHighlighterService;
         }
 
-        public async Task SynchronizeAsync()
+        public async Task SynchronizeAsync(string apiVersion, string clientIP, string agent)
         {
-            await SynchronizeTags();
+            await BeginSynchronisation(apiVersion, clientIP, agent);
 
-            _logger.LogInformation($"Loading tag assets...");
-            var dbMain = await _content.GetMainTagAsync();
-            _logger.LogInformation($"Loaded {dbMain.TagAssets.Count:N0} assets from database under tag {dbMain.Name} (main).");
+            try
+            {
+                await SynchronizeTags();
 
-            var dbNext = await _content.GetNextTagAsync();
-            _logger.LogInformation($"Loaded {dbNext.TagAssets.Count:N0} assets from database under tag {dbNext.Name} (next).");
+                _logger.LogInformation($"Loading tag assets...");
+                var dbMain = await _content.GetMainTagAsync();
+                _logger.LogInformation($"Loaded {dbMain.TagAssets.Count:N0} assets from database under tag {dbMain.Name} (main).");
 
-            _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset ({dbMain.Name})...");
-            var mainCodeAnalysisItems = await _codeAnalysisXml.ParseAsync(dbMain);
-            _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset ({dbNext.Name})...");
-            var nextCodeAnalysisItems = await _codeAnalysisXml.ParseAsync(dbNext);
+                var dbNext = await _content.GetNextTagAsync();
+                _logger.LogInformation($"Loaded {dbNext.TagAssets.Count:N0} assets from database under tag {dbNext.Name} (next).");
 
-            _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset ({dbMain.Name})...");
-            var mainParsingItems = await _parsingXml.ParseAsync(dbMain);
-            _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset ({dbNext.Name})...");
-            var nextParsingItems = await _parsingXml.ParseAsync(dbNext);
+                _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset ({dbMain.Name})...");
+                var mainCodeAnalysisItems = await _codeAnalysisXml.ParseAsync(dbMain);
+                _logger.LogInformation($"Parsing xmldocs for Rubberduck.CodeAnalysis asset ({dbNext.Name})...");
+                var nextCodeAnalysisItems = await _codeAnalysisXml.ParseAsync(dbNext);
 
-            _logger.LogInformation($"Concatenating parsed feature items...");
-            var mainItems = mainCodeAnalysisItems.Concat(mainParsingItems).ToList();
-            var nextItems = nextCodeAnalysisItems.Concat(nextParsingItems).ToList();
+                _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset ({dbMain.Name})...");
+                var mainParsingItems = await _parsingXml.ParseAsync(dbMain);
+                _logger.LogInformation($"Parsing xmldocs for Rubberduck.Parsing asset ({dbNext.Name})...");
+                var nextParsingItems = await _parsingXml.ParseAsync(dbNext);
 
-            _logger.LogInformation($"Merging...");
-            var merged = _xmlMerge.Merge(mainItems, nextItems);
+                _logger.LogInformation($"Concatenating parsed feature items...");
+                var mainItems = mainCodeAnalysisItems.Concat(mainParsingItems).ToList();
+                var nextItems = nextCodeAnalysisItems.Concat(nextParsingItems).ToList();
 
-            _logger.LogInformation($"Formatting code examples...");
-            FormatCodeExamples(merged.SelectMany(m => m.Examples.SelectMany(e => e.Modules)));
+                _logger.LogInformation($"Merging...");
+                var merged = _xmlMerge.Merge(mainItems, nextItems);
 
-            _logger.LogInformation($"Saving changes...");
-            await _content.SaveFeatureItemsAsync(merged);
+                _logger.LogInformation($"Formatting code examples...");
+                FormatCodeExamples(merged.SelectMany(m => m.Examples.SelectMany(e => e.Modules)));
 
-            _logger.LogInformation($"Done.");
+                _logger.LogInformation($"Saving changes...");
+                await _content.SaveFeatureItemsAsync(merged);
+
+                _logger.LogInformation($"Done.");
+                await EndSynchronisationAsync("Success.", SynchronisationStatusCode.Success);
+            }
+            catch (Exception exception)
+            {
+                await EndSynchronisationAsync(exception.Message, SynchronisationStatusCode.Failed);
+            }
+        }
+
+        private async Task BeginSynchronisation(string apiVersion, string clientIP, string agent)
+        {
+            var timestamp = DateTime.UtcNow;
+            var model = new Synchronisation
+            {
+                DateInserted = timestamp,
+                ApiVersion = apiVersion,
+                RequestIP = clientIP,
+                UserAgent = agent,
+                TimestampStart = timestamp
+            };
+            await _content.BeginSynchronisationAsync(model);
+        }
+
+        private async Task EndSynchronisationAsync(string message, SynchronisationStatusCode status)
+        {
+            var timestamp = DateTime.UtcNow;
+            var model = new Synchronisation
+            {
+                DateUpdated = timestamp,
+                TimestampEnd = timestamp,
+                StatusCode = (int)status,
+                Message = message
+            };
+            await _content.EndSynchronisationAsync(model);
         }
 
         private async Task SynchronizeTags()

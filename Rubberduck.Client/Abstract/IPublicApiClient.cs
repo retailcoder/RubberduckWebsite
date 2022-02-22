@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Rubberduck.Model;
 using Rubberduck.Model.Abstract;
 using Rubberduck.Model.Entities;
 
@@ -38,5 +39,10 @@ namespace Rubberduck.Client.Abstract
         /// Indents the supplied code as per specified indenter settings.
         /// </summary>
         Task<string[]> GetIndentedCodeAsync(IIndenterSettings settings);
+        Task<IndenterViewModel> GetDefaultIndenterSettings();
+        /// <summary>
+        /// Gets search results for the specified search text.
+        /// </summary>
+        Task<SearchResultsViewModel> SearchContentAsync(SearchViewModel search);
     }
 }

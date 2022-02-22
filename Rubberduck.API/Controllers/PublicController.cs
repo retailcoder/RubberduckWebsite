@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.ContentServices.Service.Abstract;
@@ -30,6 +31,16 @@ namespace Rubberduck.API.Controllers
             _logger = logger;
             _content = content;
             _indenterService = indenterService;
+        }
+
+        /// <summary>
+        /// Not sure yet :D
+        /// </summary>
+        [HttpGet]
+        [Route("/signin")]
+        public ActionResult Authenticate()
+        {
+            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "GitHub");
         }
 
         /// <summary>
@@ -151,6 +162,66 @@ namespace Rubberduck.API.Controllers
             {
                 _logger.LogError(e, "A Problem (500) result will be returned.");
                 return Problem("An error has been logged while indenting the provided code.", statusCode: 500);
+            }
+        }
+
+        /// <summary>
+        /// Gets a default indenter settings view model
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("DefaultIndenterSettings")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(string[]), 200)]
+        public async Task<ActionResult<IndenterViewModel>> GetDefaultIndenterSettingsViewModelAsync()
+        {
+            try
+            {
+                var result = new IndenterViewModel
+                {
+                    IndenterVersion = _indenterService.IndenterVersion(),
+                    Code = "Option Explicit\n\nPublic Sub DoSomething()\nEnd Sub\nPublic Sub DoSomethingElse()\n\nEnd Sub\n",
+                    AlignCommentsWithCode = true,
+                    EmptyLineHandlingMethod = Model.Abstract.IndenterEmptyLineHandling.Indent,
+                    ForceCompilerDirectivesInColumn1 = true,
+                    GroupRelatedProperties = false,
+                    IndentSpaces = 4,
+                    IndentCase = true,
+                    IndentEntireProcedureBody = true,
+                    IndentEnumTypeAsProcedure = true,
+                    VerticallySpaceProcedures = true,
+                    LinesBetweenProcedures = 1,
+                    IndentFirstCommentBlock = true,
+                    IndentFirstDeclarationBlock = true,
+                    EndOfLineCommentStyle = Model.Abstract.IndenterEndOfLineCommentStyle.SameGap,
+                };
+                return await Task.FromResult(Ok(result));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "A Problem (500) result will be returned.");
+                return Problem("An error has been logged while creating a viewmodel for indenter settings.", statusCode: 500);
+            }
+        }
+
+        /// <summary>
+        /// Searches features and feature items for filtered content.
+        /// </summary>
+        [HttpPost]
+        [Route("Search")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(SearchResultsViewModel), 200)]
+        public async Task<ActionResult<SearchResultsViewModel>> SearchAsync(SearchViewModel search)
+        {
+            try
+            {
+                var result = await _content.SearchAsync(search.Query);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "A Problem (500) result will be returned.");
+                return Problem("An error has been logged while searching for content.", statusCode: 500);
             }
         }
     }

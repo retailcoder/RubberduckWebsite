@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rubberduck.Model;
 using Rubberduck.Model.Entities;
 
 namespace RubberduckWebsite.Models
@@ -52,5 +53,7 @@ namespace RubberduckWebsite.Models
         /// Gets the UTC timestamp for the tag and tag assets metadata. <c>null</c> if there is no tag asset metadata.
         /// </summary>
         public DateTime? MetadataTimestamp { get; }
+
+        public SearchViewModel Search { get; }
     }
 }

@@ -5,29 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] | rubberduckvba.com</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="//use.fontawesome.com/releases/v5.7.2/css/all.css">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar fixed-top navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Rubberduck</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <a class="navbar-brand float-left" href="/">
+                    <img alt="Rubberduck logo" src="~/images/ducky-color.png" height="48" /><div class="text-nowrap">Rubberduck</div>
+                </a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Downloads
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a id="download-link1" class="dropdown-item" href="#">Link1</a>
+                                <a id="download-link2" class="dropdown-item" href="#">Link2</a>
+                            </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Features" asp-action="Index">Features</a>
+                            <a class="nav-link" asp-controller="Features" asp-action="Index">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://rubberduckvba.blog">Blog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Indenter" asp-action="Index">Online Indenter</a>
                         </li>
                     </ul>
+                    <div class="float-right">
+                        <form method="post" enctype="application/x-www-form-urlencoded" class="form-inline my-2 my-lg-0" asp-controller="Home" asp-action="Search">
+                            <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+                        </form>
+                        <div>
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                            <a id="login-button" href="/signin" title="Sign in with GitHub to access site admin (org members only)">
+                                <i class="fab fa-github"></i>
+                                <small>Sign in with GitHub</small>
+                            </a>
+                            }
+                            else
+                            {
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarAuthenticatedMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fab fa-github"></i>
+                                        <small>Signed in as <strong>@User.Identity.Name</strong></small>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarAuthenticatedMenuLink">
+                                        <a id="signin-button" class="dropdown-item dropdown-item-text" href="/Admin" title="Manage site content'">
+                                            Admin
+                                        </a>
+                                        <a id="report-issue" class="dropdown-item dropdown-item-text" title="Report an issue on the website's GitHub repository'" href="#">
+                                            Report an issue
+                                        </a>
+                                        <a id="signout-button" class="dropdown-item dropdown-item-text" href="/signout" title="Sign out of GitHub session">
+                                            Sign out
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
+        <div style="margin-bottom: 160px;"></div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -37,12 +92,101 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - RubberduckWebsite - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="float-left text-left">
+                &copy; 2022 - Rubberduck Contributors - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
         </div>
     </footer>
+
+    <div id="toast-popup" class="toast" data-delay="3000" role="alert" aria-live="assertive" aria-atomic="true" style="position: fixed; top: 5px; right: 5px;">
+        <div class="toast-header">
+            <span id="toast-icon" class="icon icon-tick"></span>
+            <strong class="mr-auto">@ViewData["Title"]</strong>
+            <small id="toast-timestamp"></small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div id="toast-message" class="toast-body"></div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        function setSubmitButtonBusy(button, buttonTextSpan, indicatorSpan, setBusy, caption) {
+            if (setBusy) {
+                button.attr('disabled', true);
+                button.addClass('disabled');
+                buttonTextSpan.text('Processing...');
+                indicatorSpan.removeAttr('hidden');
+            }
+            else {
+                button.removeClass('disabled');
+                button.removeAttr('disabled');
+                buttonTextSpan.text(caption);
+                indicatorSpan.attr('hidden', true);
+            }
+        }
+        function disableInvalidSubmit() {
+            // https://getbootstrap.com/docs/4.3/components/forms/#custom-styles
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        }
+        function getDownloadLinks() {
+            $.ajax({
+                url: '/Home/Downloads',
+                type: 'GET',
+                //dataType: 'json',
+                //contentType: 'application/json; charset=utf-8'
+            })
+                .done(function (links) {
+                    var link1 = links[0];
+                    $('#download-link1').text(link1.tag + (link1.isPreRelease ? ' (next)' : ' (main)'));
+                    $('#download-link1').attr('href', link1.url);
+
+                    var link2 = links[1];
+                    $('#download-link2').text(link2.tag + (link2.isPreRelease ? ' (next)' : ' (main)'));
+                    $('#download-link2').attr('href', link2.url);
+                });
+        }
+
+        function showToast(message, success) {
+            $('#toast-message').text(message);
+
+            if (success) {
+                $('#toast-icon').addClass('icon-tick');
+                $('#toast-icon').removeClass('icon-cross');
+                $('#toast-icon').show();
+            }
+            else {
+                $('#toast-icon').addClass('icon-cross');
+                $('#toast-icon').removeClass('icon-tick');
+                $('#toast-icon').show();
+            }
+
+            var timeString = new Date().toISOString().substr(11, 8);
+            $('#toast-timestamp').text(timeString);
+
+            $('#toast-popup').toast('show');
+        }
+
+        $(document).ready(function () {
+            getDownloadLinks();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

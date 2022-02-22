@@ -22,13 +22,13 @@ namespace Rubberduck.API.Services
 
         private readonly string _codeInspectionDefaultsSettingsRawURl;
         private readonly string _userAgent;
-        private readonly string _apiKey;
+        private readonly string _ghPersonalAccessToken;
 
         public GitHubDataServices(IConfiguration configuration)
         {
             _userAgent = configuration.GetSection("GitHub")["UserAgent"];
             _codeInspectionDefaultsSettingsRawURl = configuration.GetSection("GitHub")["CodeInspectionDefaultsSettingsRawUrl"];
-            _apiKey = configuration["rdapi_GITHUBAPIKEY"];
+            _ghPersonalAccessToken = configuration["rdapi_GITHUBAPIKEY"];
         }
 
         public async Task<IEnumerable<InspectionDefaultConfig>> GetCodeAnalysisDefaultsConfig()
@@ -70,7 +70,7 @@ namespace Rubberduck.API.Services
 
         public async Task<Tag> GetTagAsync(string name = null, int? id = null)
         {
-            var tokenAuth = new Credentials(_apiKey);
+            var tokenAuth = new Credentials(_ghPersonalAccessToken);
             var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
 
             var release = string.IsNullOrEmpty(name)
@@ -104,7 +104,7 @@ namespace Rubberduck.API.Services
 
         public async Task<IEnumerable<Tag>> GetAllTagsAsync()
         {
-            var tokenAuth = new Credentials(_apiKey);
+            var tokenAuth = new Credentials(_ghPersonalAccessToken);
             var client = new GitHubClient(new ProductHeaderValue(_userAgent)) { Credentials = tokenAuth };
 
             var releases = await client.Repository.Release.GetAll(_owner, _repository);

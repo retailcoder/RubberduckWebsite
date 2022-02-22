@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,8 @@ namespace Rubberduck.Client.Abstract
 {
     public abstract class ApiClientBase
     {
+        public const string ContentTypeApplicationJson = "application/json";
+
         private readonly ILogger _logger;
         private readonly string _baseUrl;
         protected TimeSpan GetRequestTimeout { get; }
@@ -34,7 +37,7 @@ namespace Rubberduck.Client.Abstract
 
         protected string BaseUrl => _baseUrl;
 
-        protected virtual HttpClient GetClient()
+        protected virtual HttpClient GetClient(string contentType = ContentTypeApplicationJson)
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.UserAgent.Add(UserAgent);
@@ -69,6 +72,7 @@ namespace Rubberduck.Client.Abstract
 
         protected virtual async Task<T> Post<T>(string route, T args) => await Post<T, T>(route, args);
 
+
         protected virtual async Task<TResult> Post<TArgs, TResult>(string route, TArgs args)
         {
             var uri = new Uri($"{_baseUrl}{route}");
@@ -87,12 +91,13 @@ namespace Rubberduck.Client.Abstract
                 using (var client = GetClient())
                 {
                     client.Timeout = PostRequestTimeout;
-                    using (var response = await client.PostAsync(uri, new StringContent(json)))
+                    using (var response = await client.PostAsync(uri, new StringContent(json, Encoding.UTF8, ContentTypeApplicationJson)))
                     {
                         response.EnsureSuccessStatusCode();
                         using (var stream = await response.Content.ReadAsStreamAsync())
                         {
-                            return (TResult)await JsonSerializer.DeserializeAsync(stream, typeof(TResult));
+                            var result = (TResult)await JsonSerializer.DeserializeAsync(stream, typeof(TResult), options: new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                            return result;
                         }
                     }
                 }
