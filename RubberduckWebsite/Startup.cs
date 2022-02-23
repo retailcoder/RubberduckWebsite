@@ -105,6 +105,10 @@ namespace RubberduckWebsite
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
                 endpoints.MapGet("/signout", async ctx =>
                 {
                     await ctx.SignOutAsync(
