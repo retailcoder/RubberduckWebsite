@@ -11,7 +11,7 @@ namespace RubberduckWebsite.Models
         public AdminViewModel(DateTime? tagsTimestamp, IEnumerable<Feature> features)
         {
             TagMetadataTimestamp = tagsTimestamp;
-            Features = features.ToHashSet();
+            Features = features.Select(e => new FeatureViewModel(e)).ToHashSet();
             if (tagsTimestamp.HasValue)
             {
                 MillisecondsSinceLastUpdate = DateTime.UtcNow.Subtract(tagsTimestamp.Value).TotalMilliseconds;
@@ -19,7 +19,7 @@ namespace RubberduckWebsite.Models
         }
 
         public DateTime? TagMetadataTimestamp { get; }
-        public IReadOnlySet<Feature> Features { get; }
+        public IReadOnlySet<FeatureViewModel> Features { get; }
         public double? MillisecondsSinceLastUpdate { get; }
     }
 
@@ -30,7 +30,7 @@ namespace RubberduckWebsite.Models
             NextTag = latestTags.SingleOrDefault(tag => tag.IsPreRelease);
             MainTag = latestTags.SingleOrDefault(tag => !tag.IsPreRelease);
             
-            Features = features.Where(feature => !feature.IsHidden).ToHashSet();
+            Features = features.Where(feature => !feature.IsHidden).Select(e => new FeatureViewModel(e)).ToHashSet();
             MetadataTimestamp = latestTags.Any() ? latestTags.Max(tag => tag.DateUpdated ?? tag.DateInserted) : null;
         }
 
@@ -47,7 +47,7 @@ namespace RubberduckWebsite.Models
         /// <summary>
         /// All features.
         /// </summary>
-        public IReadOnlySet<Feature> Features { get; }
+        public IReadOnlySet<FeatureViewModel> Features { get; }
 
         /// <summary>
         /// Gets the UTC timestamp for the tag and tag assets metadata. <c>null</c> if there is no tag asset metadata.

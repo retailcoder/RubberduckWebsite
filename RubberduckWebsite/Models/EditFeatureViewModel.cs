@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Rubberduck.Model.Entities;
@@ -71,7 +72,31 @@ namespace RubberduckWebsite.Models
             _topLevelFeatures = features.Where(e => e.ParentId is null).ToDictionary(e => e.Name, e => e);
 
             ParentFeatureName = feature.ParentFeature?.Name;
+            var source = FindScreenshot();
+            if (source != null)
+            {
+                HasScreenshot = true;
+                ScreenshotSource = new Uri(source);
+            }
+
         }
+
+        private string FindScreenshot()
+        {
+            var extensions = new[] { "gif", "png" };
+            foreach (var ext in extensions)
+            {
+                var source = $"~/images/features/{Name}.{ext}";
+                if (File.Exists(source))
+                {
+                    return source;
+                }
+            }
+
+            return null;
+        }
+        public bool HasScreenshot { get; }
+        public Uri ScreenshotSource { get; }
 
         public bool IsPersisted => _feature.Id != default;
         public IEnumerable<string> TopLevelFeatures => _topLevelFeatures.Keys.ToArray();

@@ -13,19 +13,20 @@ namespace RubberduckWebsite.Models
                 .OrderBy(feature => feature.SortOrder)
                 .ThenBy(feature => feature.Name)
                 .ToDictionary(
-                    feature => feature,
+                    feature => new FeatureViewModel(feature),
                     feature => GetSubFeatures(features, feature.Id));
         }
 
-        private static IReadOnlySet<Feature> GetSubFeatures(IEnumerable<Feature> features, int parentId)
+        private static IReadOnlySet<FeatureViewModel> GetSubFeatures(IEnumerable<Feature> features, int parentId)
         {
             return features
                 .Where(feature => feature.ParentId == parentId && feature.XmlDocSource is null)
                 .OrderBy(feature => feature.SortOrder)
                 .ThenBy(feature => feature.Name)
+                .Select(e => new FeatureViewModel(e))
                 .ToHashSet();
         }
 
-        public IReadOnlyDictionary<Feature, IReadOnlySet<Feature>> Features { get; }
+        public IReadOnlyDictionary<FeatureViewModel, IReadOnlySet<FeatureViewModel>> Features { get; }
     }
 }
