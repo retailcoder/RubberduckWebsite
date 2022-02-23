@@ -21,7 +21,7 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
 
@@ -29,8 +29,6 @@ jobs:
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
-      with:
-        vs-version: '[16.11,17.0)'
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
