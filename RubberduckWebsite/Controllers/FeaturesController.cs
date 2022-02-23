@@ -10,6 +10,7 @@ using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
+    [AllowAnonymous]
     public class FeaturesController : PublicApiClientController<FeaturesViewModel>
     {
         public FeaturesController(ILogger<FeaturesController> logger, IPublicApiClient apiClient)
