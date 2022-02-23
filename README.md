@@ -67,7 +67,7 @@ The API uses a Personal Access Token (PAT) to fetch tags and release metadata.
  - [Generate a PAT](https://github.com/settings/tokens/new) on GitHub
  - Store the PAT in a **rdapi_GITHUBAPIKEY** environment variable
 
-This access token should no longer be needed once authentication is implemented in the back-end.
+This access token is making it simpler to eventually setup a headless execution that could be triggered by a Rubberduck build.
 
 #### <a id="SetupOAuth">Setup OAuth</a>
 
