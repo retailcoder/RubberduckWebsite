@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
@@ -9,6 +10,7 @@ using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
+    [AllowAnonymous]
     public class InspectionsController : PublicApiClientController<InspectionDetailsViewModel>
     {
         public InspectionsController(ILogger<InspectionsController> logger, IPublicApiClient apiClient)

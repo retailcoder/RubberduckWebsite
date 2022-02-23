@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client;
@@ -9,6 +10,7 @@ using RubberduckWebsite.Controllers.Abstract;
 
 namespace RubberduckWebsite.Controllers
 {
+    [AllowAnonymous]
     [Route("{controller}")]
     public class IndenterController : PublicApiClientController<object>
     {

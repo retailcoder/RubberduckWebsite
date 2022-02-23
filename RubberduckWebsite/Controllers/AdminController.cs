@@ -13,7 +13,7 @@ using RubberduckWebsite.Models;
 
 namespace RubberduckWebsite.Controllers
 {
-    //[Authorize(Roles="rubberduck-org")]
+    [Authorize(Roles="rubberduck-org")]
     public class AdminController : Controller
     {
         private readonly ILogger _logger;
@@ -26,11 +26,6 @@ namespace RubberduckWebsite.Controllers
             _webHost = webHost;
 
             _apiClient = apiClient;
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            //_apiClient.SignIn(HttpContext.User.Identity);
         }
 
         public async Task<IActionResult> Index()

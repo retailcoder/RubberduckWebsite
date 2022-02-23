@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rubberduck.Client.Abstract;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace RubberduckWebsite.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : PublicApiClientController<HomeViewModel>
     {
         public HomeController(ILogger<HomeController> logger, IPublicApiClient apiClient)
