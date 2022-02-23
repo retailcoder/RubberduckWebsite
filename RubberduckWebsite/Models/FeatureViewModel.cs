@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Rubberduck.Model.Entities;
 
@@ -16,9 +17,32 @@ namespace RubberduckWebsite.Models
             Description = entity.Description;
             IsNew = entity.IsNew;
             IsHidden = entity.IsHidden;
+            IsProtected = entity.IsProtected;
             SortOrder = entity.SortOrder;
             SubFeatures = entity.SubFeatures.Select(e => new FeatureViewModel(e));
             FeatureItems = entity.FeatureItems.Select(e => new FeatureItemViewModel(e));
+
+            var source = FindScreenshot();
+            if (source != null)
+            {
+                HasScreenshot = true;
+                ScreenshotSource = source;
+            }
+        }
+
+        private string FindScreenshot()
+        {
+            var extensions = new[] { "gif", "png" };
+            foreach (var ext in extensions)
+            {
+                var source = $"wwwroot/images/features/{Name}.{ext}";
+                if (File.Exists(source))
+                {
+                    return $"images/features/{Name}.{ext}";
+                }
+            }
+
+            return null;
         }
 
         public DateTime DateUpdated { get; }
@@ -29,7 +53,11 @@ namespace RubberduckWebsite.Models
 
         public bool IsDiscontinued { get; }
         public bool IsNew { get; }
+        public bool IsProtected { get; }
         public bool IsHidden { get; }
+
+        public bool HasScreenshot { get; }
+        public string ScreenshotSource { get; }
 
         public int SortOrder { get; }
 

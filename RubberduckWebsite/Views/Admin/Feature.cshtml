@@ -171,9 +171,12 @@
                     </button>
                 </form>
             </div>
+            @if (Model.HasScreenshot)
+            {
             <div class="card-img-bottom">
-                <img id="screenshot-image" class="img-thumbnail" src="~/images/features/@(Model.Name).png" alt="Current image for @Model.Name" />
+                <img id="screenshot-image" class="img-thumbnail" src="@Model.ScreenshotSource.ToString()" alt="Current image for @Model.Name" />
             </div>
+            }
         </div>
     </div>
     }

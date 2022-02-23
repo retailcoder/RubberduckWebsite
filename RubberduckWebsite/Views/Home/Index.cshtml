@@ -153,9 +153,12 @@
                             <div class="card-body">
                                 <p class="card-text">@feature.ElevatorPitch</p>
                             </div>
+                            @if (feature.HasScreenshot)
+                            {
                             <div class="card-img-bottom">
-                                <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="~/images/features/@(feature.Name).png" height="220" />
+                                <img alt="Screenshot showcasing the '@feature.Title' feature" class="img-thumbnail" src="@feature.ScreenshotSource" height="220" />
                             </div>
+                            }
                             <div class="card-footer">
                                 <p class="card-text">Details »</p>
                             </div>

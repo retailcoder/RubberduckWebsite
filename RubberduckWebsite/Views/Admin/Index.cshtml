@@ -179,9 +179,12 @@
                                                 <div class="card-body">
                                                     <p class="card-text">@subFeature.ElevatorPitch</p>
                                                 </div>
+                                                @if (subFeature.HasScreenshot)
+                                                {
                                                 <div class="card-img-bottom">
-                                                    <img alt="Screenshot showcasing the '@subFeature.Title' feature" class="img-thumbnail" src="~/images/features/@(subFeature.Name).png" height="220" />
+                                                    <img alt="Screenshot showcasing the '@subFeature.Title' feature" class="img-thumbnail" src="@subFeature.ScreenshotSource" height="220" />
                                                 </div>
+                                                }
                                                 <div class="card-footer">
                                                     <p class="card-text">Edit »</p>
                                                 </div>
